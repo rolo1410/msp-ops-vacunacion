@@ -11,6 +11,12 @@ def create_oracle_engine(config, type):
         logging.info(f"Error al establecer la conexión con la base de datos: {e}")
 
 
+def save_to_lake(data_chunk):
+    # Implement the logic to save the data chunk to the lake
+    logging.info(f"Saving chunk of size {len(data_chunk)} to the lake...")
+    pass    
+
+
 def process_data(engine, since, until, chunk_size=10000):
     try:
         with engine.connect() as connection:

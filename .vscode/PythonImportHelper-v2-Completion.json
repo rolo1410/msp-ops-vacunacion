@@ -17,6 +17,15 @@
         "documentation": {}
     },
     {
+        "label": "duckdb",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "duckdb",
+        "description": "duckdb",
+        "detail": "duckdb",
+        "documentation": {}
+    },
+    {
         "label": "polars",
         "kind": 6,
         "isExtraImport": true,
@@ -42,11 +51,45 @@
         "documentation": {}
     },
     {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "process_data",
+        "importPath": "lake.ingest_lake",
+        "description": "lake.ingest_lake",
+        "isExtraImport": true,
+        "detail": "lake.ingest_lake",
+        "documentation": {}
+    },
+    {
+        "label": "generare_bi_echema",
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "isExtraImport": true,
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
         "label": "create_oracle_engine",
         "kind": 2,
         "importPath": "lake.ingest_lake",
         "description": "lake.ingest_lake",
-        "peekOfCode": "def create_oracle_engine(config, type):\n    try:\n        engine = create_engine(\"postgresql+psycopg2://scott:tiger@localhost:5432/mydatabase\")\n        return engine\n    except Exception as e:\n        logging.info(f\"Error al establecer la conexión con la base de datos: {e}\")\ndef process_data(engine, since, until, chunk_size=10000):\n    try:\n        with engine.connect() as connection:\n            result = connection.execute(",
+        "peekOfCode": "def create_oracle_engine(config, type):\n    try:\n        engine = create_engine(\"postgresql+psycopg2://scott:tiger@localhost:5432/mydatabase\")\n        return engine\n    except Exception as e:\n        logging.info(f\"Error al establecer la conexión con la base de datos: {e}\")\ndef save_to_lake(data_chunk):\n    # Implement the logic to save the data chunk to the lake\n    logging.info(f\"Saving chunk of size {len(data_chunk)} to the lake...\")\n    pass    ",
+        "detail": "lake.ingest_lake",
+        "documentation": {}
+    },
+    {
+        "label": "save_to_lake",
+        "kind": 2,
+        "importPath": "lake.ingest_lake",
+        "description": "lake.ingest_lake",
+        "peekOfCode": "def save_to_lake(data_chunk):\n    # Implement the logic to save the data chunk to the lake\n    logging.info(f\"Saving chunk of size {len(data_chunk)} to the lake...\")\n    pass    \ndef process_data(engine, since, until, chunk_size=10000):\n    try:\n        with engine.connect() as connection:\n            result = connection.execute(\n                \"SELECT * FROM my_table WHERE date >= :since AND date < :until\",\n                {\"since\": since, \"until\": until}",
         "detail": "lake.ingest_lake",
         "documentation": {}
     },
@@ -57,6 +100,33 @@
         "description": "lake.ingest_lake",
         "peekOfCode": "def process_data(engine, since, until, chunk_size=10000):\n    try:\n        with engine.connect() as connection:\n            result = connection.execute(\n                \"SELECT * FROM my_table WHERE date >= :since AND date < :until\",\n                {\"since\": since, \"until\": until}\n            )\n            for chunk in iter(lambda: list(itertools.islice(result, chunk_size)), []):\n                process_chunk(chunk)\n    except Exception as e:",
         "detail": "lake.ingest_lake",
+        "documentation": {}
+    },
+    {
+        "label": "generate_lake_schema",
+        "kind": 2,
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "peekOfCode": "def generate_lake_schema():\n    # Implement the logic to generate the lake schema\n    con = duckdb.connect('./resources/data_lake/vacunacion.duckdb')\n    con.execute(\"\"\"\n        CREATE TABLE IF NOT EXISTS lake_schema (\n            id INTEGER PRIMARY KEY,\n            name VARCHAR,\n            value DOUBLE\n        )\n    \"\"\")",
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
+        "label": "generare_bi_echema",
+        "kind": 2,
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "peekOfCode": "def generare_bi_echema():\n    # Implement the logic to generate the BI schema\n    con = duckdb.connect('./resources/data_lake/vacunacion.duckdb')\n    con.execute(\"\"\"\n        CREATE TABLE IF NOT EXISTS dim_persona (\n            id INTEGER PRIMARY KEY,\n            nombres VARCHAR),\n            apellidos VARCHAR,\n            fecha_nacimiento DATE,\n            identificacion VARCHAR,",
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
+        "label": "load_data",
+        "kind": 2,
+        "importPath": "lake.load_lake",
+        "description": "lake.load_lake",
+        "peekOfCode": "def load_data(df):\n    # Implement the logic to load data into the lake\n    logging.info(\"Loading data into the lake... postgres oracle\")   \n    pass",
+        "detail": "lake.load_lake",
         "documentation": {}
     },
     {
@@ -156,6 +226,24 @@
         "description": "process.process",
         "peekOfCode": "def process_orchester(df: DataFrame):\n    persona_orchester(df)",
         "detail": "process.process",
+        "documentation": {}
+    },
+    {
+        "label": "date_transform",
+        "kind": 2,
+        "importPath": "utils.clean.date_transform",
+        "description": "utils.clean.date_transform",
+        "peekOfCode": "def date_transform(df: DataFrame, column:str, format:str)->DataFrame:\n    df = df.with_columns(\n        polars.col(column).str.strptime(polars.Date,\n                                        fmt=format).alias(column)\n    )\n    return df",
+        "detail": "utils.clean.date_transform",
+        "documentation": {}
+    },
+    {
+        "label": "remove_extra_whitespaces",
+        "kind": 2,
+        "importPath": "utils.clean.text_transform",
+        "description": "utils.clean.text_transform",
+        "peekOfCode": "def remove_extra_whitespaces(df: polars.DataFrame,\n                             columns: list[str]) -> polars.DataFrame:\n    \"\"\"\n    Remove extra whitespaces from the text.\n    Args:\n        df (polars.DataFrame): The input DataFrame.\n    Returns:\n        polars.DataFrame: The cleaned DataFrame.\n    \"\"\"\n    return df.with_columns(",
+        "detail": "utils.clean.text_transform",
         "documentation": {}
     }
 ]
