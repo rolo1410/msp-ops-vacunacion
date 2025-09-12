@@ -1,0 +1,161 @@
+[
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
+        "documentation": {}
+    },
+    {
+        "label": "create_engine",
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
+        "isExtraImport": true,
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
+        "label": "polars",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "polars",
+        "description": "polars",
+        "detail": "polars",
+        "documentation": {}
+    },
+    {
+        "label": "DataFrame",
+        "importPath": "polars",
+        "description": "polars",
+        "isExtraImport": true,
+        "detail": "polars",
+        "documentation": {}
+    },
+    {
+        "label": "persona_orchester",
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "isExtraImport": true,
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "create_oracle_engine",
+        "kind": 2,
+        "importPath": "lake.ingest_lake",
+        "description": "lake.ingest_lake",
+        "peekOfCode": "def create_oracle_engine(config, type):\n    try:\n        engine = create_engine(\"postgresql+psycopg2://scott:tiger@localhost:5432/mydatabase\")\n        return engine\n    except Exception as e:\n        logging.info(f\"Error al establecer la conexión con la base de datos: {e}\")\ndef process_data(engine, since, until, chunk_size=10000):\n    try:\n        with engine.connect() as connection:\n            result = connection.execute(",
+        "detail": "lake.ingest_lake",
+        "documentation": {}
+    },
+    {
+        "label": "process_data",
+        "kind": 2,
+        "importPath": "lake.ingest_lake",
+        "description": "lake.ingest_lake",
+        "peekOfCode": "def process_data(engine, since, until, chunk_size=10000):\n    try:\n        with engine.connect() as connection:\n            result = connection.execute(\n                \"SELECT * FROM my_table WHERE date >= :since AND date < :until\",\n                {\"since\": since, \"until\": until}\n            )\n            for chunk in iter(lambda: list(itertools.islice(result, chunk_size)), []):\n                process_chunk(chunk)\n    except Exception as e:",
+        "detail": "lake.ingest_lake",
+        "documentation": {}
+    },
+    {
+        "label": "DATA_SOURCES",
+        "kind": 5,
+        "importPath": "lake.sources",
+        "description": "lake.sources",
+        "peekOfCode": "DATA_SOURCES = [\n    {\n        \"name\": \"MPI\",\n        \"type\": \"postgresql\",\n        \"host\": \"localhost\",\n        \"port\": 5432,\n        \"database\": \"mydatabase\",\n        \"username\": \"scott\",\n        \"password\": \"tiger\"              \n    }, {",
+        "detail": "lake.sources",
+        "documentation": {}
+    },
+    {
+        "label": "limpiar_columas_texto",
+        "kind": 2,
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "peekOfCode": "def limpiar_columas_texto(df: DataFrame):\n    logging.info(\"|- EST \")\n    logging.debug(\". |- No implementado\")\n    return df \ndef limpiar_columnas_fecha(df: DataFrame, cols: list):\n    logging.info(\"|- EST \")\n    logging.debug(\". |- No implementado\")\n    return df\ndef limpiar_identificacion(df: DataFrame):\n    logging.info(\"|- EST Estandarizando columnas cédulas\")",
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "limpiar_columnas_fecha",
+        "kind": 2,
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "peekOfCode": "def limpiar_columnas_fecha(df: DataFrame, cols: list):\n    logging.info(\"|- EST \")\n    logging.debug(\". |- No implementado\")\n    return df\ndef limpiar_identificacion(df: DataFrame):\n    logging.info(\"|- EST Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef validar_cedulas(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")",
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "limpiar_identificacion",
+        "kind": 2,
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "peekOfCode": "def limpiar_identificacion(df: DataFrame):\n    logging.info(\"|- EST Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef validar_cedulas(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")",
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "validar_cedulas",
+        "kind": 2,
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "peekOfCode": "def validar_cedulas(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad\")",
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "clean_anios_1900",
+        "kind": 2,
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "peekOfCode": "def clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad\")\n    logging.debug(\". |- No implementadoAgregando edad\")\n    logging.info(\"|- ENR Desagregando edad en días , mes , año\")\n    logging.debug(\". |- No implementadoDesagregando edad en días , mes , año\")\n    return df",
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "calcular_edad",
+        "kind": 2,
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "peekOfCode": "def calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad\")\n    logging.debug(\". |- No implementadoAgregando edad\")\n    logging.info(\"|- ENR Desagregando edad en días , mes , año\")\n    logging.debug(\". |- No implementadoDesagregando edad en días , mes , año\")\n    return df\ndef persona_orchester(df: DataFrame):\n    df = limpiar_columas_texto(df)\n    df = limpiar_columnas_fecha(df)\n    df = limpiar_identificacion(df)",
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "persona_orchester",
+        "kind": 2,
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "peekOfCode": "def persona_orchester(df: DataFrame):\n    df = limpiar_columas_texto(df)\n    df = limpiar_columnas_fecha(df)\n    df = limpiar_identificacion(df)\n    return df",
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "vacuna_orchester",
+        "kind": 2,
+        "importPath": "process.dim_vacuna",
+        "description": "process.dim_vacuna",
+        "peekOfCode": "def vacuna_orchester(df):\n    return df",
+        "detail": "process.dim_vacuna",
+        "documentation": {}
+    },
+    {
+        "label": "vacunacion_orchester",
+        "kind": 2,
+        "importPath": "process.dim_vacunacion",
+        "description": "process.dim_vacunacion",
+        "peekOfCode": "def vacunacion_orchester(df: polars.DataFrame):\n    return df",
+        "detail": "process.dim_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "process_orchester",
+        "kind": 2,
+        "importPath": "process.process",
+        "description": "process.process",
+        "peekOfCode": "def process_orchester(df: DataFrame):\n    persona_orchester(df)",
+        "detail": "process.process",
+        "documentation": {}
+    }
+]
