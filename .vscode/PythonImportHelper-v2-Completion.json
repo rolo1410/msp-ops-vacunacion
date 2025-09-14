@@ -1,11 +1,11 @@
 [
     {
-        "label": "logging",
+        "label": "os",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "logging",
-        "description": "logging",
-        "detail": "logging",
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
         "documentation": {}
     },
     {
@@ -17,12 +17,19 @@
         "documentation": {}
     },
     {
-        "label": "duckdb",
-        "kind": 6,
+        "label": "create_engine",
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
         "isExtraImport": true,
-        "importPath": "duckdb",
-        "description": "duckdb",
-        "detail": "duckdb",
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
+        "label": "Engine",
+        "importPath": "sqlalchemy.engine",
+        "description": "sqlalchemy.engine",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.engine",
         "documentation": {}
     },
     {
@@ -40,6 +47,40 @@
         "description": "polars",
         "isExtraImport": true,
         "detail": "polars",
+        "documentation": {}
+    },
+    {
+        "label": "DB_VACUNACION",
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "isExtraImport": true,
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "get_oracle_engine",
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "isExtraImport": true,
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
+        "documentation": {}
+    },
+    {
+        "label": "duckdb",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "duckdb",
+        "description": "duckdb",
+        "detail": "duckdb",
         "documentation": {}
     },
     {
@@ -73,6 +114,87 @@
         "description": "lake.init_lake",
         "isExtraImport": true,
         "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
+        "label": "get_oracle_engine",
+        "kind": 2,
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "peekOfCode": "def get_oracle_engine(options: dict) -> Engine:\n    user = options.get(\"user\", \"user\")\n    password = options.get(\"password\", \"password\")\n    host = options.get(\"host\", \"localhost\")\n    port = options.get(\"port\", 1521)\n    service_name = options.get(\"service_name\", \"orclpdb1\")\n    connection_string = f'oracle+cx_oracle://{user}:{password}@{host}:{port}/{service_name}'\n    engine: Engine = create_engine(connection_string, pool_pre_ping=True)\n    return engine\ndef postgres_get_engine(options: dict) -> Engine:",
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "postgres_get_engine",
+        "kind": 2,
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "peekOfCode": "def postgres_get_engine(options: dict) -> Engine:\n    user = options.get(\"user\", \"user\")\n    password = options.get(\"password\", \"password\")\n    host = options.get(\"host\", \"localhost\")\n    port = options.get(\"port\", 5432)\n    dbname = options.get(\"dbname\", \"dbname\")\n    connection_string = f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}'\n    engine: Engine = create_engine(connection_string, pool_pre_ping=True)\n    return engine",
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "DB_VACUNACION",
+        "kind": 5,
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "peekOfCode": "DB_VACUNACION = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_VACUNACION_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_VACUNACION_PORT\", 1521)),\n    \"user\": os.getenv(\"CNN_ORACLE_DB_VACUNACION_USER\", \"user\"),\n    \"password\": os.getenv(\"CNN_ORACLE_DB_VACUNACION_PASSWORD\", \"password\"),\n    \"service_name\": os.getenv(\"CNN_ORACLE_DB_VACUNACION_SID\", \"orcl\")\n}\nDB_MIP = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_MPI_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_MPI_PORT\", 1521)),",
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "DB_MIP",
+        "kind": 5,
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "peekOfCode": "DB_MIP = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_MPI_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_MPI_PORT\", 1521)),\n    \"user\": os.getenv(\"CNN_ORACLE_DB_MPI_USER\", \"user\"),\n    \"password\": os.getenv(\"CNN_ORACLE_DB_MPI_PASSWORD\", \"password\"),\n    \"service_name\": os.getenv(\"CNN_ORACLE_DB_MPI_SID\", \"orcl\")\n}\nDB_GEOSALUD = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_GEOSALUD_PORT\", 1521)),",
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "DB_GEOSALUD",
+        "kind": 5,
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "peekOfCode": "DB_GEOSALUD = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_GEOSALUD_PORT\", 1521)),\n    \"user\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_USER\", \"user\"),\n    \"password\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_PASSWORD\", \"password\"),\n    \"service_name\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_DBNAME\", \"geoserver\")\n}\nDB_REPLICA = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_REPLICACION_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_REPLICACION_PORT\", 1521)),",
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "DB_REPLICA",
+        "kind": 5,
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "peekOfCode": "DB_REPLICA = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_REPLICACION_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_REPLICACION_PORT\", 1521)),\n    \"user\": os.getenv(\"CNN_ORACLE_DB_REPLICACION_USER\", \"user\"),\n    \"password\": os.getenv(\"CNN_ORACLE_DB_REPLICACION_PASSWORD\", \"password\"),\n    \"service_name\": os.getenv(\"CNN_ORACLE_DB_REPLICACION_DBNAME\", \"replicacion\")\n}\ndef get_oracle_engine(options: dict) -> Engine:\n    user = options.get(\"user\", \"user\")\n    password = options.get(\"password\", \"password\")",
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "get_db_vacunacion",
+        "kind": 2,
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = \"\"\"\n            SELECT \n                ID_VAC_DEPU,\n                FECHA_APLICACION,\n                PUNTO_VACUNACION,\n                UNICODIGO,\n                APELLIDOS,\n                TIPO_IDEN,",
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "get_count_db_vacunacion",
+        "kind": 2,
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "peekOfCode": "def get_count_db_vacunacion(since, until):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = \"\"\"\n            SELECT \n                COUNT(*) AS total_count\n            FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID\n            WHERE \n                FECHA_APLICACION BETWEEN TO_DATE(:since, 'YYYY-MM-DD') \n                AND TO_DATE(:until, 'YYYY-MM-DD')\n            \"\"\"  # Replace with actual query",
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "get_db_vacunaciones",
+        "kind": 2,
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "peekOfCode": "def get_db_vacunaciones(since, until):\n    offset = 0\n    chunk_size = 100000\n    all_data = []\n    while True:\n        chunk = get_db_vacunacion(since, until, offset, chunk_size)\n        if chunk.is_empty():\n            break\n        all_data.append(chunk)\n        offset += chunk_size",
+        "detail": "extract.db_vacunacion",
         "documentation": {}
     },
     {
