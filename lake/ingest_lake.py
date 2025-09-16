@@ -28,3 +28,16 @@ def process_data(engine, since, until, chunk_size=10000):
                 process_chunk(chunk)
     except Exception as e:
         logging.info(f"Error al procesar los datos: {e}")       
+
+
+def ingest_data_lake(since, until, chunk_size=10000):
+    logging.basicConfig(level=logging.INFO)
+    logging.info("Iniciando el proceso de ingestión de datos al lago...")
+
+    engine = create_oracle_engine("DB_CONFIG", "oracle")
+    if not engine:
+        logging.error("No se pudo crear el motor de la base de datos. Terminando el proceso.")
+        return
+
+    process_data(engine, since, until, chunk_size)
+    logging.info("Proceso de ingestión de datos al lago completado.")

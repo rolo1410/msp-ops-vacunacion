@@ -9,6 +9,23 @@
         "documentation": {}
     },
     {
+        "label": "dotenv",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
+        "label": "load_dotenv",
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "isExtraImport": true,
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
         "label": "create_engine",
         "importPath": "sqlalchemy",
         "description": "sqlalchemy",
@@ -30,6 +47,15 @@
         "description": "sqlalchemy.engine",
         "isExtraImport": true,
         "detail": "sqlalchemy.engine",
+        "documentation": {}
+    },
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
         "documentation": {}
     },
     {
@@ -63,15 +89,6 @@
         "description": "extract.config.sources",
         "isExtraImport": true,
         "detail": "extract.config.sources",
-        "documentation": {}
-    },
-    {
-        "label": "logging",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "logging",
-        "description": "logging",
-        "detail": "logging",
         "documentation": {}
     },
     {
@@ -109,6 +126,14 @@
         "documentation": {}
     },
     {
+        "label": "get_db_vacunaciones",
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "isExtraImport": true,
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
         "label": "process_data",
         "importPath": "lake.ingest_lake",
         "description": "lake.ingest_lake",
@@ -129,7 +154,7 @@
         "kind": 2,
         "importPath": "extract.config.sources",
         "description": "extract.config.sources",
-        "peekOfCode": "def get_oracle_engine(options: dict) -> Engine:\n    user = options.get(\"user\", \"user\")\n    password = options.get(\"password\", \"password\")\n    host = options.get(\"host\", \"localhost\")\n    port = options.get(\"port\", 1521)\n    service_name = options.get(\"service_name\", \"orclpdb1\")\n    connection_string = f'oracle+cx_oracle://{user}:{password}@{host}:{port}/{service_name}'\n    engine: Engine = create_engine(connection_string, pool_pre_ping=True)\n    return engine\ndef postgres_get_engine(options: dict) -> Engine:",
+        "peekOfCode": "def get_oracle_engine(options: dict) -> Engine:\n    user = options.get(\"user\", \"user\")\n    password = options.get(\"password\", \"password\")\n    host = options.get(\"host\", \"localhost\")\n    port = options.get(\"port\", 1521)\n    service_name = options.get(\"service_name\", \"orclpdb1\")\n    connection_string = f'oracle+oracledb://{user}:{password}@{host}:{port}/?service_name={service_name}'\n    engine: Engine = create_engine(connection_string, pool_pre_ping=True)\n    return engine\ndef postgres_get_engine(options: dict) -> Engine:",
         "detail": "extract.config.sources",
         "documentation": {}
     },
@@ -183,7 +208,7 @@
         "kind": 2,
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = \"\"\"\n            SELECT\n                ID_VAC_DEPU,\n                FECHA_APLICACION,\n                PUNTO_VACUNACION,\n                UNICODIGO,\n                APELLIDOS,\n                TIPO_IDEN,",
+        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000) -> pl.DataFrame:\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = f\"\"\"\n            SELECT\n                ID_VAC_DEPU,\n                FECHA_APLICACION,\n                PUNTO_VACUNACION,\n                UNICODIGO,\n                APELLIDOS,\n                TIPO_IDEN,",
         "detail": "extract.db_vacunacion",
         "documentation": {}
     },
@@ -192,7 +217,7 @@
         "kind": 2,
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_count_db_vacunacion(since, until):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = \"\"\"\n            SELECT \n                COUNT(*) AS total_count\n            FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID\n            WHERE \n                FECHA_APLICACION BETWEEN TO_DATE(:since, 'YYYY-MM-DD') \n                AND TO_DATE(:until, 'YYYY-MM-DD')\n            \"\"\"  # Replace with actual query",
+        "peekOfCode": "def get_count_db_vacunacion(since, until):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = f\"\"\"\n            SELECT \n                COUNT(*) AS total_count\n            FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID\n            WHERE \n                FECHA_APLICACION BETWEEN TO_DATE('{since}', 'YYYY-MM-DD') \n                AND TO_DATE('{until}', 'YYYY-MM-DD')\n            \"\"\"  # Replace with actual query",
         "detail": "extract.db_vacunacion",
         "documentation": {}
     },
@@ -201,7 +226,16 @@
         "kind": 2,
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunaciones(since, until):\n    offset = 0\n    chunk_size = 100000\n    all_data = []\n    while True:\n        chunk = get_db_vacunacion(since, until, offset, chunk_size)\n        if chunk.is_empty():\n            break\n        all_data.append(chunk)\n        offset += chunk_size",
+        "peekOfCode": "def get_db_vacunaciones(since, until, chunk_size=100000) -> pl.DataFrame:\n    offset = 0\n    all_data = []\n    schema = None\n    total = get_count_db_vacunacion(since, until)\n    for offset in range(0, total, chunk_size):\n        logging.info(f\"Fetching records {offset} to {offset + chunk_size} de un total de {total}\")\n        chunk = get_db_vacunacion(since, until, offset, chunk_size)\n        if chunk.is_empty():\n            break",
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "VACUNACION_SCHEMA",
+        "kind": 5,
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "peekOfCode": "VACUNACION_SCHEMA = {\n    \"ID_VAC_DEPU\": pl.String,\n    \"FECHA_APLICACION\": pl.Date,\n    \"PUNTO_VACUNACION\": pl.String,\n    \"UNICODIGO\": pl.String,\n    \"APELLIDOS\": pl.String,\n    \"TIPO_IDEN\": pl.String,\n    \"NUM_IDEN\": pl.String,\n    \"NOMBRES\": pl.String,\n    \"NOMBRES_COMPLETOS\": pl.String,",
         "detail": "extract.db_vacunacion",
         "documentation": {}
     },
@@ -229,6 +263,15 @@
         "importPath": "lake.ingest_lake",
         "description": "lake.ingest_lake",
         "peekOfCode": "def process_data(engine, since, until, chunk_size=10000):\n    try:\n        with engine.connect() as connection:\n            result = connection.execute(\n                \"SELECT * FROM my_table WHERE date >= :since AND date < :until\",\n                {\"since\": since, \"until\": until}\n            )\n            for chunk in iter(lambda: list(itertools.islice(result, chunk_size)), []):\n                process_chunk(chunk)\n    except Exception as e:",
+        "detail": "lake.ingest_lake",
+        "documentation": {}
+    },
+    {
+        "label": "ingest_data_lake",
+        "kind": 2,
+        "importPath": "lake.ingest_lake",
+        "description": "lake.ingest_lake",
+        "peekOfCode": "def ingest_data_lake(since, until, chunk_size=10000):\n    logging.basicConfig(level=logging.INFO)\n    logging.info(\"Iniciando el proceso de ingestión de datos al lago...\")\n    engine = create_oracle_engine(\"DB_CONFIG\", \"oracle\")\n    if not engine:\n        logging.error(\"No se pudo crear el motor de la base de datos. Terminando el proceso.\")\n        return\n    process_data(engine, since, until, chunk_size)\n    logging.info(\"Proceso de ingestión de datos al lago completado.\")",
         "detail": "lake.ingest_lake",
         "documentation": {}
     },
@@ -392,6 +435,15 @@
         "description": "utils.df_utils",
         "peekOfCode": "def convertir_columnas_a_minusculas(df):\n    \"\"\"\n    Convierte los nombres de las columnas de un DataFrame a minúsculas.\n    Parámetros:\n    df (pandas.DataFrame): El DataFrame cuyas columnas se desean convertir.\n    Retorna:\n    pandas.DataFrame: El DataFrame con los nombres de las columnas en minúsculas.\n    \"\"\"\n    df.columns = [col.lower() for col in df.columns]\n    return df",
         "detail": "utils.df_utils",
+        "documentation": {}
+    },
+    {
+        "label": "file_handler",
+        "kind": 5,
+        "importPath": "main_full",
+        "description": "main_full",
+        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-01-01\"\n    until = \"2023-03-31\"\n    get_db_vacunaciones(since, until, chunk_size=100000)",
+        "detail": "main_full",
         "documentation": {}
     }
 ]

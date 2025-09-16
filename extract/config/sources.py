@@ -1,7 +1,10 @@
 import os
 
+import dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
+
+dotenv.load_dotenv()
 
 DB_VACUNACION = {
     "host": os.getenv("CNN_ORACLE_DB_VACUNACION_HOST", "localhost"),
@@ -42,7 +45,7 @@ def get_oracle_engine(options: dict) -> Engine:
     host = options.get("host", "localhost")
     port = options.get("port", 1521)
     service_name = options.get("service_name", "orclpdb1")
-    connection_string = f'oracle+cx_oracle://{user}:{password}@{host}:{port}/{service_name}'
+    connection_string = f'oracle+oracledb://{user}:{password}@{host}:{port}/?service_name={service_name}'
     engine: Engine = create_engine(connection_string, pool_pre_ping=True)
     return engine
 
