@@ -21,11 +21,4 @@ def ingest_orchester(since, until):
     geo_df = get_geo_salud_data()
     add_new_elements_to_lake('vacunacion', 'lk_establecimiento', ['uni_codigo'], geo_df)
     
-    # merge con mpi
-    df = df.join(mpi_df, left_on='NUM_IDEN', right_on='EC_IDENTIFIER_OID', how='left')
-    
-    # merge con geo
-    df = df.join(geo_df, left_on='UNICODIGO', right_on='UNI_CODIGO', how='left')
-    
-    #   
     return df

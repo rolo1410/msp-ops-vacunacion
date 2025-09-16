@@ -24,7 +24,7 @@ def get_mpi_data_chunk(identifications: list[str]) -> pl.DataFrame:
             FROM
                 MPI.PERSON
             WHERE
-                EC_IDENTIFIER_OID IN ({','.join(map(repr, identifications))})
+                IDENTIFIER_VALUE IN ({','.join(map(repr, identifications))})
             AND
             ROWNUM < 10
             """

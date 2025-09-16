@@ -1,3 +1,5 @@
+import logging
+
 import duckdb
 import polars as pl
 
@@ -71,7 +73,7 @@ def add_new_elements_to_lake(db:str,
                               table:str,
                               keys_columns:list[str],
                               df:pl.DataFrame):
-    
+    logging.info(f"|-Adding new elements to lake: {db}.{table}")
     # Implement the logic to add new elements to the lake
     con = duckdb.connect(f'./resources/data_lake/{db}.duckdb')
     

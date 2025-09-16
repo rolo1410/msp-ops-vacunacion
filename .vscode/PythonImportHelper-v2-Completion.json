@@ -398,7 +398,7 @@
         "kind": 2,
         "importPath": "lake.init_lake",
         "description": "lake.init_lake",
-        "peekOfCode": "def add_new_elements_to_lake(db:str,\n                              table:str,\n                              keys_columns:list[str],\n                              df:pl.DataFrame):\n    # Implement the logic to add new elements to the lake\n    con = duckdb.connect(f'./resources/data_lake/{db}.duckdb')\n    # \n    one_query = f\"\"\"CREATE TABLE IF NOT EXISTS {db}.main.{table} AS SELECT * FROM df;\n                    CREATE TABLE IF NOT EXISTS {db}.main.tmp_{table} AS SELECT * FROM df;\n                    INSERT INTO {db}.main.{table} SELECT * FROM {db}.main.tmp_{table} WHERE NOT EXISTS (SELECT 1 FROM {db}.main.{table} WHERE {' AND '.join([f'{table}.{col} = tmp_{table}.{col}' for col in keys_columns])} );",
+        "peekOfCode": "def add_new_elements_to_lake(db:str,\n                              table:str,\n                              keys_columns:list[str],\n                              df:pl.DataFrame):\n    logging.info(f\"|-Adding new elements to lake: {db}.{table}\")\n    # Implement the logic to add new elements to the lake\n    con = duckdb.connect(f'./resources/data_lake/{db}.duckdb')\n    # \n    one_query = f\"\"\"CREATE TABLE IF NOT EXISTS {db}.main.{table} AS SELECT * FROM df;\n                    CREATE TABLE IF NOT EXISTS {db}.main.tmp_{table} AS SELECT * FROM df;",
         "detail": "lake.init_lake",
         "documentation": {}
     },
