@@ -20,6 +20,6 @@ def ingest_orchester(since, until):
     df = df.join(mpi_df, left_on='NUM_IDEN', right_on='EC_IDENTIFIER_OID', how='left')
     print(df)
     # merge con geo
-    #df = df.join(geo_df, left_on='cod_distrito', right_on='codigo_distrito', how='left')
-    #print(df)
+    df = df.join(geo_df, left_on='UNICODIGO', right_on='UNI_CODIGO', how='left')
+    print(df)
     return df

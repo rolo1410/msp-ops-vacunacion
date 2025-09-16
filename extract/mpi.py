@@ -20,6 +20,8 @@ def get_mpi_data_chunk(identifications: list[str]) -> pl.DataFrame:
                 NAME_TEXT,
                 NAME_FAMILY,
                 NAME_GIVEN
+            FROM
+                MPI.PERSON
             WHERE
                 EC_IDENTIFIER_OID IN ({','.join(map(repr, identifications))})
             AND

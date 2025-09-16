@@ -157,6 +157,14 @@
         "documentation": {}
     },
     {
+        "label": "limpiar_columas_texto",
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "isExtraImport": true,
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
         "label": "calcular_edad",
         "importPath": "process.dim_persona",
         "description": "process.dim_persona",
@@ -393,6 +401,33 @@
         "description": "lake.sources",
         "peekOfCode": "DATA_SOURCES = [\n    {\n        \"name\": \"MPI\",\n        \"type\": \"postgresql\",\n        \"host\": \"localhost\",\n        \"port\": 5432,\n        \"database\": \"mydatabase\",\n        \"username\": \"scott\",\n        \"password\": \"tiger\"              \n    }, {",
         "detail": "lake.sources",
+        "documentation": {}
+    },
+    {
+        "label": "limpiar_columnas_geograficas",
+        "kind": 2,
+        "importPath": "process.dim_establecimiento",
+        "description": "process.dim_establecimiento",
+        "peekOfCode": "def limpiar_columnas_geograficas(df: pl.DataFrame, cols: list):\n    logging.info(\"|- EST \")\n    logging.debug(\" |- Truncando latitud y longitud a 6 decimales\")\n    df = df.with_columns(\n        [pl.col(col).round(6) for col in cols if col in df.columns]\n    )  \n    return df\ndef limpiar_columas_texto(df: pl.DataFrame):\n    logging.info(\"|- EST Limpiando columnas de texto\")\n    logging.debug(\" |- Removiendo espacios en blanco y caracteres especiales\")",
+        "detail": "process.dim_establecimiento",
+        "documentation": {}
+    },
+    {
+        "label": "limpiar_columas_texto",
+        "kind": 2,
+        "importPath": "process.dim_establecimiento",
+        "description": "process.dim_establecimiento",
+        "peekOfCode": "def limpiar_columas_texto(df: pl.DataFrame):\n    logging.info(\"|- EST Limpiando columnas de texto\")\n    logging.debug(\" |- Removiendo espacios en blanco y caracteres especiales\")\n    df = df.with_columns(\n        [pl.col(col).str.strip_chars().str.replace_all(r\"[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\\s]\", \"\") for col in df.columns if df[col].dtype == pl.Utf8]\n    )\n    logging.debug(\" |- Convirtiendo a mayúsculas\")\n    df = df.with_columns(\n        [pl.col(col).str.to_uppercase() for col in df.columns if df[col].dtype == pl.Utf8]\n    )",
+        "detail": "process.dim_establecimiento",
+        "documentation": {}
+    },
+    {
+        "label": "process_establecimiento_orchester",
+        "kind": 2,
+        "importPath": "process.dim_establecimiento",
+        "description": "process.dim_establecimiento",
+        "peekOfCode": "def process_establecimiento_orchester(df: pl.DataFrame):\n    logging.info(\"|- Establecimiento Orchester\")\n    #\n    df = limpiar_columnas_geograficas(df, ['LONGPS', 'LATGPS'])\n    #\n    df = limpiar_columas_texto(df)\n    return df",
+        "detail": "process.dim_establecimiento",
         "documentation": {}
     },
     {
