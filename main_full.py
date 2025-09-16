@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 
 from extract.ingest_orchester import ingest_orchester
+from process.clean_transform_orchester import process_orchester
 
 load_dotenv(override= True) 
 ## config loggin
@@ -21,4 +22,6 @@ logging.getLogger().addHandler(file_handler)
 if __name__ == "__main__":
     since = "2023-03-01"
     until = "2023-03-06" 
-    ingest_orchester(since, until)
+    # ingest_orchester(since, until)
+    df = process_orchester()
+    print(df)

@@ -35,14 +35,6 @@
         "documentation": {}
     },
     {
-        "label": "DataFrame",
-        "importPath": "polars",
-        "description": "polars",
-        "isExtraImport": true,
-        "detail": "polars",
-        "documentation": {}
-    },
-    {
         "label": "create_engine",
         "importPath": "sqlalchemy",
         "description": "sqlalchemy",
@@ -173,27 +165,43 @@
         "documentation": {}
     },
     {
-        "label": "limpiar_columas_texto",
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
+        "label": "limpiar_columnas_geograficas",
+        "importPath": "process.clean_transform.dim_establecimiento",
+        "description": "process.clean_transform.dim_establecimiento",
         "isExtraImport": true,
-        "detail": "process.dim_persona",
+        "detail": "process.clean_transform.dim_establecimiento",
         "documentation": {}
     },
     {
-        "label": "calcular_edad",
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
+        "label": "load_data",
+        "importPath": "lake.load_lake",
+        "description": "lake.load_lake",
         "isExtraImport": true,
-        "detail": "process.dim_persona",
+        "detail": "lake.load_lake",
         "documentation": {}
     },
     {
         "label": "persona_orchester",
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
         "isExtraImport": true,
-        "detail": "process.dim_persona",
+        "detail": "process.clean_transform.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "vacuna_orchester",
+        "importPath": "process.clean_transform.dim_vacuna",
+        "description": "process.clean_transform.dim_vacuna",
+        "isExtraImport": true,
+        "detail": "process.clean_transform.dim_vacuna",
+        "documentation": {}
+    },
+    {
+        "label": "vacunacion_orchester",
+        "importPath": "process.clean_transform.dim_vacunacion",
+        "description": "process.clean_transform.dim_vacunacion",
+        "isExtraImport": true,
+        "detail": "process.clean_transform.dim_vacunacion",
         "documentation": {}
     },
     {
@@ -211,6 +219,14 @@
         "description": "extract.ingest_orchester",
         "isExtraImport": true,
         "detail": "extract.ingest_orchester",
+        "documentation": {}
+    },
+    {
+        "label": "process_orchester",
+        "importPath": "process.clean_transform_orchester",
+        "description": "process.clean_transform_orchester",
+        "isExtraImport": true,
+        "detail": "process.clean_transform_orchester",
         "documentation": {}
     },
     {
@@ -407,7 +423,7 @@
         "kind": 2,
         "importPath": "lake.load_lake",
         "description": "lake.load_lake",
-        "peekOfCode": "def load_data(df):\n    # Implement the logic to load data into the lake\n    logging.info(\"Loading data into the lake... postgres oracle\")   \n    pass",
+        "peekOfCode": "def load_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database='./resources/data_lake/vacunacion.duckdb')\n    df = con.execute(\"SELECT * FROM lk_vacunacion\").fetch_df()\n    df = pl.from_pandas(df)\n    logging.info(\". |- Datos cargados al lago\")\n    return df",
         "detail": "lake.load_lake",
         "documentation": {}
     },
@@ -423,136 +439,136 @@
     {
         "label": "limpiar_columnas_geograficas",
         "kind": 2,
-        "importPath": "process.dim_establecimiento",
-        "description": "process.dim_establecimiento",
+        "importPath": "process.clean_transform.dim_establecimiento",
+        "description": "process.clean_transform.dim_establecimiento",
         "peekOfCode": "def limpiar_columnas_geograficas(df: pl.DataFrame, cols: list):\n    logging.info(\"|- EST \")\n    logging.debug(\" |- Truncando latitud y longitud a 6 decimales\")\n    df = df.with_columns(\n        [pl.col(col).round(6) for col in cols if col in df.columns]\n    )  \n    return df\ndef limpiar_columas_texto(df: pl.DataFrame):\n    logging.info(\"|- EST Limpiando columnas de texto\")\n    logging.debug(\" |- Removiendo espacios en blanco y caracteres especiales\")",
-        "detail": "process.dim_establecimiento",
+        "detail": "process.clean_transform.dim_establecimiento",
         "documentation": {}
     },
     {
         "label": "limpiar_columas_texto",
         "kind": 2,
-        "importPath": "process.dim_establecimiento",
-        "description": "process.dim_establecimiento",
+        "importPath": "process.clean_transform.dim_establecimiento",
+        "description": "process.clean_transform.dim_establecimiento",
         "peekOfCode": "def limpiar_columas_texto(df: pl.DataFrame):\n    logging.info(\"|- EST Limpiando columnas de texto\")\n    logging.debug(\" |- Removiendo espacios en blanco y caracteres especiales\")\n    df = df.with_columns(\n        [pl.col(col).str.strip_chars().str.replace_all(r\"[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\\s]\", \"\") for col in df.columns if df[col].dtype == pl.Utf8]\n    )\n    logging.debug(\" |- Convirtiendo a mayúsculas\")\n    df = df.with_columns(\n        [pl.col(col).str.to_uppercase() for col in df.columns if df[col].dtype == pl.Utf8]\n    )",
-        "detail": "process.dim_establecimiento",
+        "detail": "process.clean_transform.dim_establecimiento",
         "documentation": {}
     },
     {
         "label": "process_establecimiento_orchester",
         "kind": 2,
-        "importPath": "process.dim_establecimiento",
-        "description": "process.dim_establecimiento",
+        "importPath": "process.clean_transform.dim_establecimiento",
+        "description": "process.clean_transform.dim_establecimiento",
         "peekOfCode": "def process_establecimiento_orchester(df: pl.DataFrame):\n    logging.info(\"|- Establecimiento Orchester\")\n    #\n    df = limpiar_columnas_geograficas(df, ['LONGPS', 'LATGPS'])\n    #\n    df = limpiar_columas_texto(df)\n    return df",
-        "detail": "process.dim_establecimiento",
+        "detail": "process.clean_transform.dim_establecimiento",
         "documentation": {}
     },
     {
         "label": "generar_dim_fecha",
         "kind": 2,
-        "importPath": "process.dim_fecha",
-        "description": "process.dim_fecha",
+        "importPath": "process.clean_transform.dim_fecha",
+        "description": "process.clean_transform.dim_fecha",
         "peekOfCode": "def generar_dim_fecha(df: pl.DataFrame):\n    logging.info(\"|- DIM Fecha\")\n    ## generar fechas desde 2020-01-01 hasta 2025-12-31\n    df = df.with_columns(\n        pl.date_range(\n            start=\"2020-01-01\",\n            end=\"2025-12-31\",\n            closed=\"both\",\n            name=\"FECHA\"\n        )",
-        "detail": "process.dim_fecha",
+        "detail": "process.clean_transform.dim_fecha",
         "documentation": {}
     },
     {
-        "label": "limpiar_columas_texto",
+        "label": "limpiar_columnas_texto",
         "kind": 2,
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
-        "peekOfCode": "def limpiar_columas_texto(df: DataFrame):\n    return df \ndef limpiar_columnas_fecha(df: DataFrame, cols: list):\n    logging.info(\"|- EST \")\n    logging.debug(\". |- No implementado\")\n    return df\ndef limpiar_identificacion(df: DataFrame):\n    logging.info(\"|- EST Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df",
-        "detail": "process.dim_persona",
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
+        "peekOfCode": "def limpiar_columnas_texto(df: pl.DataFrame, cols: list[str] = []):\n    logging.info(\"|- EST Limpiando columnas de texto\")\n    for col in cols:\n        logging.debug(f\"  |- Limpiando columna {col}\")\n        df = df.with_columns(pl.col(col).str.strip_chars().alias(col))\n    return df\ndef limpiar_columnas_fecha(df: pl.DataFrame, cols: list[str] = []):\n    logging.info(\"|- EST Estandarizando columnas fecha\")\n    for col in cols:\n        logging.info(f\"  |- Estandarizando columna {col}\")",
+        "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
     {
         "label": "limpiar_columnas_fecha",
         "kind": 2,
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
-        "peekOfCode": "def limpiar_columnas_fecha(df: DataFrame, cols: list):\n    logging.info(\"|- EST \")\n    logging.debug(\". |- No implementado\")\n    return df\ndef limpiar_identificacion(df: DataFrame):\n    logging.info(\"|- EST Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef validar_cedulas(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")",
-        "detail": "process.dim_persona",
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
+        "peekOfCode": "def limpiar_columnas_fecha(df: pl.DataFrame, cols: list[str] = []):\n    logging.info(\"|- EST Estandarizando columnas fecha\")\n    for col in cols:\n        logging.info(f\"  |- Estandarizando columna {col}\")\n    return df\ndef esCedulaValida(cedula: str) -> bool:    \n    # Implementación de la validación de cédula\n    if not cedula or len(cedula) != 10 or not cedula.isdigit():\n        return False\n    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]",
+        "detail": "process.clean_transform.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "esCedulaValida",
+        "kind": 2,
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
+        "peekOfCode": "def esCedulaValida(cedula: str) -> bool:    \n    # Implementación de la validación de cédula\n    if not cedula or len(cedula) != 10 or not cedula.isdigit():\n        return False\n    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]\n    total = 0\n    for i in range(9):\n        val = int(cedula[i]) * coeficientes[i]\n        if val >= 10:\n            val -= 9",
+        "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
     {
         "label": "limpiar_identificacion",
         "kind": 2,
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
-        "peekOfCode": "def limpiar_identificacion(df: DataFrame):\n    logging.info(\"|- EST Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef validar_cedulas(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")",
-        "detail": "process.dim_persona",
-        "documentation": {}
-    },
-    {
-        "label": "validar_cedulas",
-        "kind": 2,
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
-        "peekOfCode": "def validar_cedulas(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")",
-        "detail": "process.dim_persona",
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
+        "peekOfCode": "def limpiar_identificacion(df: pl.DataFrame):\n    logging.info(\"|- LIM Limpiando columnas identificación\")\n    ## Eliminar registros sin cédula\n    logging.debug(f\"  |- REM Eliminando registros sin cédula o vacíos en el campo NUM_IDEN\")\n    df = df.filter(pl.col(\"NUM_IDEN\").is_not_null() & (pl.col(\"NUM_IDEN\") != \"\"))\n    ## si el registro es cedula y tiene 10 digitos\n    logging.debug(f\"  |- EST Completando cedulas que tienen menos de 10 digitos con un 0 a la izquierda\")\n    df = df.with_columns(pl.when(\n        (pl.col(\"TIPO_IDEN\") == \"CÉDULA DE IDENTIDAD\") & (pl.col(\"NUM_IDEN\").str.len_chars() < 10)\n    ).then(",
+        "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
     {
         "label": "clean_anios_1900",
         "kind": 2,
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
-        "peekOfCode": "def clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")\n    df['edad_anios'] = df.apply(calcular_edad)\n    df['edad_meses'] = df.apply(calcular_edad)\n    df['edad_dias'] = df.apply(calcular_edad)\n    return df",
-        "detail": "process.dim_persona",
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
+        "peekOfCode": "def clean_anios_1900(df: pl.DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(f\"  |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: pl.DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")\n    df['edad_anios'] = df.apply(calcular_edad)\n    df['edad_meses'] = df.apply(calcular_edad)\n    df['edad_dias'] = df.apply(calcular_edad)\n    return df",
+        "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
     {
         "label": "calcular_edad",
         "kind": 2,
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
-        "peekOfCode": "def calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")\n    df['edad_anios'] = df.apply(calcular_edad)\n    df['edad_meses'] = df.apply(calcular_edad)\n    df['edad_dias'] = df.apply(calcular_edad)\n    return df\ndef calcular_grupo_etario(df: DataFrame):\n    # agrega la columna grupo_etario\n    logging.info(\"|- ENR Agregando edad\")\n    df['grupo_etario'] = df.apply(calcular_edad)    ",
-        "detail": "process.dim_persona",
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
+        "peekOfCode": "def calcular_edad(df: pl.DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")\n    df['edad_anios'] = df.apply(calcular_edad)\n    df['edad_meses'] = df.apply(calcular_edad)\n    df['edad_dias'] = df.apply(calcular_edad)\n    return df\ndef calcular_grupo_etario(df: pl.DataFrame):\n    # agrega la columna grupo_etario\n    logging.info(\"|- ENR Agregando edad\")\n    df['grupo_etario'] = df.apply(calcular_edad)    ",
+        "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
     {
         "label": "calcular_grupo_etario",
         "kind": 2,
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
-        "peekOfCode": "def calcular_grupo_etario(df: DataFrame):\n    # agrega la columna grupo_etario\n    logging.info(\"|- ENR Agregando edad\")\n    df['grupo_etario'] = df.apply(calcular_edad)    \n    logging.debug(\". |- No implementadoAgregando edad\")\n    logging.info(\"|- ENR Desagregando edad en días , mes , año\")\n    logging.debug(\". |- No implementadoDesagregando edad en días , mes , año\")\n    return df\ndef persona_orchester(df: DataFrame):\n    df = limpiar_columas_texto(df)",
-        "detail": "process.dim_persona",
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
+        "peekOfCode": "def calcular_grupo_etario(df: pl.DataFrame):\n    # agrega la columna grupo_etario\n    logging.info(\"|- ENR Agregando edad\")\n    df['grupo_etario'] = df.apply(calcular_edad)    \n    logging.debug(\". |- No implementadoAgregando edad\")\n    logging.info(\"|- ENR Desagregando edad en días , mes , año\")\n    logging.debug(\". |- No implementadoDesagregando edad en días , mes , año\")\n    return df\ndef persona_orchester(df: pl.DataFrame):\n    df = limpiar_columnas_texto(df, cols=[\"TIPO_IDEN\", \"NUM_IDEN\", \"APELLIDOS\", \"NOMBRES\",\"NOMBRES_COMPLETOS\", \"SEXO\", \"ETNIA\", \"NACIONALIDAD\"])",
+        "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
     {
         "label": "persona_orchester",
         "kind": 2,
-        "importPath": "process.dim_persona",
-        "description": "process.dim_persona",
-        "peekOfCode": "def persona_orchester(df: DataFrame):\n    df = limpiar_columas_texto(df)\n    df = limpiar_columnas_fecha(df)\n    df = limpiar_identificacion(df)\n    return df",
-        "detail": "process.dim_persona",
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
+        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = limpiar_columnas_texto(df, cols=[\"TIPO_IDEN\", \"NUM_IDEN\", \"APELLIDOS\", \"NOMBRES\",\"NOMBRES_COMPLETOS\", \"SEXO\", \"ETNIA\", \"NACIONALIDAD\"])\n    df = limpiar_columnas_fecha(df, cols=[\"FECHA_NACIMIENTO\"])\n    df = limpiar_identificacion(df)\n    df = validar_cedulas(df)\n    df = clean_anios_1900(df)\n    df = calcular_edad(df)\n    df = calcular_grupo_etario(df)\n    df = limpiar_identificacion(df)\n    return df",
+        "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
     {
         "label": "vacuna_orchester",
         "kind": 2,
-        "importPath": "process.dim_vacuna",
-        "description": "process.dim_vacuna",
+        "importPath": "process.clean_transform.dim_vacuna",
+        "description": "process.clean_transform.dim_vacuna",
         "peekOfCode": "def vacuna_orchester(df):\n    return df",
-        "detail": "process.dim_vacuna",
+        "detail": "process.clean_transform.dim_vacuna",
         "documentation": {}
     },
     {
         "label": "vacunacion_orchester",
         "kind": 2,
-        "importPath": "process.dim_vacunacion",
-        "description": "process.dim_vacunacion",
+        "importPath": "process.clean_transform.dim_vacunacion",
+        "description": "process.clean_transform.dim_vacunacion",
         "peekOfCode": "def vacunacion_orchester(df: polars.DataFrame):\n    return df",
-        "detail": "process.dim_vacunacion",
+        "detail": "process.clean_transform.dim_vacunacion",
         "documentation": {}
     },
     {
         "label": "process_orchester",
         "kind": 2,
-        "importPath": "process.process",
-        "description": "process.process",
-        "peekOfCode": "def process_orchester(df: pl.DataFrame):\n    persona_orchester(df)",
-        "detail": "process.process",
+        "importPath": "process.clean_transform_orchester",
+        "description": "process.clean_transform_orchester",
+        "peekOfCode": "def process_orchester():\n    df = load_data()\n    df = persona_orchester(df)\n    df = vacuna_orchester(df)\n    df = vacunacion_orchester(df)\n    return df",
+        "detail": "process.clean_transform_orchester",
         "documentation": {}
     },
     {
@@ -587,7 +603,7 @@
         "kind": 5,
         "importPath": "main_full",
         "description": "main_full",
-        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-03-01\"\n    until = \"2023-03-06\" \n    ingest_orchester(since, until)",
+        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-03-01\"\n    until = \"2023-03-06\" \n    # ingest_orchester(since, until)",
         "detail": "main_full",
         "documentation": {}
     }

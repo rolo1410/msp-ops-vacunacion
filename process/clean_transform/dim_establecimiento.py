@@ -2,8 +2,6 @@ import logging
 
 import polars as pl
 
-from process.dim_persona import limpiar_columas_texto
-
 
 def limpiar_columnas_geograficas(df: pl.DataFrame, cols: list):
     logging.info("|- EST ")
