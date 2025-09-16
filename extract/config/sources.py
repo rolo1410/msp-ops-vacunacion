@@ -46,7 +46,6 @@ def get_oracle_engine(options: dict) -> Engine:
     port = options.get("port", 1521)
     service_name = options.get("service_name", "orclpdb1")
     connection_string = f'oracle+oracledb://{user}:{password}@{host}:{port}/?service_name={service_name}'
-    print(connection_string)
     engine: Engine = create_engine(connection_string, pool_pre_ping=True)
     return engine
 

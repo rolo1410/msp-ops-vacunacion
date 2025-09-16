@@ -86,12 +86,12 @@ def get_count_db_vacunacion(since, until):
 
 
 def get_db_vacunaciones(since, until, chunk_size=100000) -> pl.DataFrame:
+    logging.info(f"|- Fetching vacunas")
     offset = 0
     all_data = []
-    schema = None
     total = get_count_db_vacunacion(since, until)
     for offset in range(0, total, chunk_size):
-        logging.info(f"Fetching records {offset} to {offset + chunk_size} de un total de {total}")
+        logging.info(f" |- Fetching records {offset} to {offset + chunk_size} de un total de {total}")
         chunk = get_db_vacunacion(since, until, offset, chunk_size)
         if chunk.is_empty():
             break

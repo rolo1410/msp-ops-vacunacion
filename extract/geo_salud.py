@@ -3,7 +3,7 @@ import polars as pl
 from extract.config.sources import DB_GEOSALUD, get_oracle_engine
 
 
-def get_gosalud_data():
+def get_geo_salud_data():
     db_geo_salud_data = get_oracle_engine(DB_GEOSALUD)
     query = f"""
             SELECT

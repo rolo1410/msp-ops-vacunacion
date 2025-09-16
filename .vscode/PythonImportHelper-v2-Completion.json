@@ -124,6 +124,30 @@
         "documentation": {}
     },
     {
+        "label": "get_db_vacunaciones",
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "isExtraImport": true,
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "get_geo_salud_data",
+        "importPath": "extract.geo_salud",
+        "description": "extract.geo_salud",
+        "isExtraImport": true,
+        "detail": "extract.geo_salud",
+        "documentation": {}
+    },
+    {
+        "label": "get_mpi_data",
+        "importPath": "extract.mpi",
+        "description": "extract.mpi",
+        "isExtraImport": true,
+        "detail": "extract.mpi",
+        "documentation": {}
+    },
+    {
         "label": "duckdb",
         "kind": 6,
         "isExtraImport": true,
@@ -158,27 +182,11 @@
         "documentation": {}
     },
     {
-        "label": "get_db_vacunaciones",
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
+        "label": "ingest_orchester",
+        "importPath": "extract.ingest_orchester",
+        "description": "extract.ingest_orchester",
         "isExtraImport": true,
-        "detail": "extract.db_vacunacion",
-        "documentation": {}
-    },
-    {
-        "label": "process_data",
-        "importPath": "lake.ingest_lake",
-        "description": "lake.ingest_lake",
-        "isExtraImport": true,
-        "detail": "lake.ingest_lake",
-        "documentation": {}
-    },
-    {
-        "label": "get_gosalud_data",
-        "importPath": "extract.gosalud",
-        "description": "extract.gosalud",
-        "isExtraImport": true,
-        "detail": "extract.gosalud",
+        "detail": "extract.ingest_orchester",
         "documentation": {}
     },
     {
@@ -194,7 +202,7 @@
         "kind": 2,
         "importPath": "extract.config.sources",
         "description": "extract.config.sources",
-        "peekOfCode": "def get_oracle_engine(options: dict) -> Engine:\n    user = options.get(\"user\", \"user\")\n    password = options.get(\"password\", \"password\")\n    host = options.get(\"host\", \"localhost\")\n    port = options.get(\"port\", 1521)\n    service_name = options.get(\"service_name\", \"orclpdb1\")\n    connection_string = f'oracle+oracledb://{user}:{password}@{host}:{port}/?service_name={service_name}'\n    print(connection_string)\n    engine: Engine = create_engine(connection_string, pool_pre_ping=True)\n    return engine",
+        "peekOfCode": "def get_oracle_engine(options: dict) -> Engine:\n    user = options.get(\"user\", \"user\")\n    password = options.get(\"password\", \"password\")\n    host = options.get(\"host\", \"localhost\")\n    port = options.get(\"port\", 1521)\n    service_name = options.get(\"service_name\", \"orclpdb1\")\n    connection_string = f'oracle+oracledb://{user}:{password}@{host}:{port}/?service_name={service_name}'\n    engine: Engine = create_engine(connection_string, pool_pre_ping=True)\n    return engine\ndef postgres_get_engine(options: dict) -> Engine:",
         "detail": "extract.config.sources",
         "documentation": {}
     },
@@ -266,7 +274,7 @@
         "kind": 2,
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunaciones(since, until, chunk_size=100000) -> pl.DataFrame:\n    offset = 0\n    all_data = []\n    schema = None\n    total = get_count_db_vacunacion(since, until)\n    for offset in range(0, total, chunk_size):\n        logging.info(f\"Fetching records {offset} to {offset + chunk_size} de un total de {total}\")\n        chunk = get_db_vacunacion(since, until, offset, chunk_size)\n        if chunk.is_empty():\n            break",
+        "peekOfCode": "def get_db_vacunaciones(since, until, chunk_size=100000) -> pl.DataFrame:\n    logging.info(f\"|- Fetching vacunas\")\n    offset = 0\n    all_data = []\n    total = get_count_db_vacunacion(since, until)\n    for offset in range(0, total, chunk_size):\n        logging.info(f\" |- Fetching records {offset} to {offset + chunk_size} de un total de {total}\")\n        chunk = get_db_vacunacion(since, until, offset, chunk_size)\n        if chunk.is_empty():\n            break",
         "detail": "extract.db_vacunacion",
         "documentation": {}
     },
@@ -280,12 +288,21 @@
         "documentation": {}
     },
     {
-        "label": "get_gosalud_data",
+        "label": "get_geo_salud_data",
         "kind": 2,
-        "importPath": "extract.gosalud",
-        "description": "extract.gosalud",
-        "peekOfCode": "def get_gosalud_data():\n    db_geo_salud_data = get_oracle_engine(DB_GEOSALUD)\n    query = f\"\"\"\n            SELECT\n                UNI_CODIGO,\n                UNI_NOMBRE,\n                PRV_CODIGO,\n                PRV_DESCRIPCION,\n                CAN_CODIGO,\n                CAN_DESCRIPCION,",
-        "detail": "extract.gosalud",
+        "importPath": "extract.geo_salud",
+        "description": "extract.geo_salud",
+        "peekOfCode": "def get_geo_salud_data():\n    db_geo_salud_data = get_oracle_engine(DB_GEOSALUD)\n    query = f\"\"\"\n            SELECT\n                UNI_CODIGO,\n                UNI_NOMBRE,\n                PRV_CODIGO,\n                PRV_DESCRIPCION,\n                CAN_CODIGO,\n                CAN_DESCRIPCION,",
+        "detail": "extract.geo_salud",
+        "documentation": {}
+    },
+    {
+        "label": "ingest_orchester",
+        "kind": 2,
+        "importPath": "extract.ingest_orchester",
+        "description": "extract.ingest_orchester",
+        "peekOfCode": "def ingest_orchester(since, until):\n    df = get_db_vacunaciones(since, until)\n    ## remover caracter ' especiales de la columna NUM_IDEN y castearla a string\n    df.with_columns(\n        df['NUM_IDEN'].str.replace_all(\"'\", \"\").cast(str)\n    )\n    mpi_df = get_mpi_data(df['NUM_IDEN'].drop_nulls().drop_nans().unique().to_list())\n    print(mpi_df)\n    ## obtener datos geográficos\n    geo_df = get_geo_salud_data()",
+        "detail": "extract.ingest_orchester",
         "documentation": {}
     },
     {
@@ -302,7 +319,7 @@
         "kind": 2,
         "importPath": "extract.mpi",
         "description": "extract.mpi",
-        "peekOfCode": "def get_mpi_data(identifications: list[str]) -> pl.DataFrame:\n    chunk_size = 1000\n    dfs = []\n    for i in range(0, len(identifications), chunk_size):\n        chunk = identifications[i:i + chunk_size]\n        df = get_mpi_data_chunk(chunk)\n        dfs.append(df)\n    df = pl.concat(dfs)\n    return df",
+        "peekOfCode": "def get_mpi_data(identifications: list[str]) -> pl.DataFrame:\n    logging.info(f\"|- Fetching vacunas\")\n    chunk_size = 900\n    dfs = []\n    for i in range(0, len(identifications), chunk_size):\n        logging.info(f\" |- Fetching chunk {i // chunk_size + 1}\")\n        chunk = identifications[i:i + chunk_size]\n        df = get_mpi_data_chunk(chunk)\n        dfs.append(df)\n    df = pl.concat(dfs)",
         "detail": "extract.mpi",
         "documentation": {}
     },
@@ -509,7 +526,7 @@
         "kind": 5,
         "importPath": "main_full",
         "description": "main_full",
-        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-01-01\"\n    until = \"2023-03-31\"\n    get_gosalud_data()",
+        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-01-01\"\n    until = \"2023-01-05\" \n    ingest_orchester(since, until)",
         "detail": "main_full",
         "documentation": {}
     }
