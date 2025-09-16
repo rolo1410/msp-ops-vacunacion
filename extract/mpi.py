@@ -10,6 +10,7 @@ def get_mpi_data_chunk(identifications: list[str]) -> pl.DataFrame:
     query = f"""
             SELECT
                 EC_IDENTIFIER_OID,
+                IDENTIFIER_VALUE,
                 GENDER,
                 BIRTHDATE,
                 MARITAL_STATUS,
@@ -32,11 +33,12 @@ def get_mpi_data_chunk(identifications: list[str]) -> pl.DataFrame:
 
 
 def get_mpi_data(identifications: list[str]) -> pl.DataFrame:
-    logging.info(f"|- Fetching vacunas")
-    chunk_size = 900
+    logging.info(f"|- MPI Obteniendo datos del MPI para {len(identifications)} identificaciones")
+    chunk_size = 999
     dfs = []
+    # por configuracion solo se puede traer en chunks de 999
     for i in range(0, len(identifications), chunk_size):
-        logging.info(f" |- Fetching chunk {i // chunk_size + 1}")
+        logging.info(f" |- Fetching chunk {i // chunk_size + 1} de {(len(identifications) - 1) // chunk_size + 1}")
         chunk = identifications[i:i + chunk_size]
         df = get_mpi_data_chunk(chunk)
         dfs.append(df)

@@ -26,6 +26,23 @@
         "documentation": {}
     },
     {
+        "label": "polars",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "polars",
+        "description": "polars",
+        "detail": "polars",
+        "documentation": {}
+    },
+    {
+        "label": "DataFrame",
+        "importPath": "polars",
+        "description": "polars",
+        "isExtraImport": true,
+        "detail": "polars",
+        "documentation": {}
+    },
+    {
         "label": "create_engine",
         "importPath": "sqlalchemy",
         "description": "sqlalchemy",
@@ -56,23 +73,6 @@
         "importPath": "logging",
         "description": "logging",
         "detail": "logging",
-        "documentation": {}
-    },
-    {
-        "label": "polars",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "polars",
-        "description": "polars",
-        "detail": "polars",
-        "documentation": {}
-    },
-    {
-        "label": "DataFrame",
-        "importPath": "polars",
-        "description": "polars",
-        "isExtraImport": true,
-        "detail": "polars",
         "documentation": {}
     },
     {
@@ -148,6 +148,22 @@
         "documentation": {}
     },
     {
+        "label": "add_new_elements_to_lake",
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "isExtraImport": true,
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
+        "label": "generare_bi_echema",
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "isExtraImport": true,
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
         "label": "duckdb",
         "kind": 6,
         "isExtraImport": true,
@@ -195,14 +211,6 @@
         "description": "extract.ingest_orchester",
         "isExtraImport": true,
         "detail": "extract.ingest_orchester",
-        "documentation": {}
-    },
-    {
-        "label": "generare_bi_echema",
-        "importPath": "lake.init_lake",
-        "description": "lake.init_lake",
-        "isExtraImport": true,
-        "detail": "lake.init_lake",
         "documentation": {}
     },
     {
@@ -264,7 +272,7 @@
         "kind": 2,
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000) -> pl.DataFrame:\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = f\"\"\"\n            SELECT\n                ID_VAC_DEPU,\n                FECHA_APLICACION,\n                PUNTO_VACUNACION,\n                UNICODIGO,\n                APELLIDOS,\n                TIPO_IDEN,",
+        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000) -> pl.DataFrame:\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = f\"\"\"\n            SELECT\n                ID_VAC_DEPU,\n                FECHA_APLICACION,\n                PUNTO_VACUNACION,\n                UNICODIGO,\n                TIPO_IDEN,\n                NUM_IDEN,",
         "detail": "extract.db_vacunacion",
         "documentation": {}
     },
@@ -291,7 +299,7 @@
         "kind": 5,
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
-        "peekOfCode": "VACUNACION_SCHEMA = {\n    \"ID_VAC_DEPU\": pl.String,\n    \"FECHA_APLICACION\": pl.Date,\n    \"PUNTO_VACUNACION\": pl.String,\n    \"UNICODIGO\": pl.String,\n    \"APELLIDOS\": pl.String,\n    \"TIPO_IDEN\": pl.String,\n    \"NUM_IDEN\": pl.String,\n    \"NOMBRES\": pl.String,\n    \"NOMBRES_COMPLETOS\": pl.String,",
+        "peekOfCode": "VACUNACION_SCHEMA = {\n    \"ID_VAC_DEPU\": pl.String,\n    \"FECHA_APLICACION\": pl.Date,\n    \"PUNTO_VACUNACION\": pl.String,\n    \"UNICODIGO\": pl.String,\n    \"TIPO_IDEN\": pl.String,\n    \"NUM_IDEN\": pl.String,\n    \"APELLIDOS\": pl.String,\n    \"NOMBRES\": pl.String,\n    \"NOMBRES_COMPLETOS\": pl.String,",
         "detail": "extract.db_vacunacion",
         "documentation": {}
     },
@@ -309,7 +317,7 @@
         "kind": 2,
         "importPath": "extract.ingest_orchester",
         "description": "extract.ingest_orchester",
-        "peekOfCode": "def ingest_orchester(since, until):\n    df = get_db_vacunaciones(since, until)\n    ## remover caracter ' especiales de la columna NUM_IDEN y castearla a string\n    df.with_columns(\n        df['NUM_IDEN'].str.replace_all(\"'\", \"\").cast(str)\n    )\n    mpi_df = get_mpi_data(df['NUM_IDEN'].drop_nulls().drop_nans().unique().to_list())\n    print(mpi_df)\n    ## obtener datos geográficos\n    geo_df = get_geo_salud_data()",
+        "peekOfCode": "def ingest_orchester(since, until):\n    df = get_db_vacunaciones(since, until)\n    ## remover caracter ' especiales de la columna NUM_IDEN y castearla a string\n    df.with_columns(\n        df['NUM_IDEN'].str.replace_all(\"'\", \"\").cast(str)\n    )\n    add_new_elements_to_lake('vacunacion', 'lk_vacunacion', ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], df)\n    # datos del registro civil\n    mpi_df = get_mpi_data(df['NUM_IDEN'].drop_nulls().drop_nans().unique().to_list())\n    add_new_elements_to_lake('vacunacion', 'lk_persona', ['IDENTIFIER_VALUE'], mpi_df)",
         "detail": "extract.ingest_orchester",
         "documentation": {}
     },
@@ -318,7 +326,7 @@
         "kind": 2,
         "importPath": "extract.mpi",
         "description": "extract.mpi",
-        "peekOfCode": "def get_mpi_data_chunk(identifications: list[str]) -> pl.DataFrame:\n    db_mpi_data = get_oracle_engine(DB_MIP)\n    query = f\"\"\"\n            SELECT\n                EC_IDENTIFIER_OID,\n                GENDER,\n                BIRTHDATE,\n                MARITAL_STATUS,\n                EC_FAMILY_GROUP,\n                EC_SON_NUMBER,",
+        "peekOfCode": "def get_mpi_data_chunk(identifications: list[str]) -> pl.DataFrame:\n    db_mpi_data = get_oracle_engine(DB_MIP)\n    query = f\"\"\"\n            SELECT\n                EC_IDENTIFIER_OID,\n                IDENTIFIER_VALUE,\n                GENDER,\n                BIRTHDATE,\n                MARITAL_STATUS,\n                EC_FAMILY_GROUP,",
         "detail": "extract.mpi",
         "documentation": {}
     },
@@ -327,7 +335,7 @@
         "kind": 2,
         "importPath": "extract.mpi",
         "description": "extract.mpi",
-        "peekOfCode": "def get_mpi_data(identifications: list[str]) -> pl.DataFrame:\n    logging.info(f\"|- Fetching vacunas\")\n    chunk_size = 900\n    dfs = []\n    for i in range(0, len(identifications), chunk_size):\n        logging.info(f\" |- Fetching chunk {i // chunk_size + 1}\")\n        chunk = identifications[i:i + chunk_size]\n        df = get_mpi_data_chunk(chunk)\n        dfs.append(df)\n    df = pl.concat(dfs)",
+        "peekOfCode": "def get_mpi_data(identifications: list[str]) -> pl.DataFrame:\n    logging.info(f\"|- MPI Obteniendo datos del MPI para {len(identifications)} identificaciones\")\n    chunk_size = 999\n    dfs = []\n    # por configuracion solo se puede traer en chunks de 999\n    for i in range(0, len(identifications), chunk_size):\n        logging.info(f\" |- Fetching chunk {i // chunk_size + 1} de {(len(identifications) - 1) // chunk_size + 1}\")\n        chunk = identifications[i:i + chunk_size]\n        df = get_mpi_data_chunk(chunk)\n        dfs.append(df)",
         "detail": "extract.mpi",
         "documentation": {}
     },
@@ -386,6 +394,15 @@
         "documentation": {}
     },
     {
+        "label": "add_new_elements_to_lake",
+        "kind": 2,
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "peekOfCode": "def add_new_elements_to_lake(db:str,\n                              table:str,\n                              keys_columns:list[str],\n                              df:pl.DataFrame):\n    # Implement the logic to add new elements to the lake\n    con = duckdb.connect(f'./resources/data_lake/{db}.duckdb')\n    # \n    one_query = f\"\"\"CREATE TABLE IF NOT EXISTS {db}.main.{table} AS SELECT * FROM df;\n                    CREATE TABLE IF NOT EXISTS {db}.main.tmp_{table} AS SELECT * FROM df;\n                    INSERT INTO {db}.main.{table} SELECT * FROM {db}.main.tmp_{table} WHERE NOT EXISTS (SELECT 1 FROM {db}.main.{table} WHERE {' AND '.join([f'{table}.{col} = tmp_{table}.{col}' for col in keys_columns])} );",
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
         "label": "load_data",
         "kind": 2,
         "importPath": "lake.load_lake",
@@ -428,6 +445,15 @@
         "description": "process.dim_establecimiento",
         "peekOfCode": "def process_establecimiento_orchester(df: pl.DataFrame):\n    logging.info(\"|- Establecimiento Orchester\")\n    #\n    df = limpiar_columnas_geograficas(df, ['LONGPS', 'LATGPS'])\n    #\n    df = limpiar_columas_texto(df)\n    return df",
         "detail": "process.dim_establecimiento",
+        "documentation": {}
+    },
+    {
+        "label": "generar_dim_fecha",
+        "kind": 2,
+        "importPath": "process.dim_fecha",
+        "description": "process.dim_fecha",
+        "peekOfCode": "def generar_dim_fecha(df: pl.DataFrame):\n    logging.info(\"|- DIM Fecha\")\n    ## generar fechas desde 2020-01-01 hasta 2025-12-31\n    df = df.with_columns(\n        pl.date_range(\n            start=\"2020-01-01\",\n            end=\"2025-12-31\",\n            closed=\"both\",\n            name=\"FECHA\"\n        )",
+        "detail": "process.dim_fecha",
         "documentation": {}
     },
     {
@@ -561,7 +587,7 @@
         "kind": 5,
         "importPath": "main_full",
         "description": "main_full",
-        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-01-01\"\n    until = \"2023-01-05\" \n    ingest_orchester(since, until)",
+        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-03-01\"\n    until = \"2023-03-06\" \n    ingest_orchester(since, until)",
         "detail": "main_full",
         "documentation": {}
     }

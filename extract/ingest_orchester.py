@@ -1,6 +1,7 @@
 from extract.db_vacunacion import get_db_vacunaciones
 from extract.geo_salud import get_geo_salud_data
 from extract.mpi import get_mpi_data
+from lake.init_lake import add_new_elements_to_lake
 
 
 def ingest_orchester(since, until):
@@ -10,16 +11,21 @@ def ingest_orchester(since, until):
     df.with_columns(
         df['NUM_IDEN'].str.replace_all("'", "").cast(str)
     )
+    add_new_elements_to_lake('vacunacion', 'lk_vacunacion', ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], df)
+    
+    # datos del registro civil
     mpi_df = get_mpi_data(df['NUM_IDEN'].drop_nulls().drop_nans().unique().to_list())
-    print(mpi_df)
+    add_new_elements_to_lake('vacunacion', 'lk_persona', ['IDENTIFIER_VALUE'], mpi_df)
 
     ## obtener datos geográficos
     geo_df = get_geo_salud_data()
-    print(geo_df)   
+    add_new_elements_to_lake('vacunacion', 'lk_establecimiento', ['uni_codigo'], geo_df)
+    
     # merge con mpi
     df = df.join(mpi_df, left_on='NUM_IDEN', right_on='EC_IDENTIFIER_OID', how='left')
-    print(df)
+    
     # merge con geo
     df = df.join(geo_df, left_on='UNICODIGO', right_on='UNI_CODIGO', how='left')
-    print(df)
+    
+    #   
     return df

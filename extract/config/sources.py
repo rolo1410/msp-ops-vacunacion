@@ -1,6 +1,7 @@
 import os
 
 import dotenv
+import polars
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
