@@ -6,7 +6,7 @@ from extract.config.sources import DB_VACUNACION, get_oracle_engine
 def get_db_vacunacion(since, until, offset=0, chunk_size=100000):
     db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)
     query = """
-            SELECT 
+            SELECT
                 ID_VAC_DEPU,
                 FECHA_APLICACION,
                 PUNTO_VACUNACION,
@@ -36,7 +36,7 @@ def get_db_vacunacion(since, until, offset=0, chunk_size=100000):
             FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID
             WHERE FECHA_APLICACION BETWEEN TO_DATE(:since, 'YYYY-MM-DD') AND TO_DATE(:until, 'YYYY-MM-DD')
             OFFSET :offset ROWS FETCH NEXT :chunk_size ROWS ONLY
-            """  # Replace with actual query
+            """  
     df = pl.read_sql(query, db_vacunacion_engine)
     return df
 
@@ -54,7 +54,6 @@ def get_count_db_vacunacion(since, until):
     df = pl.read_sql(query,
                      db_vacunacion_engine,
                      params={"since": since, "until": until})
-    
     return df['total_count'][0]
 
 

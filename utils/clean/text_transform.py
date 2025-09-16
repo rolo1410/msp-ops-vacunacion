@@ -1,8 +1,8 @@
-import polars
+import polars as pl
 
 
-def remove_extra_whitespaces(df: polars.DataFrame,
-                             columns: list[str]) -> polars.DataFrame:
+def remove_extra_whitespaces(df: pl.DataFrame,
+                             columns: list[str]) -> pl.DataFrame:
     """
     Remove extra whitespaces from the text.
 

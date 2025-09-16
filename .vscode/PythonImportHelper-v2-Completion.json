@@ -84,6 +84,14 @@
         "documentation": {}
     },
     {
+        "label": "calcular_edad",
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "isExtraImport": true,
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
         "label": "persona_orchester",
         "importPath": "process.dim_persona",
         "description": "process.dim_persona",
@@ -175,7 +183,7 @@
         "kind": 2,
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = \"\"\"\n            SELECT \n                ID_VAC_DEPU,\n                FECHA_APLICACION,\n                PUNTO_VACUNACION,\n                UNICODIGO,\n                APELLIDOS,\n                TIPO_IDEN,",
+        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = \"\"\"\n            SELECT\n                ID_VAC_DEPU,\n                FECHA_APLICACION,\n                PUNTO_VACUNACION,\n                UNICODIGO,\n                APELLIDOS,\n                TIPO_IDEN,",
         "detail": "extract.db_vacunacion",
         "documentation": {}
     },
@@ -265,7 +273,7 @@
         "kind": 2,
         "importPath": "process.dim_persona",
         "description": "process.dim_persona",
-        "peekOfCode": "def limpiar_columas_texto(df: DataFrame):\n    logging.info(\"|- EST \")\n    logging.debug(\". |- No implementado\")\n    return df \ndef limpiar_columnas_fecha(df: DataFrame, cols: list):\n    logging.info(\"|- EST \")\n    logging.debug(\". |- No implementado\")\n    return df\ndef limpiar_identificacion(df: DataFrame):\n    logging.info(\"|- EST Estandarizando columnas cédulas\")",
+        "peekOfCode": "def limpiar_columas_texto(df: DataFrame):\n    return df \ndef limpiar_columnas_fecha(df: DataFrame, cols: list):\n    logging.info(\"|- EST \")\n    logging.debug(\". |- No implementado\")\n    return df\ndef limpiar_identificacion(df: DataFrame):\n    logging.info(\"|- EST Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df",
         "detail": "process.dim_persona",
         "documentation": {}
     },
@@ -292,7 +300,7 @@
         "kind": 2,
         "importPath": "process.dim_persona",
         "description": "process.dim_persona",
-        "peekOfCode": "def validar_cedulas(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad\")",
+        "peekOfCode": "def validar_cedulas(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")",
         "detail": "process.dim_persona",
         "documentation": {}
     },
@@ -301,7 +309,7 @@
         "kind": 2,
         "importPath": "process.dim_persona",
         "description": "process.dim_persona",
-        "peekOfCode": "def clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad\")\n    logging.debug(\". |- No implementadoAgregando edad\")\n    logging.info(\"|- ENR Desagregando edad en días , mes , año\")\n    logging.debug(\". |- No implementadoDesagregando edad en días , mes , año\")\n    return df",
+        "peekOfCode": "def clean_anios_1900(df: DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(\". |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")\n    df['edad_anios'] = df.apply(calcular_edad)\n    df['edad_meses'] = df.apply(calcular_edad)\n    df['edad_dias'] = df.apply(calcular_edad)\n    return df",
         "detail": "process.dim_persona",
         "documentation": {}
     },
@@ -310,7 +318,16 @@
         "kind": 2,
         "importPath": "process.dim_persona",
         "description": "process.dim_persona",
-        "peekOfCode": "def calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad\")\n    logging.debug(\". |- No implementadoAgregando edad\")\n    logging.info(\"|- ENR Desagregando edad en días , mes , año\")\n    logging.debug(\". |- No implementadoDesagregando edad en días , mes , año\")\n    return df\ndef persona_orchester(df: DataFrame):\n    df = limpiar_columas_texto(df)\n    df = limpiar_columnas_fecha(df)\n    df = limpiar_identificacion(df)",
+        "peekOfCode": "def calcular_edad(df: DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")\n    df['edad_anios'] = df.apply(calcular_edad)\n    df['edad_meses'] = df.apply(calcular_edad)\n    df['edad_dias'] = df.apply(calcular_edad)\n    return df\ndef calcular_grupo_etario(df: DataFrame):\n    # agrega la columna grupo_etario\n    logging.info(\"|- ENR Agregando edad\")\n    df['grupo_etario'] = df.apply(calcular_edad)    ",
+        "detail": "process.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "calcular_grupo_etario",
+        "kind": 2,
+        "importPath": "process.dim_persona",
+        "description": "process.dim_persona",
+        "peekOfCode": "def calcular_grupo_etario(df: DataFrame):\n    # agrega la columna grupo_etario\n    logging.info(\"|- ENR Agregando edad\")\n    df['grupo_etario'] = df.apply(calcular_edad)    \n    logging.debug(\". |- No implementadoAgregando edad\")\n    logging.info(\"|- ENR Desagregando edad en días , mes , año\")\n    logging.debug(\". |- No implementadoDesagregando edad en días , mes , año\")\n    return df\ndef persona_orchester(df: DataFrame):\n    df = limpiar_columas_texto(df)",
         "detail": "process.dim_persona",
         "documentation": {}
     },
@@ -346,7 +363,7 @@
         "kind": 2,
         "importPath": "process.process",
         "description": "process.process",
-        "peekOfCode": "def process_orchester(df: DataFrame):\n    persona_orchester(df)",
+        "peekOfCode": "def process_orchester(df: pl.DataFrame):\n    persona_orchester(df)",
         "detail": "process.process",
         "documentation": {}
     },
@@ -364,8 +381,17 @@
         "kind": 2,
         "importPath": "utils.clean.text_transform",
         "description": "utils.clean.text_transform",
-        "peekOfCode": "def remove_extra_whitespaces(df: polars.DataFrame,\n                             columns: list[str]) -> polars.DataFrame:\n    \"\"\"\n    Remove extra whitespaces from the text.\n    Args:\n        df (polars.DataFrame): The input DataFrame.\n    Returns:\n        polars.DataFrame: The cleaned DataFrame.\n    \"\"\"\n    return df.with_columns(",
+        "peekOfCode": "def remove_extra_whitespaces(df: pl.DataFrame,\n                             columns: list[str]) -> pl.DataFrame:\n    \"\"\"\n    Remove extra whitespaces from the text.\n    Args:\n        df (polars.DataFrame): The input DataFrame.\n    Returns:\n        polars.DataFrame: The cleaned DataFrame.\n    \"\"\"\n    return df.with_columns(",
         "detail": "utils.clean.text_transform",
+        "documentation": {}
+    },
+    {
+        "label": "convertir_columnas_a_minusculas",
+        "kind": 2,
+        "importPath": "utils.df_utils",
+        "description": "utils.df_utils",
+        "peekOfCode": "def convertir_columnas_a_minusculas(df):\n    \"\"\"\n    Convierte los nombres de las columnas de un DataFrame a minúsculas.\n    Parámetros:\n    df (pandas.DataFrame): El DataFrame cuyas columnas se desean convertir.\n    Retorna:\n    pandas.DataFrame: El DataFrame con los nombres de las columnas en minúsculas.\n    \"\"\"\n    df.columns = [col.lower() for col in df.columns]\n    return df",
+        "detail": "utils.df_utils",
         "documentation": {}
     }
 ]
