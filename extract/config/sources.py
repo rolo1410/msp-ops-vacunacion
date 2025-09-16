@@ -27,7 +27,7 @@ DB_GEOSALUD = {
     "port": int(os.getenv("CNN_ORACLE_DB_GEOSALUD_PORT", 1521)),
     "user": os.getenv("CNN_ORACLE_DB_GEOSALUD_USER", "user"),
     "password": os.getenv("CNN_ORACLE_DB_GEOSALUD_PASSWORD", "password"),
-    "service_name": os.getenv("CNN_ORACLE_DB_GEOSALUD_DBNAME", "geoserver")
+    "service_name": os.getenv("CNN_ORACLE_DB_GEOSALUD_DB_NAME", "geoserver")
 }
 
 DB_REPLICA = {
@@ -46,6 +46,7 @@ def get_oracle_engine(options: dict) -> Engine:
     port = options.get("port", 1521)
     service_name = options.get("service_name", "orclpdb1")
     connection_string = f'oracle+oracledb://{user}:{password}@{host}:{port}/?service_name={service_name}'
+    print(connection_string)
     engine: Engine = create_engine(connection_string, pool_pre_ping=True)
     return engine
 

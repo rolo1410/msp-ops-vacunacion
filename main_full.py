@@ -7,6 +7,8 @@ load_dotenv(override= True)
 ## config loggin
 import logging
 
+from extract.gosalud import get_gosalud_data
+
 ## login in console and file
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -22,4 +24,5 @@ logging.getLogger().addHandler(file_handler)
 if __name__ == "__main__":
     since = "2023-01-01"
     until = "2023-03-31"
-    get_db_vacunaciones(since, until, chunk_size=100000)
+    get_gosalud_data()
+   # get_db_vacunaciones(since, until, chunk_size=100000)

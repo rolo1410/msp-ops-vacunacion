@@ -92,6 +92,38 @@
         "documentation": {}
     },
     {
+        "label": "DB_GEOSALUD",
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "isExtraImport": true,
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "get_oracle_engine",
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "isExtraImport": true,
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "DB_MIP",
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "isExtraImport": true,
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
+        "label": "get_oracle_engine",
+        "importPath": "extract.config.sources",
+        "description": "extract.config.sources",
+        "isExtraImport": true,
+        "detail": "extract.config.sources",
+        "documentation": {}
+    },
+    {
         "label": "duckdb",
         "kind": 6,
         "isExtraImport": true,
@@ -142,6 +174,14 @@
         "documentation": {}
     },
     {
+        "label": "get_gosalud_data",
+        "importPath": "extract.gosalud",
+        "description": "extract.gosalud",
+        "isExtraImport": true,
+        "detail": "extract.gosalud",
+        "documentation": {}
+    },
+    {
         "label": "generare_bi_echema",
         "importPath": "lake.init_lake",
         "description": "lake.init_lake",
@@ -154,7 +194,7 @@
         "kind": 2,
         "importPath": "extract.config.sources",
         "description": "extract.config.sources",
-        "peekOfCode": "def get_oracle_engine(options: dict) -> Engine:\n    user = options.get(\"user\", \"user\")\n    password = options.get(\"password\", \"password\")\n    host = options.get(\"host\", \"localhost\")\n    port = options.get(\"port\", 1521)\n    service_name = options.get(\"service_name\", \"orclpdb1\")\n    connection_string = f'oracle+oracledb://{user}:{password}@{host}:{port}/?service_name={service_name}'\n    engine: Engine = create_engine(connection_string, pool_pre_ping=True)\n    return engine\ndef postgres_get_engine(options: dict) -> Engine:",
+        "peekOfCode": "def get_oracle_engine(options: dict) -> Engine:\n    user = options.get(\"user\", \"user\")\n    password = options.get(\"password\", \"password\")\n    host = options.get(\"host\", \"localhost\")\n    port = options.get(\"port\", 1521)\n    service_name = options.get(\"service_name\", \"orclpdb1\")\n    connection_string = f'oracle+oracledb://{user}:{password}@{host}:{port}/?service_name={service_name}'\n    print(connection_string)\n    engine: Engine = create_engine(connection_string, pool_pre_ping=True)\n    return engine",
         "detail": "extract.config.sources",
         "documentation": {}
     },
@@ -190,7 +230,7 @@
         "kind": 5,
         "importPath": "extract.config.sources",
         "description": "extract.config.sources",
-        "peekOfCode": "DB_GEOSALUD = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_GEOSALUD_PORT\", 1521)),\n    \"user\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_USER\", \"user\"),\n    \"password\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_PASSWORD\", \"password\"),\n    \"service_name\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_DBNAME\", \"geoserver\")\n}\nDB_REPLICA = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_REPLICACION_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_REPLICACION_PORT\", 1521)),",
+        "peekOfCode": "DB_GEOSALUD = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_GEOSALUD_PORT\", 1521)),\n    \"user\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_USER\", \"user\"),\n    \"password\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_PASSWORD\", \"password\"),\n    \"service_name\": os.getenv(\"CNN_ORACLE_DB_GEOSALUD_DB_NAME\", \"geoserver\")\n}\nDB_REPLICA = {\n    \"host\": os.getenv(\"CNN_ORACLE_DB_REPLICACION_HOST\", \"localhost\"),\n    \"port\": int(os.getenv(\"CNN_ORACLE_DB_REPLICACION_PORT\", 1521)),",
         "detail": "extract.config.sources",
         "documentation": {}
     },
@@ -237,6 +277,33 @@
         "description": "extract.db_vacunacion",
         "peekOfCode": "VACUNACION_SCHEMA = {\n    \"ID_VAC_DEPU\": pl.String,\n    \"FECHA_APLICACION\": pl.Date,\n    \"PUNTO_VACUNACION\": pl.String,\n    \"UNICODIGO\": pl.String,\n    \"APELLIDOS\": pl.String,\n    \"TIPO_IDEN\": pl.String,\n    \"NUM_IDEN\": pl.String,\n    \"NOMBRES\": pl.String,\n    \"NOMBRES_COMPLETOS\": pl.String,",
         "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "get_gosalud_data",
+        "kind": 2,
+        "importPath": "extract.gosalud",
+        "description": "extract.gosalud",
+        "peekOfCode": "def get_gosalud_data():\n    db_geo_salud_data = get_oracle_engine(DB_GEOSALUD)\n    query = f\"\"\"\n            SELECT\n                UNI_CODIGO,\n                UNI_NOMBRE,\n                PRV_CODIGO,\n                PRV_DESCRIPCION,\n                CAN_CODIGO,\n                CAN_DESCRIPCION,",
+        "detail": "extract.gosalud",
+        "documentation": {}
+    },
+    {
+        "label": "get_mpi_data_chunk",
+        "kind": 2,
+        "importPath": "extract.mpi",
+        "description": "extract.mpi",
+        "peekOfCode": "def get_mpi_data_chunk(identifications: list[str]) -> pl.DataFrame:\n    db_mpi_data = get_oracle_engine(DB_MIP)\n    query = f\"\"\"\n            SELECT\n                EC_IDENTIFIER_OID,\n                GENDER,\n                BIRTHDATE,\n                MARITAL_STATUS,\n                EC_FAMILY_GROUP,\n                EC_SON_NUMBER,",
+        "detail": "extract.mpi",
+        "documentation": {}
+    },
+    {
+        "label": "get_mpi_data",
+        "kind": 2,
+        "importPath": "extract.mpi",
+        "description": "extract.mpi",
+        "peekOfCode": "def get_mpi_data(identifications: list[str]) -> pl.DataFrame:\n    chunk_size = 1000\n    dfs = []\n    for i in range(0, len(identifications), chunk_size):\n        chunk = identifications[i:i + chunk_size]\n        df = get_mpi_data_chunk(chunk)\n        dfs.append(df)\n    df = pl.concat(dfs)\n    return df",
+        "detail": "extract.mpi",
         "documentation": {}
     },
     {
@@ -442,7 +509,7 @@
         "kind": 5,
         "importPath": "main_full",
         "description": "main_full",
-        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-01-01\"\n    until = \"2023-03-31\"\n    get_db_vacunaciones(since, until, chunk_size=100000)",
+        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-01-01\"\n    until = \"2023-03-31\"\n    get_gosalud_data()",
         "detail": "main_full",
         "documentation": {}
     }
