@@ -42,6 +42,26 @@ def parse_arguments():
         help='Fecha de fin para la extracción de datos (formato: YYYY-MM-DD)'
     )
     
+    parser.add_argument(
+        '--chunk-size',
+        type=int,
+        default=500000,
+        help='Tamaño de chunk para procesamiento paralelo (default: 500000)'
+    )
+    
+    parser.add_argument(
+        '--max-workers',
+        type=int,
+        default=4,
+        help='Número máximo de workers para procesamiento paralelo (default: 4)'
+    )
+    
+    parser.add_argument(
+        '--no-cache',
+        action='store_true',
+        help='Deshabilitar cache y forzar consulta a base de datos'
+    )
+    
     return parser.parse_args()
 
 def main():
@@ -52,12 +72,17 @@ def main():
     # Parsear argumentos
     args = parse_arguments()
     
-    logging.info(f"Iniciando procesamiento con parámetros: since={args.since}, until={args.until}")
+    logging.info(f"Iniciando procesamiento con parámetros:")
+    logging.info(f"  - since: {args.since}")
+    logging.info(f"  - until: {args.until}")
+    logging.info(f"  - chunk_size: {args.chunk_size:,}")
+    logging.info(f"  - max_workers: {args.max_workers}")
+    logging.info(f"  - cache habilitado: {not args.no_cache}")
     
     try:
-        # Ejecutar ingesta de datos
+        # Ejecutar ingesta de datos con parámetros optimizados
         logging.info("Iniciando ingesta de datos")
-        ingest_orchester(args.since, args.until)
+        ingest_orchester(args.since, args.until, args.chunk_size, args.max_workers, not args.no_cache)
         
         # Ejecutar procesamiento
         logging.info("Iniciando procesamiento de datos")
