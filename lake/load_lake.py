@@ -10,5 +10,5 @@ def load_data()-> pl.DataFrame:
     con = duckdb.connect(database='./resources/data_lake/vacunacion.duckdb')
     df = con.execute("SELECT * FROM lk_vacunacion").fetch_df()
     df = pl.from_pandas(df)
-    logging.info(". |- Datos cargados al lago")
+    logging.info(" |- Datos cargados al lago")
     return df

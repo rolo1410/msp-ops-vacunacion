@@ -473,74 +473,20 @@
         "documentation": {}
     },
     {
-        "label": "limpiar_columnas_texto",
-        "kind": 2,
-        "importPath": "process.clean_transform.dim_persona",
-        "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def limpiar_columnas_texto(df: pl.DataFrame, cols: list[str] = []):\n    logging.info(\"|- EST Limpiando columnas de texto\")\n    for col in cols:\n        logging.debug(f\"  |- Limpiando columna {col}\")\n        df = df.with_columns(pl.col(col).str.strip_chars().alias(col))\n    return df\ndef limpiar_columnas_fecha(df: pl.DataFrame, cols: list[str] = []):\n    logging.info(\"|- EST Estandarizando columnas fecha\")\n    for col in cols:\n        logging.info(f\"  |- Estandarizando columna {col}\")",
-        "detail": "process.clean_transform.dim_persona",
-        "documentation": {}
-    },
-    {
-        "label": "limpiar_columnas_fecha",
-        "kind": 2,
-        "importPath": "process.clean_transform.dim_persona",
-        "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def limpiar_columnas_fecha(df: pl.DataFrame, cols: list[str] = []):\n    logging.info(\"|- EST Estandarizando columnas fecha\")\n    for col in cols:\n        logging.info(f\"  |- Estandarizando columna {col}\")\n    return df\ndef esCedulaValida(cedula: str) -> bool:    \n    # Implementación de la validación de cédula\n    if not cedula or len(cedula) != 10 or not cedula.isdigit():\n        return False\n    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]",
-        "detail": "process.clean_transform.dim_persona",
-        "documentation": {}
-    },
-    {
-        "label": "esCedulaValida",
-        "kind": 2,
-        "importPath": "process.clean_transform.dim_persona",
-        "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def esCedulaValida(cedula: str) -> bool:    \n    # Implementación de la validación de cédula\n    if not cedula or len(cedula) != 10 or not cedula.isdigit():\n        return False\n    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]\n    total = 0\n    for i in range(9):\n        val = int(cedula[i]) * coeficientes[i]\n        if val >= 10:\n            val -= 9",
-        "detail": "process.clean_transform.dim_persona",
-        "documentation": {}
-    },
-    {
-        "label": "limpiar_identificacion",
-        "kind": 2,
-        "importPath": "process.clean_transform.dim_persona",
-        "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def limpiar_identificacion(df: pl.DataFrame):\n    logging.info(\"|- LIM Limpiando columnas identificación\")\n    ## Eliminar registros sin cédula\n    logging.debug(f\"  |- REM Eliminando registros sin cédula o vacíos en el campo NUM_IDEN\")\n    df = df.filter(pl.col(\"NUM_IDEN\").is_not_null() & (pl.col(\"NUM_IDEN\") != \"\"))\n    ## si el registro es cedula y tiene 10 digitos\n    logging.debug(f\"  |- EST Completando cedulas que tienen menos de 10 digitos con un 0 a la izquierda\")\n    df = df.with_columns(pl.when(\n        (pl.col(\"TIPO_IDEN\") == \"CÉDULA DE IDENTIDAD\") & (pl.col(\"NUM_IDEN\").str.len_chars() < 10)\n    ).then(",
-        "detail": "process.clean_transform.dim_persona",
-        "documentation": {}
-    },
-    {
-        "label": "clean_anios_1900",
-        "kind": 2,
-        "importPath": "process.clean_transform.dim_persona",
-        "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def clean_anios_1900(df: pl.DataFrame):\n    logging.info(\"|- VAL Estandarizando columnas cédulas\")\n    logging.debug(f\"  |- No implementadoEstandarizando columnas cédulas\")\n    return df\ndef calcular_edad(df: pl.DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")\n    df['edad_anios'] = df.apply(calcular_edad)\n    df['edad_meses'] = df.apply(calcular_edad)\n    df['edad_dias'] = df.apply(calcular_edad)\n    return df",
-        "detail": "process.clean_transform.dim_persona",
-        "documentation": {}
-    },
-    {
-        "label": "calcular_edad",
-        "kind": 2,
-        "importPath": "process.clean_transform.dim_persona",
-        "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def calcular_edad(df: pl.DataFrame):\n    logging.info(\"|- ENR Agregando edad, descompiendo en años, meses y días\")\n    df['edad_anios'] = df.apply(calcular_edad)\n    df['edad_meses'] = df.apply(calcular_edad)\n    df['edad_dias'] = df.apply(calcular_edad)\n    return df\ndef calcular_grupo_etario(df: pl.DataFrame):\n    # agrega la columna grupo_etario\n    logging.info(\"|- ENR Agregando edad\")\n    df['grupo_etario'] = df.apply(calcular_edad)    ",
-        "detail": "process.clean_transform.dim_persona",
-        "documentation": {}
-    },
-    {
-        "label": "calcular_grupo_etario",
-        "kind": 2,
-        "importPath": "process.clean_transform.dim_persona",
-        "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def calcular_grupo_etario(df: pl.DataFrame):\n    # agrega la columna grupo_etario\n    logging.info(\"|- ENR Agregando edad\")\n    df['grupo_etario'] = df.apply(calcular_edad)    \n    logging.debug(\". |- No implementadoAgregando edad\")\n    logging.info(\"|- ENR Desagregando edad en días , mes , año\")\n    logging.debug(\". |- No implementadoDesagregando edad en días , mes , año\")\n    return df\ndef persona_orchester(df: pl.DataFrame):\n    df = limpiar_columnas_texto(df, cols=[\"TIPO_IDEN\", \"NUM_IDEN\", \"APELLIDOS\", \"NOMBRES\",\"NOMBRES_COMPLETOS\", \"SEXO\", \"ETNIA\", \"NACIONALIDAD\"])",
-        "detail": "process.clean_transform.dim_persona",
-        "documentation": {}
-    },
-    {
         "label": "persona_orchester",
         "kind": 2,
         "importPath": "process.clean_transform.dim_persona",
         "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = limpiar_columnas_texto(df, cols=[\"TIPO_IDEN\", \"NUM_IDEN\", \"APELLIDOS\", \"NOMBRES\",\"NOMBRES_COMPLETOS\", \"SEXO\", \"ETNIA\", \"NACIONALIDAD\"])\n    df = limpiar_columnas_fecha(df, cols=[\"FECHA_NACIMIENTO\"])\n    df = limpiar_identificacion(df)\n    df = validar_cedulas(df)\n    df = clean_anios_1900(df)\n    df = calcular_edad(df)\n    df = calcular_grupo_etario(df)\n    df = limpiar_identificacion(df)\n    return df",
+        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = _limpiar_columnas_texto(df, cols=[\"TIPO_IDEN\", \"NUM_IDEN\", \"APELLIDOS\", \"NOMBRES\",\"NOMBRES_COMPLETOS\", \"SEXO\", \"ETNIA\", \"NACIONALIDAD\"])\n    df = _limpiar_columnas_fecha(df, cols=[\"FECHA_NACIMIENTO\"])\n    df = _limpiar_identificacion(df)\n    df = _calcular_edad(df)\n    df = _calcular_grupo_etario(df)\n    return df",
+        "detail": "process.clean_transform.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "__all__",
+        "kind": 5,
+        "importPath": "process.clean_transform.dim_persona",
+        "description": "process.clean_transform.dim_persona",
+        "peekOfCode": "__all__ = [\n    'persona_orchester'\n]\nfrom process.clean_transform.dim_establecimiento import limpiar_columnas_geograficas\ndef _limpiar_columnas_texto(df: pl.DataFrame, cols: list[str] = []):\n    logging.info(\"|- EST Limpiando columnas de texto\")\n    for col in cols:\n        logging.debug(f\"  |- Limpiando columna {col}\")\n        df = df.with_columns(pl.col(col).str.strip_chars().alias(col))\n    return df",
         "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
@@ -603,7 +549,7 @@
         "kind": 5,
         "importPath": "main_full",
         "description": "main_full",
-        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.INFO)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-03-01\"\n    until = \"2023-03-06\" \n    # ingest_orchester(since, until)",
+        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.DEBUG)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-03-01\"\n    until = \"2023-03-06\" \n    # ingest_orchester(since, until)",
         "detail": "main_full",
         "documentation": {}
     }
