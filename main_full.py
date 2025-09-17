@@ -1,10 +1,14 @@
 import argparse
+from datetime import datetime
 import logging
 from dotenv import load_dotenv
 
 from extract.ingest_orchester import ingest_orchester
 from lake.init_lake import add_new_elements_to_lake
 from process.clean_transform_orchester import process_orchester
+
+from load.profilers.persona_profiler import profiler_orchester
+
 
 load_dotenv(override=True) 
 
@@ -92,6 +96,9 @@ def main():
         logging.info("Guardando datos procesados al lago")
         add_new_elements_to_lake('vacunacion', 'db_vacunacion', ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], df)
         
+        # Guardar datos procesados
+        logging.info("Generando perfiles de datos")
+        profiler_orchester(df)  # pyright: ignore[reportUndefinedVariable]
         logging.info("Procesamiento completado exitosamente")
         
     except Exception as e:
