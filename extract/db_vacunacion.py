@@ -3,10 +3,13 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Optional
 import time
+import queue
+import threading
 
 import polars as pl
 
 from extract.config.sources import DB_VACUNACION, get_oracle_engine
+from lake.init_lake import add_new_elements_to_lake
 
 VACUNACION_SCHEMA = {
     "ID_VAC_DEPU": pl.String,
@@ -120,9 +123,41 @@ def _fetch_chunk_worker(args) -> Optional[pl.DataFrame]:
         logging.error(f"Error procesando chunk offset {offset}: {e}")
         return None
 
-def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 500000, max_workers: int = 4) -> pl.DataFrame:
+def _persistence_worker(data_queue: queue.Queue, processed_chunks: list, stop_event: threading.Event):
+    """Worker function para persistir chunks de forma secuencial usando DuckDB"""
+    while not stop_event.is_set() or not data_queue.empty():
+        try:
+            # Intentar obtener un chunk de la cola con timeout
+            chunk_data = data_queue.get(timeout=1.0)
+            if chunk_data is None:  # Señal de finalización
+                break
+                
+            offset, chunk = chunk_data
+            
+            # Limpiar la columna NUM_IDEN antes de persistir
+            if 'NUM_IDEN' in chunk.columns:
+                chunk = chunk.with_columns(
+                    chunk['NUM_IDEN'].str.replace_all("'", "").cast(str)
+                )
+            
+            # Persistir el chunk usando add_new_elements_to_lake
+            add_new_elements_to_lake('vacunacion', 'lk_vacunacion', 
+                                   ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], chunk)
+            
+            processed_chunks.append(offset)
+            logging.info(f" |- Persistido chunk offset {offset} ({len(processed_chunks)} chunks completados)")
+            data_queue.task_done()
+            
+        except queue.Empty:
+            continue
+        except Exception as e:
+            logging.error(f"Error persistiendo chunk: {e}")
+            data_queue.task_done()
+
+def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 500000, max_workers: int = 4) -> None:
     """
-    Versión paralela optimizada para obtener datos de vacunación
+    Versión paralela optimizada para obtener datos de vacunación y persistirlos usando cola.
+    No retorna DataFrame, sino que persiste directamente cada chunk al lago de datos.
     """
     logging.info(f"|- Fetching vacunas (paralelo con {max_workers} workers)")
     start_total = time.time()
@@ -132,7 +167,8 @@ def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 50000
     logging.info(f" |- Total de registros: {total:,}")
     
     if total == 0:
-        return pl.DataFrame()
+        logging.warning(" |- No hay registros para procesar")
+        return
     
     # Preparar argumentos para workers
     chunk_args = []
@@ -141,36 +177,51 @@ def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 50000
     
     logging.info(f" |- Procesando {len(chunk_args)} chunks con {max_workers} workers")
     
-    all_data = []
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Enviar todos los trabajos
-        future_to_offset = {
-            executor.submit(_fetch_chunk_worker, args): args[2] 
-            for args in chunk_args
-        }
-        
-        # Recoger resultados conforme se completan
-        for future in as_completed(future_to_offset):
-            offset = future_to_offset[future]
-            try:
-                chunk = future.result()
-                if chunk is not None:
-                    all_data.append(chunk)
-                    logging.info(f" |- Completado chunk offset {offset} ({len(all_data)}/{len(chunk_args)})")
-            except Exception as e:
-                logging.error(f"Error en chunk offset {offset}: {e}")
+    # Crear cola para comunicación entre threads
+    data_queue = queue.Queue(maxsize=5)  # Limitar tamaño para controlar memoria
+    processed_chunks = []
+    stop_event = threading.Event()
     
-    # Concatenar todos los chunks
-    if all_data:
-        logging.info(f" |- Concatenando {len(all_data)} chunks...")
-        result = pl.concat(all_data, rechunk=True)
+    # Iniciar worker de persistencia en thread separado
+    persistence_thread = threading.Thread(
+        target=_persistence_worker, 
+        args=(data_queue, processed_chunks, stop_event)
+    )
+    persistence_thread.start()
+    
+    try:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Enviar todos los trabajos de descarga
+            future_to_offset = {
+                executor.submit(_fetch_chunk_worker, args): args[2] 
+                for args in chunk_args
+            }
+            
+            # Recoger resultados conforme se completan y enviarlos a la cola
+            for future in as_completed(future_to_offset):
+                offset = future_to_offset[future]
+                try:
+                    chunk = future.result()
+                    if chunk is not None:
+                        # Poner el chunk en la cola para persistencia
+                        data_queue.put((offset, chunk))
+                        logging.info(f" |- Descargado chunk offset {offset}, enviado a cola de persistencia")
+                    else:
+                        logging.warning(f" |- Chunk offset {offset} está vacío")
+                except Exception as e:
+                    logging.error(f"Error en chunk offset {offset}: {e}")
+    
+    finally:
+        # Señalar fin de procesamiento
+        data_queue.put(None)  # Señal de parada
+        stop_event.set()
+        
+        # Esperar a que termine el thread de persistencia
+        persistence_thread.join()
+        
         end_total = time.time()
         logging.info(f" |- Procesamiento completado en {end_total - start_total:.2f} segundos")
-        logging.info(f" |- DataFrame final: {result.shape[0]:,} filas, {result.shape[1]} columnas")
-        return result
-    else:
-        logging.warning(" |- No se obtuvieron datos")
-        return pl.DataFrame()
+        logging.info(f" |- Total de chunks persistidos: {len(processed_chunks)}/{len(chunk_args)}")
 
 def get_db_vacunaciones_cached(since: str, until: str, chunk_size: int = 500000, 
                               cache_dir: str = "./resources/cache") -> pl.DataFrame:
@@ -196,7 +247,13 @@ def get_db_vacunaciones_cached(since: str, until: str, chunk_size: int = 500000,
     
     # Si no hay cache válido, consultar base de datos
     logging.info("|- No hay cache válido, consultando base de datos")
-    df = get_db_vacunaciones_parallel(since, until, chunk_size)
+    
+    # Usar la función paralela que persiste directamente
+    get_db_vacunaciones_parallel(since, until, chunk_size)
+    
+    # Cargar datos desde el lago después de la persistencia
+    from lake.load_lake import load_data
+    df = load_data()
     
     # Guardar en cache si se obtuvieron datos
     if not df.is_empty():
@@ -222,4 +279,20 @@ def get_db_vacunaciones(since, until, chunk_size=500000) -> pl.DataFrame:
         return get_db_vacunaciones_cached(since, until, chunk_size)
     except Exception as e:
         logging.warning(f"Error con cache, usando versión paralela: {e}")
-        return get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)
+        # La función paralela ya no retorna DataFrame, persiste directamente
+        get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)
+        # Cargar datos desde el lago
+        from lake.load_lake import load_data
+        return load_data()
+
+
+def get_db_vacunaciones_from_lake() -> pl.DataFrame:
+    """
+    Función de utilidad para cargar datos de vacunación directamente desde el lago.
+    Útil cuando se necesita el DataFrame completo después de usar la versión paralela.
+    """
+    from lake.load_lake import load_data
+    logging.info("|- Cargando datos de vacunación desde el lago")
+    df = load_data()
+    logging.info(f" |- Cargados {df.shape[0]:,} registros, {df.shape[1]} columnas")
+    return df

@@ -23,7 +23,7 @@ def generare_bi_echema():
     con.execute("""
         CREATE TABLE IF NOT EXISTS dim_persona (
             id INTEGER PRIMARY KEY,
-            nombres VARCHAR),
+            nombres VARCHAR,
             apellidos VARCHAR,
             fecha_nacimiento DATE,
             identificacion VARCHAR,
@@ -36,7 +36,7 @@ def generare_bi_echema():
         CREATE TABLE IF NOT EXISTS dim_vacuna (
             id INTEGER PRIMARY KEY,
             nombre VARCHAR,
-            lote VARCHAR,
+            lote VARCHAR
         );
         CREATE TABLE IF NOT EXISTS dim_tiempo (
             id INTEGER PRIMARY KEY,
@@ -56,15 +56,48 @@ def generare_bi_echema():
             uni_nombre VARCHAR,
             uni_tipo VARCHAR,
             correo VARCHAR
+        );      
+        CREATE TABLE IF NOT EXISTS dim_dpa_administrativo(
+            id INTEGER PRIMARY KEY,
+            zona VARCHAR,
+            codigo_zona VARCHAR,
+            circuito VARCHAR,
+            codigo_circuito VARCHAR,
+            distrito VARCHAR,
+            codigo_distrito VARCHAR
+        );
+        CREATE TABLE IF NOT EXISTS dim_dpa_geografico(
+            id INTEGER PRIMARY KEY,
+            provincia VARCHAR,
+            codigo_provincia VARCHAR,
+            canton VARCHAR,
+            codigo_canton VARCHAR,
+            parroquia VARCHAR,
+            codigo_parroquia VARCHAR
+        );
+        CREATE TABLE IF NOT EXISTS dim_profesional(
+            id INTEGER PRIMARY KEY,
+            nombres VARCHAR,
+            identificacion VARCHAR
         );
         CREATE TABLE IF NOT EXISTS fact_vacunacion (
             id INTEGER PRIMARY KEY,
             persona_id INTEGER,
             vacuna_id INTEGER,
+            profesional_id INTEGER,
+            establecimiento_id INTEGER,
+            dpa_administrativo_id INTEGER,
+            dpa_geografico_id INTEGER,
+            tiempo_id INTEGER,
             fecha_vacunacion DATE,
             centro_vacunacion VARCHAR,
             FOREIGN KEY (persona_id) REFERENCES dim_persona(id),
-            FOREIGN KEY (vacuna_id) REFERENCES dim_vacuna(id)
+            FOREIGN KEY (dpa_administrativo_id) REFERENCES dim_dpa_administrativo(id),
+            FOREIGN KEY (dpa_geografico_id) REFERENCES dim_dpa_geografico(id),
+            FOREIGN KEY (tiempo_id) REFERENCES dim_tiempo(id),
+            FOREIGN KEY (vacuna_id) REFERENCES dim_vacuna(id),
+            FOREIGN KEY (profesional_id) REFERENCES dim_profesional(id),
+            FOREIGN KEY (establecimiento_id) REFERENCES dim_establecimiento(id)
         );
     """)
     con.close()

@@ -1,5 +1,46 @@
 [
     {
+        "label": "absolute_import",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "division",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "print_function",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "Image",
+        "importPath": "PIL",
+        "description": "PIL",
+        "isExtraImport": true,
+        "detail": "PIL",
+        "documentation": {}
+    },
+    {
+        "label": "imagehash",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "imagehash",
+        "description": "imagehash",
+        "detail": "imagehash",
+        "documentation": {}
+    },
+    {
         "label": "os",
         "kind": 6,
         "isExtraImport": true,
@@ -68,6 +109,65 @@
         "documentation": {}
     },
     {
+        "label": "ThreadPoolExecutor",
+        "importPath": "concurrent.futures",
+        "description": "concurrent.futures",
+        "isExtraImport": true,
+        "detail": "concurrent.futures",
+        "documentation": {}
+    },
+    {
+        "label": "as_completed",
+        "importPath": "concurrent.futures",
+        "description": "concurrent.futures",
+        "isExtraImport": true,
+        "detail": "concurrent.futures",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "queue",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "queue",
+        "description": "queue",
+        "detail": "queue",
+        "documentation": {}
+    },
+    {
+        "label": "threading",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "threading",
+        "description": "threading",
+        "detail": "threading",
+        "documentation": {}
+    },
+    {
         "label": "DB_VACUNACION",
         "importPath": "extract.config.sources",
         "description": "extract.config.sources",
@@ -116,7 +216,55 @@
         "documentation": {}
     },
     {
+        "label": "add_new_elements_to_lake",
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "isExtraImport": true,
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
+        "label": "add_new_elements_to_lake",
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "isExtraImport": true,
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
+        "label": "add_new_elements_to_lake",
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "isExtraImport": true,
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
+        "label": "generare_bi_echema",
+        "importPath": "lake.init_lake",
+        "description": "lake.init_lake",
+        "isExtraImport": true,
+        "detail": "lake.init_lake",
+        "documentation": {}
+    },
+    {
         "label": "get_db_vacunaciones",
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "isExtraImport": true,
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "get_db_vacunaciones_cached",
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "isExtraImport": true,
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "get_db_vacunaciones_parallel",
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
         "isExtraImport": true,
@@ -140,19 +288,19 @@
         "documentation": {}
     },
     {
-        "label": "add_new_elements_to_lake",
-        "importPath": "lake.init_lake",
-        "description": "lake.init_lake",
+        "label": "load_data",
+        "importPath": "lake.load_lake",
+        "description": "lake.load_lake",
         "isExtraImport": true,
-        "detail": "lake.init_lake",
+        "detail": "lake.load_lake",
         "documentation": {}
     },
     {
-        "label": "generare_bi_echema",
-        "importPath": "lake.init_lake",
-        "description": "lake.init_lake",
+        "label": "load_data",
+        "importPath": "lake.load_lake",
+        "description": "lake.load_lake",
         "isExtraImport": true,
-        "detail": "lake.init_lake",
+        "detail": "lake.load_lake",
         "documentation": {}
     },
     {
@@ -165,19 +313,43 @@
         "documentation": {}
     },
     {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "generate_profile_report",
+        "importPath": "load.generate_profile",
+        "description": "load.generate_profile",
+        "isExtraImport": true,
+        "detail": "load.generate_profile",
+        "documentation": {}
+    },
+    {
         "label": "limpiar_columnas_geograficas",
         "importPath": "process.clean_transform.dim_establecimiento",
         "description": "process.clean_transform.dim_establecimiento",
         "isExtraImport": true,
         "detail": "process.clean_transform.dim_establecimiento",
-        "documentation": {}
-    },
-    {
-        "label": "load_data",
-        "importPath": "lake.load_lake",
-        "description": "lake.load_lake",
-        "isExtraImport": true,
-        "detail": "lake.load_lake",
         "documentation": {}
     },
     {
@@ -205,12 +377,12 @@
         "documentation": {}
     },
     {
-        "label": "time",
+        "label": "argparse",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "time",
-        "description": "time",
-        "detail": "time",
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
         "documentation": {}
     },
     {
@@ -227,6 +399,140 @@
         "description": "process.clean_transform_orchester",
         "isExtraImport": true,
         "detail": "process.clean_transform_orchester",
+        "documentation": {}
+    },
+    {
+        "label": "profiler_orchester",
+        "importPath": "load.profilers.persona_profiler",
+        "description": "load.profilers.persona_profiler",
+        "isExtraImport": true,
+        "detail": "load.profilers.persona_profiler",
+        "documentation": {}
+    },
+    {
+        "label": "find_similar_images",
+        "kind": 2,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "def find_similar_images(userpaths, hashfunc=imagehash.average_hash):\n\tdef is_image(filename):\n\t\tf = filename.lower()\n\t\treturn f.endswith('.png') or f.endswith('.jpg') or \\\n\t\t\tf.endswith('.jpeg') or f.endswith('.bmp') or \\\n\t\t\tf.endswith('.gif') or '.jpg' in f or f.endswith('.svg')\n\timage_filenames = []\n\tfor userpath in userpaths:\n\t\timage_filenames += [os.path.join(userpath, path) for path in os.listdir(userpath) if is_image(path)]\n\timages = {}",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\t\tf",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\t\tf = filename.lower()\n\t\treturn f.endswith('.png') or f.endswith('.jpg') or \\\n\t\t\tf.endswith('.jpeg') or f.endswith('.bmp') or \\\n\t\t\tf.endswith('.gif') or '.jpg' in f or f.endswith('.svg')\n\timage_filenames = []\n\tfor userpath in userpaths:\n\t\timage_filenames += [os.path.join(userpath, path) for path in os.listdir(userpath) if is_image(path)]\n\timages = {}\n\tfor img in sorted(image_filenames):\n\t\ttry:",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\timage_filenames",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\timage_filenames = []\n\tfor userpath in userpaths:\n\t\timage_filenames += [os.path.join(userpath, path) for path in os.listdir(userpath) if is_image(path)]\n\timages = {}\n\tfor img in sorted(image_filenames):\n\t\ttry:\n\t\t\thash = hashfunc(Image.open(img))\n\t\texcept Exception as e:\n\t\t\tprint('Problem:', e, 'with', img)\n\t\t\tcontinue",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\timages",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\timages = {}\n\tfor img in sorted(image_filenames):\n\t\ttry:\n\t\t\thash = hashfunc(Image.open(img))\n\t\texcept Exception as e:\n\t\t\tprint('Problem:', e, 'with', img)\n\t\t\tcontinue\n\t\tif hash in images:\n\t\t\tprint(img, '  already exists as', ' '.join(images[hash]))\n\t\t\tif 'dupPictures' in img:",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\t\t\thash",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\t\t\thash = hashfunc(Image.open(img))\n\t\texcept Exception as e:\n\t\t\tprint('Problem:', e, 'with', img)\n\t\t\tcontinue\n\t\tif hash in images:\n\t\t\tprint(img, '  already exists as', ' '.join(images[hash]))\n\t\t\tif 'dupPictures' in img:\n\t\t\t\tprint('rm -v', img)\n\t\timages[hash] = images.get(hash, []) + [img]\n\t# for k, img_list in six.iteritems(images):",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\t\timages[hash]",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\t\timages[hash] = images.get(hash, []) + [img]\n\t# for k, img_list in six.iteritems(images):\n\t# \tif len(img_list) > 1:\n\t# \t\tprint(\" \".join(img_list))\nif __name__ == '__main__':  # noqa: C901\n\timport os\n\timport sys\n\tdef usage():\n\t\tsys.stderr.write(\"\"\"SYNOPSIS: %s [ahash|phash|dhash|...] [<directory>]\nIdentifies similar images in the directory.",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\thashmethod",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\thashmethod = sys.argv[1] if len(sys.argv) > 1 else usage()\n\tif hashmethod == 'ahash':\n\t\thashfunc = imagehash.average_hash\n\telif hashmethod == 'phash':\n\t\thashfunc = imagehash.phash\n\telif hashmethod == 'dhash':\n\t\thashfunc = imagehash.dhash\n\telif hashmethod == 'whash-haar':\n\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\t\thashfunc",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\t\thashfunc = imagehash.average_hash\n\telif hashmethod == 'phash':\n\t\thashfunc = imagehash.phash\n\telif hashmethod == 'dhash':\n\t\thashfunc = imagehash.dhash\n\telif hashmethod == 'whash-haar':\n\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':\n\t\tdef hashfunc(img):\n\t\t\treturn imagehash.whash(img, mode='db4')",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\t\thashfunc",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\t\thashfunc = imagehash.phash\n\telif hashmethod == 'dhash':\n\t\thashfunc = imagehash.dhash\n\telif hashmethod == 'whash-haar':\n\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':\n\t\tdef hashfunc(img):\n\t\t\treturn imagehash.whash(img, mode='db4')\n\telif hashmethod == 'colorhash':\n\t\thashfunc = imagehash.colorhash",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\t\thashfunc",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\t\thashfunc = imagehash.dhash\n\telif hashmethod == 'whash-haar':\n\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':\n\t\tdef hashfunc(img):\n\t\t\treturn imagehash.whash(img, mode='db4')\n\telif hashmethod == 'colorhash':\n\t\thashfunc = imagehash.colorhash\n\telif hashmethod == 'crop-resistant':\n\t\thashfunc = imagehash.crop_resistant_hash",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\t\thashfunc",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':\n\t\tdef hashfunc(img):\n\t\t\treturn imagehash.whash(img, mode='db4')\n\telif hashmethod == 'colorhash':\n\t\thashfunc = imagehash.colorhash\n\telif hashmethod == 'crop-resistant':\n\t\thashfunc = imagehash.crop_resistant_hash\n\telse:\n\t\tusage()",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\t\thashfunc",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\t\thashfunc = imagehash.colorhash\n\telif hashmethod == 'crop-resistant':\n\t\thashfunc = imagehash.crop_resistant_hash\n\telse:\n\t\tusage()\n\tuserpaths = sys.argv[2:] if len(sys.argv) > 2 else '.'\n\tfind_similar_images(userpaths=userpaths, hashfunc=hashfunc)",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\t\thashfunc",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\t\thashfunc = imagehash.crop_resistant_hash\n\telse:\n\t\tusage()\n\tuserpaths = sys.argv[2:] if len(sys.argv) > 2 else '.'\n\tfind_similar_images(userpaths=userpaths, hashfunc=hashfunc)",
+        "detail": ".venv.bin.find_similar_images",
+        "documentation": {}
+    },
+    {
+        "label": "\tuserpaths",
+        "kind": 5,
+        "importPath": ".venv.bin.find_similar_images",
+        "description": ".venv.bin.find_similar_images",
+        "peekOfCode": "\tuserpaths = sys.argv[2:] if len(sys.argv) > 2 else '.'\n\tfind_similar_images(userpaths=userpaths, hashfunc=hashfunc)",
+        "detail": ".venv.bin.find_similar_images",
         "documentation": {}
     },
     {
@@ -284,11 +590,20 @@
         "documentation": {}
     },
     {
+        "label": "get_db_vacunacion_optimized",
+        "kind": 2,
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "peekOfCode": "def get_db_vacunacion_optimized(since: str, until: str, offset: int = 0, chunk_size: int = 100000) -> pl.DataFrame:\n    \"\"\"\n    Versión optimizada de la consulta con mejores prácticas SQL\n    \"\"\"\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    # Query optimizada con hints de Oracle y ORDER BY para consistencia\n    query = f\"\"\"\n            SELECT /*+ FIRST_ROWS({chunk_size}) INDEX_RANGE_SCAN */\n                ID_VAC_DEPU,\n                FECHA_APLICACION,",
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
         "label": "get_db_vacunacion",
         "kind": 2,
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000) -> pl.DataFrame:\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = f\"\"\"\n            SELECT\n                ID_VAC_DEPU,\n                FECHA_APLICACION,\n                PUNTO_VACUNACION,\n                UNICODIGO,\n                TIPO_IDEN,\n                NUM_IDEN,",
+        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000) -> pl.DataFrame:\n    return get_db_vacunacion_optimized(since, until, offset, chunk_size)\ndef get_count_db_vacunacion(since, until):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = f\"\"\"\n            SELECT \n                COUNT(*) AS total_count\n            FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID\n            WHERE \n                FECHA_APLICACION BETWEEN TO_DATE('{since}', 'YYYY-MM-DD') ",
         "detail": "extract.db_vacunacion",
         "documentation": {}
     },
@@ -302,11 +617,38 @@
         "documentation": {}
     },
     {
+        "label": "get_db_vacunaciones_parallel",
+        "kind": 2,
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "peekOfCode": "def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 500000, max_workers: int = 4) -> None:\n    \"\"\"\n    Versión paralela optimizada para obtener datos de vacunación y persistirlos usando cola.\n    No retorna DataFrame, sino que persiste directamente cada chunk al lago de datos.\n    \"\"\"\n    logging.info(f\"|- Fetching vacunas (paralelo con {max_workers} workers)\")\n    start_total = time.time()\n    # Obtener total de registros\n    total = get_count_db_vacunacion(since, until)\n    logging.info(f\" |- Total de registros: {total:,}\")",
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "get_db_vacunaciones_cached",
+        "kind": 2,
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "peekOfCode": "def get_db_vacunaciones_cached(since: str, until: str, chunk_size: int = 500000, \n                              cache_dir: str = \"./resources/cache\") -> pl.DataFrame:\n    \"\"\"\n    Versión con cache para evitar consultas repetidas\n    \"\"\"\n    # Crear directorio de cache si no existe\n    os.makedirs(cache_dir, exist_ok=True)\n    # Nombre del archivo de cache basado en parámetros\n    cache_filename = f\"vacunaciones_{since}_{until}_{chunk_size}.parquet\"\n    cache_path = os.path.join(cache_dir, cache_filename)",
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
         "label": "get_db_vacunaciones",
         "kind": 2,
         "importPath": "extract.db_vacunacion",
         "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunaciones(since, until, chunk_size=100000) -> pl.DataFrame:\n    logging.info(f\"|- Fetching vacunas\")\n    offset = 0\n    all_data = []\n    total = get_count_db_vacunacion(since, until)\n    for offset in range(0, total, chunk_size):\n        logging.info(f\" |- Fetching records {offset} to {offset + chunk_size} de un total de {total}\")\n        chunk = get_db_vacunacion(since, until, offset, chunk_size)\n        if chunk.is_empty():\n            break",
+        "peekOfCode": "def get_db_vacunaciones(since, until, chunk_size=500000) -> pl.DataFrame:\n    \"\"\"\n    Función principal optimizada - usa paralelización por defecto\n    \"\"\"\n    # Determinar número óptimo de workers basado en CPU\n    max_workers = min(4, os.cpu_count() or 1)\n    # Usar versión con cache si está disponible\n    try:\n        return get_db_vacunaciones_cached(since, until, chunk_size)\n    except Exception as e:",
+        "detail": "extract.db_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "get_db_vacunaciones_from_lake",
+        "kind": 2,
+        "importPath": "extract.db_vacunacion",
+        "description": "extract.db_vacunacion",
+        "peekOfCode": "def get_db_vacunaciones_from_lake() -> pl.DataFrame:\n    \"\"\"\n    Función de utilidad para cargar datos de vacunación directamente desde el lago.\n    Útil cuando se necesita el DataFrame completo después de usar la versión paralela.\n    \"\"\"\n    from lake.load_lake import load_data\n    logging.info(\"|- Cargando datos de vacunación desde el lago\")\n    df = load_data()\n    logging.info(f\" |- Cargados {df.shape[0]:,} registros, {df.shape[1]} columnas\")\n    return df",
         "detail": "extract.db_vacunacion",
         "documentation": {}
     },
@@ -333,7 +675,7 @@
         "kind": 2,
         "importPath": "extract.ingest_orchester",
         "description": "extract.ingest_orchester",
-        "peekOfCode": "def ingest_orchester(since, until):\n    df = get_db_vacunaciones(since, until)\n    ## remover caracter ' especiales de la columna NUM_IDEN y castearla a string\n    df.with_columns(\n        df['NUM_IDEN'].str.replace_all(\"'\", \"\").cast(str)\n    )\n    add_new_elements_to_lake('vacunacion', 'lk_vacunacion', ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], df)\n    # datos del registro civil\n    mpi_df = get_mpi_data(df['NUM_IDEN'].drop_nulls().drop_nans().unique().to_list())\n    add_new_elements_to_lake('vacunacion', 'lk_persona', ['IDENTIFIER_VALUE'], mpi_df)",
+        "peekOfCode": "def ingest_orchester(since, until, chunk_size=500000, max_workers=4, use_cache=True):\n    \"\"\"\n    Orquestador de ingesta optimizado con parámetros configurables\n    \"\"\"\n    logging.info(\"|- Iniciando orquestador de ingesta\")\n    if use_cache:\n        logging.info(\"|- Usando versión con cache\")\n        df = get_db_vacunaciones_cached(since, until, chunk_size)\n        # Limpiar la columna NUM_IDEN antes de persistir\n        df = df.with_columns(",
         "detail": "extract.ingest_orchester",
         "documentation": {}
     },
@@ -405,7 +747,7 @@
         "kind": 2,
         "importPath": "lake.init_lake",
         "description": "lake.init_lake",
-        "peekOfCode": "def generare_bi_echema():\n    # Implement the logic to generate the BI schema\n    con = duckdb.connect('./resources/data_lake/vacunacion.duckdb')\n    con.execute(\"\"\"\n        CREATE TABLE IF NOT EXISTS dim_persona (\n            id INTEGER PRIMARY KEY,\n            nombres VARCHAR),\n            apellidos VARCHAR,\n            fecha_nacimiento DATE,\n            identificacion VARCHAR,",
+        "peekOfCode": "def generare_bi_echema():\n    # Implement the logic to generate the BI schema\n    con = duckdb.connect('./resources/data_lake/vacunacion.duckdb')\n    con.execute(\"\"\"\n        CREATE TABLE IF NOT EXISTS dim_persona (\n            id INTEGER PRIMARY KEY,\n            nombres VARCHAR,\n            apellidos VARCHAR,\n            fecha_nacimiento DATE,\n            identificacion VARCHAR,",
         "detail": "lake.init_lake",
         "documentation": {}
     },
@@ -423,7 +765,7 @@
         "kind": 2,
         "importPath": "lake.load_lake",
         "description": "lake.load_lake",
-        "peekOfCode": "def load_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database='./resources/data_lake/vacunacion.duckdb')\n    df = con.execute(\"SELECT * FROM lk_vacunacion\").fetch_df()\n    df = pl.from_pandas(df)\n    logging.info(\". |- Datos cargados al lago\")\n    return df",
+        "peekOfCode": "def load_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database='./resources/data_lake/vacunacion.duckdb')\n    df = con.execute(\"SELECT * FROM lk_vacunacion\").fetch_df()\n    df = pl.from_pandas(df)\n    logging.info(\" |- Datos cargados al lago\")\n    return df",
         "detail": "lake.load_lake",
         "documentation": {}
     },
@@ -434,6 +776,24 @@
         "description": "lake.sources",
         "peekOfCode": "DATA_SOURCES = [\n    {\n        \"name\": \"MPI\",\n        \"type\": \"postgresql\",\n        \"host\": \"localhost\",\n        \"port\": 5432,\n        \"database\": \"mydatabase\",\n        \"username\": \"scott\",\n        \"password\": \"tiger\"              \n    }, {",
         "detail": "lake.sources",
+        "documentation": {}
+    },
+    {
+        "label": "profiler_orchester",
+        "kind": 2,
+        "importPath": "load.profilers.persona_profiler",
+        "description": "load.profilers.persona_profiler",
+        "peekOfCode": "def profiler_orchester(df: pl.DataFrame):\n    if os.getenv('GENERATE_PERFILER', 'False') == 'True':\n        __persona_profiler(df)\n        __vacuna_profiler(df)    \n        __vacunacion_profiler(df)\n        __establecimiento_profiler(df)\n    return df",
+        "detail": "load.profilers.persona_profiler",
+        "documentation": {}
+    },
+    {
+        "label": "generate_profile_report",
+        "kind": 2,
+        "importPath": "load.generate_profile",
+        "description": "load.generate_profile",
+        "peekOfCode": "def generate_profile_report(df: pl.DataFrame, columns: list[str],path: str, name: str):\n    \"\"\"\n    Genera un perfil de datos usando ydata_profiling si está disponible.\n    Si no está disponible, genera un reporte básico.\n    \"\"\"\n    logging.info(\"|- ENR Generando perfil de datos\")\n    try:\n        from ydata_profiling import ProfileReport\n        logging.debug(\" |- Usando ydata_profiling para generar perfil completo\")\n        # Seleccionar columnas y convertir a pandas para ydata_profiling",
+        "detail": "load.generate_profile",
         "documentation": {}
     },
     {
@@ -477,7 +837,7 @@
         "kind": 2,
         "importPath": "process.clean_transform.dim_persona",
         "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = _limpiar_columnas_texto(df, cols=[\"TIPO_IDEN\", \"NUM_IDEN\", \"APELLIDOS\", \"NOMBRES\",\"NOMBRES_COMPLETOS\", \"SEXO\", \"ETNIA\", \"NACIONALIDAD\"])\n    df = _limpiar_columnas_fecha(df, cols=[\"FECHA_NACIMIENTO\"])\n    df = _limpiar_identificacion(df)\n    df = _calcular_edad(df)\n    df = _calcular_grupo_etario(df)\n    return df",
+        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = _crear_dataframe_con_moda_fecha(df)\n    df = _limpiar_columnas_texto(df, cols=[\"TIPO_IDEN\", \"NUM_IDEN\", \"APELLIDOS\", \"NOMBRES\",\"NOMBRES_COMPLETOS\", \"SEXO\", \"ETNIA\", \"NACIONALIDAD\"])\n    df = _limpiar_columnas_fecha(df, cols=[\"FECHA_NACIMIENTO\"])\n    df = _limpiar_identificacion(df)\n    df = _calcular_edad(df)\n    df = _calcular_grupo_etario(df)\n    df = _homologar_etnia(df)\n    return df",
         "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
@@ -486,8 +846,17 @@
         "kind": 5,
         "importPath": "process.clean_transform.dim_persona",
         "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "__all__ = [\n    'persona_orchester'\n]\nfrom process.clean_transform.dim_establecimiento import limpiar_columnas_geograficas\ndef _limpiar_columnas_texto(df: pl.DataFrame, cols: list[str] = []):\n    logging.info(\"|- EST Limpiando columnas de texto\")\n    for col in cols:\n        logging.debug(f\"  |- Limpiando columna {col}\")\n        df = df.with_columns(pl.col(col).str.strip_chars().alias(col))\n    return df",
+        "peekOfCode": "__all__ = [\n    'persona_orchester',\n]\ndef _limpiar_columnas_texto(df: pl.DataFrame, cols: list[str] = []):\n    logging.info(\"|- EST Limpiando columnas de texto\")\n    for col in cols:\n        logging.debug(f\" |- Limpiando columna {col} caracteres especiales\")\n        df = df.with_columns(pl.col(col).str.strip_chars().alias(col))\n        logging.debug(f\" |- Limpiando columna {col} mayusculas\")\n        df = df.with_columns(pl.col(col).str.to_uppercase().alias(col))",
         "detail": "process.clean_transform.dim_persona",
+        "documentation": {}
+    },
+    {
+        "label": "vacunas_nombres",
+        "kind": 2,
+        "importPath": "process.clean_transform.dim_vacuna",
+        "description": "process.clean_transform.dim_vacuna",
+        "peekOfCode": "def vacunas_nombres(df):\n    ## leer archivo csv \ndef vacuna_orchester(df):\n    return df",
+        "detail": "process.clean_transform.dim_vacuna",
         "documentation": {}
     },
     {
@@ -545,11 +914,29 @@
         "documentation": {}
     },
     {
-        "label": "file_handler",
-        "kind": 5,
+        "label": "setup_logging",
+        "kind": 2,
         "importPath": "main_full",
         "description": "main_full",
-        "peekOfCode": "file_handler = logging.FileHandler('app.log')\nfile_handler.setLevel(logging.DEBUG)\nfile_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n# Agregar el handler de archivo al logger root\nlogging.getLogger().addHandler(file_handler)\n##\nif __name__ == \"__main__\":\n    since = \"2023-03-01\"\n    until = \"2023-03-06\" \n    # ingest_orchester(since, until)",
+        "peekOfCode": "def setup_logging():\n    \"\"\"Configurar el sistema de logging\"\"\"\n    # Logging en consola y archivo\n    logging.basicConfig(level=logging.DEBUG, format=\"%(asctime)s - %(levelname)s - %(message)s\")\n    # Crear un handler para archivo\n    file_handler = logging.FileHandler('app.log')\n    file_handler.setLevel(logging.DEBUG)\n    file_handler.setFormatter(logging.Formatter(\"%(asctime)s - %(levelname)s - %(message)s\"))\n    # Agregar el handler de archivo al logger root\n    logging.getLogger().addHandler(file_handler)",
+        "detail": "main_full",
+        "documentation": {}
+    },
+    {
+        "label": "parse_arguments",
+        "kind": 2,
+        "importPath": "main_full",
+        "description": "main_full",
+        "peekOfCode": "def parse_arguments():\n    \"\"\"Parsear argumentos de línea de comandos\"\"\"\n    parser = argparse.ArgumentParser(\n        description=\"Procesamiento completo de datos de vacunación\",\n        formatter_class=argparse.ArgumentDefaultsHelpFormatter\n    )\n    parser.add_argument(\n        '--since', \n        type=str, \n        default='1800-01-01',",
+        "detail": "main_full",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "main_full",
+        "description": "main_full",
+        "peekOfCode": "def main():\n    \"\"\"Función principal del procesamiento\"\"\"\n    # Configurar logging\n    setup_logging()\n    # Parsear argumentos\n    args = parse_arguments()\n    logging.info(f\"Iniciando procesamiento con parámetros:\")\n    logging.info(f\"  - since: {args.since}\")\n    logging.info(f\"  - until: {args.until}\")\n    logging.info(f\"  - chunk_size: {args.chunk_size:,}\")",
         "detail": "main_full",
         "documentation": {}
     }
