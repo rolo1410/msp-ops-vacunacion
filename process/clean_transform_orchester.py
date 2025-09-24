@@ -7,6 +7,9 @@ from process.clean_transform.dim_vacunacion import vacunacion_orchester
 
 
 def process_orchester():
+    '''
+    Orquesta el procesamiento de datos de vacunación
+    '''
     df = load_data()
     df = persona_orchester(df)
     df = vacuna_orchester(df)

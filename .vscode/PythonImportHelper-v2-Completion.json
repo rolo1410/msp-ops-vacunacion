@@ -394,19 +394,19 @@
         "documentation": {}
     },
     {
-        "label": "process_orchester",
-        "importPath": "process.clean_transform_orchester",
-        "description": "process.clean_transform_orchester",
-        "isExtraImport": true,
-        "detail": "process.clean_transform_orchester",
-        "documentation": {}
-    },
-    {
         "label": "profiler_orchester",
         "importPath": "load.profilers.persona_profiler",
         "description": "load.profilers.persona_profiler",
         "isExtraImport": true,
         "detail": "load.profilers.persona_profiler",
+        "documentation": {}
+    },
+    {
+        "label": "process_orchester",
+        "importPath": "process.clean_transform_orchester",
+        "description": "process.clean_transform_orchester",
+        "isExtraImport": true,
+        "detail": "process.clean_transform_orchester",
         "documentation": {}
     },
     {
@@ -882,7 +882,7 @@
         "kind": 2,
         "importPath": "process.clean_transform_orchester",
         "description": "process.clean_transform_orchester",
-        "peekOfCode": "def process_orchester():\n    df = load_data()\n    df = persona_orchester(df)\n    df = vacuna_orchester(df)\n    df = vacunacion_orchester(df)\n    return df",
+        "peekOfCode": "def process_orchester():\n    '''\n    Orquesta el procesamiento de datos de vacunación\n    '''\n    df = load_data()\n    df = persona_orchester(df)\n    df = vacuna_orchester(df)\n    df = vacunacion_orchester(df)\n    return df",
         "detail": "process.clean_transform_orchester",
         "documentation": {}
     },
