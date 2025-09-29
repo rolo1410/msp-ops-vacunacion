@@ -1,7 +1,9 @@
-import os
-import polars as pl
 import logging
+import os
 from datetime import datetime
+
+import polars as pl
+
 
 def generate_profile_report(df: pl.DataFrame, columns: list[str],path: str, name: str):
     """
@@ -23,8 +25,9 @@ def generate_profile_report(df: pl.DataFrame, columns: list[str],path: str, name
         
         # Guardar archivo
         today = datetime.now().strftime("%Y_%m_%d")
-        filename = f"{"_".join(name.title().split(" "))}_{today}.html"
-        # create path if not exists
+        filename = f"{'_'.join(name.title().split(' '))}_{today}_basic_profile.txt"
+
+        # create path if not exists 
         os.makedirs(path, exist_ok=True)
         
         profile.to_file(os.path.join(path, filename))
@@ -86,7 +89,7 @@ def _generate_basic_profile(df: pl.DataFrame, columns: list[str], name: str):
         
         # Guardar reporte básico
         today = datetime.now().strftime("%Y_%m_%d")
-        filename = f"{"_".join(name.title().split(" "))}_{today}_basic_profile.txt"
+        filename = f"{'_'.join(name.title().split(' '))}_{today}_basic_profile.txt"
         
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(f"=== PERFIL BÁSICO DE DATOS ===\n")
