@@ -76,6 +76,15 @@
         "documentation": {}
     },
     {
+        "label": "sqlalchemy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sqlalchemy",
+        "description": "sqlalchemy",
+        "detail": "sqlalchemy",
+        "documentation": {}
+    },
+    {
         "label": "create_engine",
         "importPath": "sqlalchemy",
         "description": "sqlalchemy",
@@ -93,6 +102,14 @@
     },
     {
         "label": "Engine",
+        "importPath": "sqlalchemy.engine",
+        "description": "sqlalchemy.engine",
+        "isExtraImport": true,
+        "detail": "sqlalchemy.engine",
+        "documentation": {}
+    },
+    {
+        "label": "URL",
         "importPath": "sqlalchemy.engine",
         "description": "sqlalchemy.engine",
         "isExtraImport": true,
@@ -438,6 +455,15 @@
         "description": "process.clean_transform.dim_vacunacion",
         "isExtraImport": true,
         "detail": "process.clean_transform.dim_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
         "documentation": {}
     },
     {
@@ -811,7 +837,7 @@
         "kind": 2,
         "importPath": "extract.ingest_orchester",
         "description": "extract.ingest_orchester",
-        "peekOfCode": "def ingest_orchester(since, until, chunk_size=500000, max_workers=4, use_cache=True):\n    \"\"\"\n    Orquestador de ingesta optimizado con parámetros configurables\n    \"\"\"\n    logging.info(\"|- Usando versión paralela con persistencia automática\")\n    # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb\n    #get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)\n    ## obtiene los datos de vacunación de rutina\n    get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)\n    # Cargar datos desde el lago para obtener las identificaciones",
+        "peekOfCode": "def ingest_orchester(since, until, chunk_size=500000, max_workers=4, use_cache=True):\n    \"\"\"\n    Orquestador de ingesta optimizado con parámetros configurables\n    \"\"\"\n    logging.info(\"|- Usando versión paralela con persistencia automática\")\n    # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb\n    get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)\n    ## obtiene los datos de vacunación de rutina\n    ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)\n    # Cargar datos desde el lago para obtener las identificaciones",
         "detail": "extract.ingest_orchester",
         "documentation": {}
     },
@@ -1047,6 +1073,15 @@
         "description": "utils.df_utils",
         "peekOfCode": "def convertir_columnas_a_minusculas(df):\n    \"\"\"\n    Convierte los nombres de las columnas de un DataFrame a minúsculas.\n    Parámetros:\n    df (pandas.DataFrame): El DataFrame cuyas columnas se desean convertir.\n    Retorna:\n    pandas.DataFrame: El DataFrame con los nombres de las columnas en minúsculas.\n    \"\"\"\n    df.columns = [col.lower() for col in df.columns]\n    return df",
         "detail": "utils.df_utils",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_and_save_parquet_oracle",
+        "kind": 2,
+        "importPath": "get_full_parquet",
+        "description": "get_full_parquet",
+        "peekOfCode": "def fetch_and_save_parquet_oracle(\n    user: str,\n    password: str,\n    host: str,\n    port: int,\n    service_name: str,\n    table_name: str,\n    parquet_file: str,\n    chunk_size: int = 100000\n):",
+        "detail": "get_full_parquet",
         "documentation": {}
     },
     {

@@ -15,10 +15,10 @@ def ingest_orchester(since, until, chunk_size=500000, max_workers=4, use_cache=T
     logging.info("|- Usando versión paralela con persistencia automática")
     
     # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb
-    #get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)
+    get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)
     
     ## obtiene los datos de vacunación de rutina
-    get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)
+    ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)
     
     # Cargar datos desde el lago para obtener las identificaciones
     logging.info("|- Cargando datos desde el lago para procesamiento posterior")
