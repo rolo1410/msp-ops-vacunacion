@@ -1,34 +1,28 @@
-from extract.db_vacunacion import get_db_vacunaciones, get_db_vacunaciones_cached, get_db_vacunaciones_parallel
+import logging
+
+from extract.db_vacunacion import get_db_vacunaciones_cached, get_db_vacunaciones_parallel
+from extract.db_vacunacion_rutinario import get_db_vacunaciones_parallel_rutinario
 from extract.geo_salud import get_geo_salud_data
 from extract.mpi import get_mpi_data
 from lake.init_lake import add_new_elements_to_lake
 from lake.load_lake import load_data
-import logging
 
 
 def ingest_orchester(since, until, chunk_size=500000, max_workers=4, use_cache=True):
     """
     Orquestador de ingesta optimizado con parámetros configurables
     """
-    logging.info("|- Iniciando orquestador de ingesta")
+    logging.info("|- Usando versión paralela con persistencia automática")
     
-    if use_cache:
-        logging.info("|- Usando versión con cache")
-        df = get_db_vacunaciones_cached(since, until, chunk_size)
-        
-        # Limpiar la columna NUM_IDEN antes de persistir
-        df = df.with_columns(
-            df['NUM_IDEN'].str.replace_all("'", "").cast(str)
-        )
-        add_new_elements_to_lake('vacunacion', 'lk_vacunacion', ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], df)
-    else:
-        logging.info("|- Usando versión paralela con persistencia automática")
-        # La función ya no retorna DataFrame, persiste directamente
-        get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)
-        
-        # Cargar datos desde el lago para obtener las identificaciones
-        logging.info("|- Cargando datos desde el lago para procesamiento posterior")
-        df = load_data()
+    # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb
+    #get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)
+    
+    ## obtiene los datos de vacunación de rutina
+    get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)
+    
+    # Cargar datos desde el lago para obtener las identificaciones
+    logging.info("|- Cargando datos desde el lago para procesamiento posterior")
+    df = load_data()
     
     # datos del registro civil
     logging.info("|- Procesando datos del registro civil (MPI)")

@@ -32,11 +32,11 @@ DB_GEOSALUD = {
 }
 
 DB_REPLICA = {
-    "host": os.getenv("CNN_ORACLE_DB_REPLICACION_HOST", "localhost"),
-    "port": int(os.getenv("CNN_ORACLE_DB_REPLICACION_PORT", 1521)),
-    "user": os.getenv("CNN_ORACLE_DB_REPLICACION_USER", "user"),
-    "password": os.getenv("CNN_ORACLE_DB_REPLICACION_PASSWORD", "password"),
-    "service_name": os.getenv("CNN_ORACLE_DB_REPLICACION_DBNAME", "replicacion")
+    "host": os.getenv("CNN_ORACLE_DB_REPLICA_HOST", "localhost"),
+    "port": int(os.getenv("CNN_ORACLE_DB_REPLICA_PORT", 1521)),
+    "user": os.getenv("CNN_ORACLE_DB_REPLICA_USER", "user"),
+    "password": os.getenv("CNN_ORACLE_DB_REPLICA_PASSWORD", "password"),
+    "service_name": os.getenv("CNN_ORACLE_DB_REPLICA_DB_NAME", "reeplicas")
 }
 
 

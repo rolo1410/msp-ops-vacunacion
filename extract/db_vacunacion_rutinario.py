@@ -8,76 +8,70 @@ from typing import List, Optional
 
 import polars as pl
 
-from extract.config.sources import DB_VACUNACION, get_oracle_engine
+from extract.config.sources import DB_REPLICA, DB_VACUNACION, get_oracle_engine
 from lake.init_lake import add_new_elements_to_lake
 
-VACUNACION_SCHEMA = {
-    "ID_VAC_DEPU": pl.String,
-    "FECHA_APLICACION": pl.Date,
-    "PUNTO_VACUNACION": pl.String,
-    "UNICODIGO": pl.String,
-    "TIPO_IDEN": pl.String,
-    "NUM_IDEN": pl.String,
-    "APELLIDOS": pl.String,
-    "NOMBRES": pl.String,
-    "NOMBRES_COMPLETOS": pl.String,
-    "SEXO": pl.String,
-    "FECHA_NACIMIENTO": pl.Date,
-    "NACIONALIDAD": pl.String,
-    "ETNIA": pl.String,
-    "POBLA_VACUNA": pl.String,
-    "GRUPO_RIESGO": pl.String,
-    "NOMBRE_VACUNA": pl.String,
-    "LOTE_VACUNA": pl.String,
-    "DOSIS_APLICADA": pl.String,
-    "PROFESIONAL_APLICA": pl.String,
-    "IDEN_PROFESIONAL_APLICA": pl.String,
-    "FASE_VACUNA": pl.String,
-    "FASE_VACUNA_DEPURADA": pl.String,
-    "GRUPO_RIESGO_DEPURADA": pl.String,
-    "SISTEMA": pl.String,
-    "REGISTRO_CIVIL": pl.String,
-    "ID_VAC_CONS": pl.String,
+VACUNACION_REGULAR_SCHEMA = {
+    "ID":pl.Int64,
+    'HACUE_AMED':pl.String,
+    "ACTIVO":pl.Int64, 
+    "PACIENTE_ID":pl.Int64,
+    "PERSONA_ID":pl.Int64,
+    "FECHAVACUNACION" :pl.Date,
+    "NUMEROIDENTIFICACION" :pl.String,
+    "FECHANACIMIENTO":pl.Date,
+    "ESTADO":pl.Int64,
+    "CTSEXO_ID":pl.Int64, 
+    "SEXO":pl.String,
+    "ENTIDAD_ID":pl.Int64,
+    "ESQUEMAVACUNACION_ID":pl.Int64,
+    "ID":pl.Int64,
+    "ESTADO":pl.Int64,
+    "FECHACREACION":pl.Date,
+    "FECHAMODIFICACION":pl.Date,
+    "PUNTOVACUNACION_ID":pl.Int64,
+    "LOTE":pl.String,
+    "FASEVACUNACION":pl.String,
+    "REFUERZO":pl.String
 }
 
-def get_db_vacunacion_optimized(since: str, until: str, offset: int = 0, chunk_size: int = 100000) -> pl.DataFrame:
+def get_db_vacunacion_rutinario_optimized(since: str, until: str, offset: int = 0, chunk_size: int = 100000) -> pl.DataFrame:
     """
     Versión optimizada de la consulta con mejores prácticas SQL
     """
-    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)
+    db_vacunacion_engine = get_oracle_engine(DB_REPLICA)
     
     # Query optimizada con hints de Oracle y ORDER BY para consistencia
     query = f"""
             SELECT /*+ FIRST_ROWS({chunk_size}) INDEX_RANGE_SCAN */
-                ID_VAC_DEPU,
-                FECHA_APLICACION,
-                PUNTO_VACUNACION,
-                UNICODIGO,
-                TIPO_IDEN,
-                NUM_IDEN,
-                APELLIDOS,
-                NOMBRES,
-                NOMBRES_COMPLETOS,
-                SEXO,
-                FECHA_NACIMIENTO,
-                NACIONALIDAD,
-                ETNIA,
-                POBLA_VACUNA,
-                GRUPO_RIESGO,
-                NOMBRE_VACUNA,
-                LOTE_VACUNA,
-                DOSIS_APLICADA,
-                PROFESIONAL_APLICA,
-                IDEN_PROFESIONAL_APLICA,
-                FASE_VACUNA,
-                FASE_VACUNA_DEPURADA,
-                GRUPO_RIESGO_DEPURADA,
-                SISTEMA,
-                REGISTRO_CIVIL,
-                ID_VAC_CONS
-            FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID
-            WHERE FECHA_APLICACION BETWEEN TO_DATE('{since}', 'YYYY-MM-DD') AND TO_DATE('{until}', 'YYYY-MM-DD')
-            ORDER BY ID_VAC_DEPU
+                R.ID,
+                'HACUE_AMED',
+                P.ACTIVO ,
+                r.PACIENTE_ID,
+                PE.ID AS PERSONA_ID,
+                r.FECHAVACUNACION ,
+                PE.NUMEROIDENTIFICACION ,
+                pe.FECHANACIMIENTO ,
+                pe.ESTADO ,
+                pe.CTSEXO_ID ,
+                d.DESCRIPCION AS SEXO,
+                pe.FECHACREACION ,
+                pe.FECHAMODIFICACION ,
+                R.ENTIDAD_ID,
+                R.ESQUEMAVACUNACION_ID,
+                P.ID,
+                P.ESTADO ,
+                P.FECHACREACION ,
+                P.FECHAMODIFICACION ,
+                R.PUNTOVACUNACION_ID,
+                R.LOTE,
+                R.FASEVACUNACION,
+                r.REFUERZO
+            FROM
+            HCUE_AMED.REGISTROVACUNACION R INNER JOIN HCUE_AMED.PACIENTE P ON
+            R.PACIENTE_ID = P.ID INNER JOIN HCUE_SISTEMA.PERSONA PE ON
+            PE.ID = p.PERSONA_ID LEFT JOIN HCUE_CATALOGOS.DETALLECATALOGO d ON d.ID = pe.CTSEXO_ID 
+            WHERE r.FECHAVACUNACION BETWEEN TO_DATE('{since}', 'YYYY-MM-DD') AND TO_DATE('{until}', 'YYYY-MM-DD')
             OFFSET {offset} ROWS FETCH NEXT {chunk_size} ROWS ONLY
             """
     
@@ -93,18 +87,19 @@ def get_db_vacunacion_optimized(since: str, until: str, offset: int = 0, chunk_s
 
 # Mantener función original para compatibilidad
 def get_db_vacunacion(since, until, offset=0, chunk_size=100000) -> pl.DataFrame:
-    return get_db_vacunacion_optimized(since, until, offset, chunk_size)
+    return get_db_vacunacion_rutinario_optimized(since, until, offset, chunk_size)
 
 
-def get_count_db_vacunacion(since, until):
-    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)
+def get_count_db_vacunacion_rutinario(since, until):
+    db_vacunacion_engine = get_oracle_engine(DB_REPLICA)
     query = f"""
-            SELECT 
-                COUNT(*) AS total_count
-            FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID
-            WHERE 
-                FECHA_APLICACION BETWEEN TO_DATE('{since}', 'YYYY-MM-DD') 
-                AND TO_DATE('{until}', 'YYYY-MM-DD')
+            SELECT
+                count(*) as TOTAL_COUNT
+            FROM
+                HCUE_AMED.REGISTROVACUNACION R
+            WHERE
+                R.FECHAVACUNACION > TO_DATE('{since}', 'yyyy-mm-dd') 
+                AND R.FECHAVACUNACION < TO_DATE('{until}', 'yyyy-mm-dd')
             """  # Replace with actual query
     df = pl.read_database(query, connection=db_vacunacion_engine.connect())
     return df['TOTAL_COUNT'][0]
@@ -114,16 +109,16 @@ def _fetch_chunk_worker(args) -> Optional[pl.DataFrame]:
     """Worker function para procesamiento paralelo de chunks"""
     since, until, offset, chunk_size = args
     try:
-        chunk = get_db_vacunacion_optimized(since, until, offset, chunk_size)
+        chunk = get_db_vacunacion_rutinario_optimized(since, until, offset, chunk_size)
         if not chunk.is_empty():
-            chunk = chunk.cast(VACUNACION_SCHEMA, strict=False)
+            chunk = chunk.cast(VACUNACION_REGULAR_SCHEMA, strict=False)
             return chunk
         return None
     except Exception as e:
         logging.error(f"Error procesando chunk offset {offset}: {e}")
         return None
 
-def _persistence_worker(data_queue: queue.Queue, processed_chunks: list, stop_event: threading.Event):
+def _persistence_worker_rutinario(data_queue: queue.Queue, processed_chunks: list, stop_event: threading.Event):
     """Worker function para persistir chunks de forma secuencial usando DuckDB"""
     while not stop_event.is_set() or not data_queue.empty():
         try:
@@ -134,15 +129,9 @@ def _persistence_worker(data_queue: queue.Queue, processed_chunks: list, stop_ev
                 
             offset, chunk = chunk_data
             
-            # Limpiar la columna NUM_IDEN antes de persistir
-            if 'NUM_IDEN' in chunk.columns:
-                chunk = chunk.with_columns(
-                    chunk['NUM_IDEN'].str.replace_all("'", "").cast(str)
-                )
-            
             # Persistir el chunk usando add_new_elements_to_lake
-            add_new_elements_to_lake('vacunacion', 'lk_vacunacion', 
-                                   ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], chunk)
+            add_new_elements_to_lake('vacunacion_rutinario', 'lk_vacunacion_rutinario', 
+                                   ['NUMEROIDENTIFICACION', 'FECHAVACUNACION', 'ENTIDAD_ID'], chunk)
             
             processed_chunks.append(offset)
             logging.info(f" |- Persistido chunk offset {offset} ({len(processed_chunks)} chunks completados)")
@@ -154,7 +143,7 @@ def _persistence_worker(data_queue: queue.Queue, processed_chunks: list, stop_ev
             logging.error(f"Error persistiendo chunk: {e}")
             data_queue.task_done()
 
-def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 500000, max_workers: int = 4) -> None:
+def get_db_vacunaciones_parallel_rutinario(since: str, until: str, chunk_size: int = 500000, max_workers: int = 4) -> None:
     """
     Versión paralela optimizada para obtener datos de vacunación y persistirlos usando cola.
     No retorna DataFrame, sino que persiste directamente cada chunk al lago de datos.
@@ -163,7 +152,7 @@ def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 50000
     start_total = time.time()
     
     # Obtener total de registros
-    total = get_count_db_vacunacion(since, until)
+    total = get_count_db_vacunacion_rutinario(since, until)
     logging.info(f" |- Total de registros: {total:,}")
     
     if total == 0:
@@ -184,7 +173,7 @@ def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 50000
     
     # Iniciar worker de persistencia en thread separado
     persistence_thread = threading.Thread(
-        target=_persistence_worker, 
+        target=_persistence_worker_rutinario, 
         args=(data_queue, processed_chunks, stop_event)
     )
     persistence_thread.start()
@@ -223,48 +212,6 @@ def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 50000
         logging.info(f" |- Procesamiento completado en {end_total - start_total:.2f} segundos")
         logging.info(f" |- Total de chunks persistidos: {len(processed_chunks)}/{len(chunk_args)}")
 
-def get_db_vacunaciones_cached(since: str, until: str, chunk_size: int = 500000, 
-                              cache_dir: str = "./resources/cache") -> pl.DataFrame:
-    """
-    Versión con cache para evitar consultas repetidas
-    """
-    # Crear directorio de cache si no existe
-    os.makedirs(cache_dir, exist_ok=True)
-    
-    # Nombre del archivo de cache basado en parámetros
-    cache_filename = f"vacunaciones_{since}_{until}_{chunk_size}.parquet"
-    cache_path = os.path.join(cache_dir, cache_filename)
-    
-    # Verificar si existe cache válido
-    if os.path.exists(cache_path):
-        try:
-            logging.info(f"|- Cargando datos desde cache: {cache_filename}")
-            df = pl.read_parquet(cache_path)
-            logging.info(f" |- Cache cargado: {df.shape[0]:,} filas, {df.shape[1]} columnas")
-            return df
-        except Exception as e:
-            logging.warning(f" |- Error cargando cache: {e}, consultando base de datos")
-    
-    # Si no hay cache válido, consultar base de datos
-    logging.info("|- No hay cache válido, consultando base de datos")
-    
-    # Usar la función paralela que persiste directamente
-    get_db_vacunaciones_parallel(since, until, chunk_size)
-    
-    # Cargar datos desde el lago después de la persistencia
-    from lake.load_lake import load_data
-    df = load_data()
-    
-    # Guardar en cache si se obtuvieron datos
-    if not df.is_empty():
-        try:
-            logging.info(f"|- Guardando datos en cache: {cache_filename}")
-            df.write_parquet(cache_path)
-            logging.info(" |- Cache guardado exitosamente")
-        except Exception as e:
-            logging.warning(f" |- Error guardando cache: {e}")
-    
-    return df
 
 # Mantener función original para compatibilidad, pero usar la versión optimizada
 def get_db_vacunaciones(since, until, chunk_size=500000) -> pl.DataFrame:
@@ -276,14 +223,15 @@ def get_db_vacunaciones(since, until, chunk_size=500000) -> pl.DataFrame:
     
     # Usar versión con cache si está disponible
     try:
-        return get_db_vacunaciones_cached(since, until, chunk_size)
-    except Exception as e:
         logging.warning(f"Error con cache, usando versión paralela: {e}")
         # La función paralela ya no retorna DataFrame, persiste directamente
-        get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)
+        get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)
         # Cargar datos desde el lago
         from lake.load_lake import load_data
         return load_data()
+    except Exception as e:
+        logging.info("|- Usando versión paralela optimizada")
+    return pl.DataFrame()
 
 
 def get_db_vacunaciones_from_lake() -> pl.DataFrame:

@@ -102,7 +102,7 @@ def generare_bi_echema():
     """)
     con.close()
     
-def add_new_elements_to_lake(db:str,
+def add_new_elements_to_lake( db:str,
                               table:str,
                               keys_columns:list[str],
                               df:pl.DataFrame):
@@ -110,7 +110,7 @@ def add_new_elements_to_lake(db:str,
     # Implement the logic to add new elements to the lake
     con = duckdb.connect(f'./resources/data_lake/{db}.duckdb')
     
-    # 
+    # aqui hace el llamado al df
     one_query = f"""CREATE TABLE IF NOT EXISTS {db}.main.{table} AS SELECT * FROM df;
                     CREATE TABLE IF NOT EXISTS {db}.main.tmp_{table} AS SELECT * FROM df;
                     INSERT INTO {db}.main.{table} SELECT * FROM {db}.main.tmp_{table} WHERE NOT EXISTS (SELECT 1 FROM {db}.main.{table} WHERE {' AND '.join([f'{table}.{col} = tmp_{table}.{col}' for col in keys_columns])} );
