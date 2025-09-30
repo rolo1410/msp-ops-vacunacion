@@ -11,3 +11,4 @@ df_moda.csv
 *.html
 resources/cache/*.parquet
 **/**/*.pyc
+parquets/*.parquet
