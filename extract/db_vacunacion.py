@@ -77,10 +77,8 @@ def get_db_vacunacion_optimized(since: str, until: str, offset: int = 0, chunk_s
                 ID_VAC_CONS
             FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID
             WHERE FECHA_APLICACION BETWEEN TO_DATE('{since}', 'YYYY-MM-DD') AND TO_DATE('{until}', 'YYYY-MM-DD')
-            ORDER BY ID_VAC_DEPU
             OFFSET {offset} ROWS FETCH NEXT {chunk_size} ROWS ONLY
             """
-    
     try:
         start_time = time.time()
         df = pl.read_database(query, connection=db_vacunacion_engine.connect(), infer_schema_length=None)
@@ -222,77 +220,3 @@ def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 50000
         end_total = time.time()
         logging.info(f" |- Procesamiento completado en {end_total - start_total:.2f} segundos")
         logging.info(f" |- Total de chunks persistidos: {len(processed_chunks)}/{len(chunk_args)}")
-
-def get_db_vacunaciones_cached(since: str, until: str, chunk_size: int = 500000, 
-                              cache_dir: str = "./resources/cache") -> pl.DataFrame:
-    """
-    Versión con cache para evitar consultas repetidas
-    """
-    # Crear directorio de cache si no existe
-    os.makedirs(cache_dir, exist_ok=True)
-    
-    # Nombre del archivo de cache basado en parámetros
-    cache_filename = f"vacunaciones_{since}_{until}_{chunk_size}.parquet"
-    cache_path = os.path.join(cache_dir, cache_filename)
-    
-    # Verificar si existe cache válido
-    if os.path.exists(cache_path):
-        try:
-            logging.info(f"|- Cargando datos desde cache: {cache_filename}")
-            df = pl.read_parquet(cache_path)
-            logging.info(f" |- Cache cargado: {df.shape[0]:,} filas, {df.shape[1]} columnas")
-            return df
-        except Exception as e:
-            logging.warning(f" |- Error cargando cache: {e}, consultando base de datos")
-    
-    # Si no hay cache válido, consultar base de datos
-    logging.info("|- No hay cache válido, consultando base de datos")
-    
-    # Usar la función paralela que persiste directamente
-    get_db_vacunaciones_parallel(since, until, chunk_size)
-    
-    # Cargar datos desde el lago después de la persistencia
-    from lake.load_lake import load_data
-    df = load_data()
-    
-    # Guardar en cache si se obtuvieron datos
-    if not df.is_empty():
-        try:
-            logging.info(f"|- Guardando datos en cache: {cache_filename}")
-            df.write_parquet(cache_path)
-            logging.info(" |- Cache guardado exitosamente")
-        except Exception as e:
-            logging.warning(f" |- Error guardando cache: {e}")
-    
-    return df
-
-# Mantener función original para compatibilidad, pero usar la versión optimizada
-def get_db_vacunaciones(since, until, chunk_size=500000) -> pl.DataFrame:
-    """
-    Función principal optimizada - usa paralelización por defecto
-    """
-    # Determinar número óptimo de workers basado en CPU
-    max_workers = min(4, os.cpu_count() or 1)
-    
-    # Usar versión con cache si está disponible
-    try:
-        return get_db_vacunaciones_cached(since, until, chunk_size)
-    except Exception as e:
-        logging.warning(f"Error con cache, usando versión paralela: {e}")
-        # La función paralela ya no retorna DataFrame, persiste directamente
-        get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)
-        # Cargar datos desde el lago
-        from lake.load_lake import load_data
-        return load_data()
-
-
-def get_db_vacunaciones_from_lake() -> pl.DataFrame:
-    """
-    Función de utilidad para cargar datos de vacunación directamente desde el lago.
-    Útil cuando se necesita el DataFrame completo después de usar la versión paralela.
-    """
-    from lake.load_lake import load_data
-    logging.info("|- Cargando datos de vacunación desde el lago")
-    df = load_data()
-    logging.info(f" |- Cargados {df.shape[0]:,} registros, {df.shape[1]} columnas")
-    return df

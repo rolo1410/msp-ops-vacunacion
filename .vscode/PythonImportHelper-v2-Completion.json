@@ -750,33 +750,6 @@
         "documentation": {}
     },
     {
-        "label": "get_db_vacunaciones_cached",
-        "kind": 2,
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunaciones_cached(since: str, until: str, chunk_size: int = 500000, \n                              cache_dir: str = \"./resources/cache\") -> pl.DataFrame:\n    \"\"\"\n    Versión con cache para evitar consultas repetidas\n    \"\"\"\n    # Crear directorio de cache si no existe\n    os.makedirs(cache_dir, exist_ok=True)\n    # Nombre del archivo de cache basado en parámetros\n    cache_filename = f\"vacunaciones_{since}_{until}_{chunk_size}.parquet\"\n    cache_path = os.path.join(cache_dir, cache_filename)",
-        "detail": "extract.db_vacunacion",
-        "documentation": {}
-    },
-    {
-        "label": "get_db_vacunaciones",
-        "kind": 2,
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunaciones(since, until, chunk_size=500000) -> pl.DataFrame:\n    \"\"\"\n    Función principal optimizada - usa paralelización por defecto\n    \"\"\"\n    # Determinar número óptimo de workers basado en CPU\n    max_workers = min(4, os.cpu_count() or 1)\n    # Usar versión con cache si está disponible\n    try:\n        return get_db_vacunaciones_cached(since, until, chunk_size)\n    except Exception as e:",
-        "detail": "extract.db_vacunacion",
-        "documentation": {}
-    },
-    {
-        "label": "get_db_vacunaciones_from_lake",
-        "kind": 2,
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunaciones_from_lake() -> pl.DataFrame:\n    \"\"\"\n    Función de utilidad para cargar datos de vacunación directamente desde el lago.\n    Útil cuando se necesita el DataFrame completo después de usar la versión paralela.\n    \"\"\"\n    from lake.load_lake import load_data\n    logging.info(\"|- Cargando datos de vacunación desde el lago\")\n    df = load_data()\n    logging.info(f\" |- Cargados {df.shape[0]:,} registros, {df.shape[1]} columnas\")\n    return df",
-        "detail": "extract.db_vacunacion",
-        "documentation": {}
-    },
-    {
         "label": "VACUNACION_SCHEMA",
         "kind": 5,
         "importPath": "extract.db_vacunacion",
@@ -1123,7 +1096,7 @@
         "kind": 2,
         "importPath": "get_full_parquet",
         "description": "get_full_parquet",
-        "peekOfCode": "def fetch_and_save_parquet_oracle(\n    user: str,\n    password: str,\n    host: str,\n    port: int,\n    service_name: str,\n    table_name: str,\n    parquet_file: str,\n    chunk_size: int = 5000000\n):",
+        "peekOfCode": "def fetch_and_save_parquet_oracle(\n    user: str,\n    password: str,\n    host: str,\n    port: int,\n    service_name: str,\n    table_name: str,\n    parquet_file: str,\n<<<<<<< HEAD\n    chunk_size: int = 5000000",
         "detail": "get_full_parquet",
         "documentation": {}
     },
