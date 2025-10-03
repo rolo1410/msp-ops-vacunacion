@@ -1,12 +1,13 @@
+import glob
 import os
 import time
 
 import dotenv
+import duckdb
 import pandas as pd
 import sqlalchemy
-from sqlalchemy.engine import URL
 from pyspark.sql import SparkSession
-import glob
+from sqlalchemy.engine import URL
 
 dotenv.load_dotenv(override=True)
 
@@ -46,7 +47,6 @@ def fetch_and_save_parquet_oracle(
     engine: sqlalchemy.Engine = sqlalchemy.create_engine(connection_string, pool_pre_ping=True)
 
     offset = 0
-    dfs = []
     # Get total number of rows (only once, at the start)
     total_query = f"SELECT COUNT(*) FROM {table_name} where FECHA_APLICACION <= TO_DATE('2025-01-01', 'YYYY-MM-DD')"
     total_rows = pd.read_sql(total_query, engine).iloc[0, 0]
@@ -68,6 +68,10 @@ def fetch_and_save_parquet_oracle(
         """
         df = pd.read_sql(query, engine)
         elapsed = time.time() - start_time
+        con = duckdb.connect(f"{parquet_file}.duckdb")
+        con.execute(f"CREATE TABLE IF NOT EXISTS data AS SELECT * FROM df LIMIT 0")
+        con.append("data", df)
+        con.close()
         print(f"Iteración {iter_num} de {total_iters} tiempo de iteración: {elapsed:.2f} segundos")
 
         if not df.empty:

@@ -377,6 +377,14 @@
         "documentation": {}
     },
     {
+        "label": "get_identificaciones_data",
+        "importPath": "lake.load_lake",
+        "description": "lake.load_lake",
+        "isExtraImport": true,
+        "detail": "lake.load_lake",
+        "documentation": {}
+    },
+    {
         "label": "load_data",
         "importPath": "lake.load_lake",
         "description": "lake.load_lake",
@@ -458,12 +466,29 @@
         "documentation": {}
     },
     {
+        "label": "glob",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "glob",
+        "description": "glob",
+        "detail": "glob",
+        "documentation": {}
+    },
+    {
         "label": "pandas",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "pandas",
         "description": "pandas",
         "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "SparkSession",
+        "importPath": "pyspark.sql",
+        "description": "pyspark.sql",
+        "isExtraImport": true,
+        "detail": "pyspark.sql",
         "documentation": {}
     },
     {
@@ -837,7 +862,7 @@
         "kind": 2,
         "importPath": "extract.ingest_orchester",
         "description": "extract.ingest_orchester",
-        "peekOfCode": "def ingest_orchester(since, until, chunk_size=500000, max_workers=4, use_cache=True):\n    \"\"\"\n    Orquestador de ingesta optimizado con parámetros configurables\n    \"\"\"\n    logging.info(\"|- Usando versión paralela con persistencia automática\")\n    # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb\n    get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)\n    ## obtiene los datos de vacunación de rutina\n    ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)\n    # Cargar datos desde el lago para obtener las identificaciones",
+        "peekOfCode": "def ingest_orchester(since, until, chunk_size=500000, max_workers=4, use_cache=True):\n    \"\"\"\n    Orquestador de ingesta optimizado con parámetros configurables\n    \"\"\"\n    logging.info(\"|- Usando versión paralela con persistencia automática\")\n    # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb\n    # get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)\n    ## obtiene los datos de vacunación de rutina\n    ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)\n    # Cargar datos desde el lago para obtener las identificaciones",
         "detail": "extract.ingest_orchester",
         "documentation": {}
     },
@@ -905,11 +930,11 @@
         "documentation": {}
     },
     {
-        "label": "generare_bi_echema",
+        "label": "generate_bi_schema",
         "kind": 2,
         "importPath": "lake.init_lake",
         "description": "lake.init_lake",
-        "peekOfCode": "def generare_bi_echema():\n    # Implement the logic to generate the BI schema\n    con = duckdb.connect('./resources/data_lake/vacunacion.duckdb')\n    con.execute(\"\"\"\n        CREATE TABLE IF NOT EXISTS dim_persona (\n            id INTEGER PRIMARY KEY,\n            nombres VARCHAR,\n            apellidos VARCHAR,\n            fecha_nacimiento DATE,\n            identificacion VARCHAR,",
+        "peekOfCode": "def generate_bi_schema():\n    # Implement the logic to generate the BI schema\n    con = duckdb.connect('./resources/data_lake/vacunacion_schema.duckdb')\n    con.execute(\"\"\"\n        CREATE TABLE IF NOT EXISTS dim_persona (\n            id INTEGER PRIMARY KEY,\n            nombres VARCHAR,\n            apellidos VARCHAR,\n            fecha_nacimiento DATE,\n            identificacion VARCHAR,",
         "detail": "lake.init_lake",
         "documentation": {}
     },
@@ -927,7 +952,16 @@
         "kind": 2,
         "importPath": "lake.load_lake",
         "description": "lake.load_lake",
-        "peekOfCode": "def load_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database='./resources/data_lake/vacunacion.duckdb')\n    df = con.execute(\"SELECT * FROM lk_vacunacion\").fetch_df()\n    df = pl.from_pandas(df)\n    logging.info(\" |- Datos cargados al lago\")\n    return df",
+        "peekOfCode": "def load_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database='./resources/data_lake/vacunacion.duckdb')\n    df = con.execute(\"SELECT * FROM vacunacion\").fetch_df()\n    df = pl.from_pandas(df)\n    logging.info(\" |- Datos cargados al lago\")\n    return df\ndef get_identificaciones_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake",
+        "detail": "lake.load_lake",
+        "documentation": {}
+    },
+    {
+        "label": "get_identificaciones_data",
+        "kind": 2,
+        "importPath": "lake.load_lake",
+        "description": "lake.load_lake",
+        "peekOfCode": "def get_identificaciones_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database='./resources/data_lake/vacunacion.duckdb')\n    df = con.execute(\"select distinct(v.num_iden) from vacunacion v \").fetch_df()\n    ## remover \" y ' de las identificaciones :\"\n    df['num_iden'] = df['num_iden'].str.replace(':','').str.replace('\"','').str.replace(\"'\",'')\n    df = pl.from_pandas(df)\n    logging.info(\" |- Datos cargados al lago\")\n    return df",
         "detail": "lake.load_lake",
         "documentation": {}
     },
@@ -1076,12 +1110,30 @@
         "documentation": {}
     },
     {
+        "label": "merge_parquet_files",
+        "kind": 2,
+        "importPath": "get_full_parquet",
+        "description": "get_full_parquet",
+        "peekOfCode": "def merge_parquet_files(input_dir: str, output_file: str):\n    spark = SparkSession.builder.getOrCreate()\n    parquet_files = glob.glob(os.path.join(input_dir, \"*.parquet\"))\n    print(f\"Found {len(parquet_files)} parquet files to merge.\")\n    if not parquet_files:\n        print(\"No parquet files found in the directory.\")\n        spark.stop()\n        return\n    df = spark.read.parquet(*parquet_files)\n    df.write.mode(\"overwrite\").parquet(output_file)",
+        "detail": "get_full_parquet",
+        "documentation": {}
+    },
+    {
         "label": "fetch_and_save_parquet_oracle",
         "kind": 2,
         "importPath": "get_full_parquet",
         "description": "get_full_parquet",
-        "peekOfCode": "def fetch_and_save_parquet_oracle(\n    user: str,\n    password: str,\n    host: str,\n    port: int,\n    service_name: str,\n    table_name: str,\n    parquet_file: str,\n    chunk_size: int = 100000\n):",
+        "peekOfCode": "def fetch_and_save_parquet_oracle(\n    user: str,\n    password: str,\n    host: str,\n    port: int,\n    service_name: str,\n    table_name: str,\n    parquet_file: str,\n    chunk_size: int = 5000000\n):",
         "detail": "get_full_parquet",
+        "documentation": {}
+    },
+    {
+        "label": "insert_parquets_to_duckdb",
+        "kind": 2,
+        "importPath": "joinparquet",
+        "description": "joinparquet",
+        "peekOfCode": "def insert_parquets_to_duckdb(input_dir: str, db_path: str, table_name: str):\n    con = duckdb.connect(database=db_path)\n    con.execute(f\"\"\"\n        CREATE TABLE IF NOT EXISTS {table_name} AS SELECT * FROM parquet_scan('./parquets/db_covid_19.parquet_chunk3.parquet')\n    \"\"\")\n    con.execute(f\"\"\"\n        DELETE FROM {table_name}\n    \"\"\")\n    for parquet_file in glob.glob(os.path.join(input_dir, \"*.parquet\")):\n        print(f\"Inserting {parquet_file} into {table_name}\")",
+        "detail": "joinparquet",
         "documentation": {}
     },
     {

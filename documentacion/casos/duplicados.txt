@@ -1,0 +1,3 @@
+identificar duplicados
+-- cuando todo el registro es igual en todos los campos
+-- cuando la fecha_aplicacion, unicodigo, num_iden, dosis

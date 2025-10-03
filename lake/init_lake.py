@@ -17,9 +17,9 @@ def generate_lake_schema():
     con.close()
 
 
-def generare_bi_echema():
+def generate_bi_schema():
     # Implement the logic to generate the BI schema
-    con = duckdb.connect('./resources/data_lake/vacunacion.duckdb')
+    con = duckdb.connect('./resources/data_lake/vacunacion_schema.duckdb')
     con.execute("""
         CREATE TABLE IF NOT EXISTS dim_persona (
             id INTEGER PRIMARY KEY,
