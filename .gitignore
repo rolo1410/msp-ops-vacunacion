@@ -12,3 +12,5 @@ df_moda.csv
 resources/cache/*.parquet
 **/**/*.pyc
 parquets/*.parquet
+.vscode
+.vscode/*
