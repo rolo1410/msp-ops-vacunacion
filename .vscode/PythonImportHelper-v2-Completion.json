@@ -94,94 +94,12 @@
         "documentation": {}
     },
     {
-        "label": "queue",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "queue",
-        "description": "queue",
-        "detail": "queue",
-        "documentation": {}
-    },
-    {
-        "label": "threading",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "threading",
-        "description": "threading",
-        "detail": "threading",
-        "documentation": {}
-    },
-    {
         "label": "time",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "time",
         "description": "time",
         "detail": "time",
-        "documentation": {}
-    },
-    {
-        "label": "ThreadPoolExecutor",
-        "importPath": "concurrent.futures",
-        "description": "concurrent.futures",
-        "isExtraImport": true,
-        "detail": "concurrent.futures",
-        "documentation": {}
-    },
-    {
-        "label": "as_completed",
-        "importPath": "concurrent.futures",
-        "description": "concurrent.futures",
-        "isExtraImport": true,
-        "detail": "concurrent.futures",
-        "documentation": {}
-    },
-    {
-        "label": "ThreadPoolExecutor",
-        "importPath": "concurrent.futures",
-        "description": "concurrent.futures",
-        "isExtraImport": true,
-        "detail": "concurrent.futures",
-        "documentation": {}
-    },
-    {
-        "label": "as_completed",
-        "importPath": "concurrent.futures",
-        "description": "concurrent.futures",
-        "isExtraImport": true,
-        "detail": "concurrent.futures",
-        "documentation": {}
-    },
-    {
-        "label": "List",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Optional",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "List",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Optional",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
         "documentation": {}
     },
     {
@@ -297,23 +215,65 @@
         "documentation": {}
     },
     {
-        "label": "get_db_vacunaciones_cached",
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
+        "label": "queue",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "extract.db_vacunacion",
+        "importPath": "queue",
+        "description": "queue",
+        "detail": "queue",
         "documentation": {}
     },
     {
-        "label": "get_db_vacunaciones_parallel",
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
+        "label": "threading",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "extract.db_vacunacion",
+        "importPath": "threading",
+        "description": "threading",
+        "detail": "threading",
         "documentation": {}
     },
     {
-        "label": "get_db_vacunaciones_parallel_rutinario",
+        "label": "ThreadPoolExecutor",
+        "importPath": "concurrent.futures",
+        "description": "concurrent.futures",
+        "isExtraImport": true,
+        "detail": "concurrent.futures",
+        "documentation": {}
+    },
+    {
+        "label": "as_completed",
+        "importPath": "concurrent.futures",
+        "description": "concurrent.futures",
+        "isExtraImport": true,
+        "detail": "concurrent.futures",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "load_lake_db_vacunacion_covid",
+        "importPath": "extract.db_vacunacion_covid",
+        "description": "extract.db_vacunacion_covid",
+        "isExtraImport": true,
+        "detail": "extract.db_vacunacion_covid",
+        "documentation": {}
+    },
+    {
+        "label": "load_lake_db_vacunacion_rutinario",
         "importPath": "extract.db_vacunacion_rutinario",
         "description": "extract.db_vacunacion_rutinario",
         "isExtraImport": true,
@@ -334,14 +294,6 @@
         "description": "extract.mpi",
         "isExtraImport": true,
         "detail": "extract.mpi",
-        "documentation": {}
-    },
-    {
-        "label": "load_data",
-        "importPath": "lake.load_lake",
-        "description": "lake.load_lake",
-        "isExtraImport": true,
-        "detail": "lake.load_lake",
         "documentation": {}
     },
     {
@@ -556,65 +508,56 @@
         "documentation": {}
     },
     {
-        "label": "get_db_vacunacion_optimized",
+        "label": "get_db_vacunacion_covid_chunk",
         "kind": 2,
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunacion_optimized(since: str, until: str, offset: int = 0, chunk_size: int = 100000) -> pl.DataFrame:\n    \"\"\"\n    Versión optimizada de la consulta con mejores prácticas SQL\n    \"\"\"\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    # Query optimizada con hints de Oracle y ORDER BY para consistencia\n    query = f\"\"\"\n            SELECT /*+ FIRST_ROWS({chunk_size}) INDEX_RANGE_SCAN */\n                ID_VAC_DEPU,\n                FECHA_APLICACION,",
-        "detail": "extract.db_vacunacion",
-        "documentation": {}
-    },
-    {
-        "label": "get_db_vacunacion",
-        "kind": 2,
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000) -> pl.DataFrame:\n    return get_db_vacunacion_optimized(since, until, offset, chunk_size)\ndef get_count_db_vacunacion(since, until):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = f\"\"\"\n            SELECT \n                COUNT(*) AS total_count\n            FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID\n            WHERE \n                FECHA_APLICACION BETWEEN TO_DATE('{since}', 'YYYY-MM-DD') ",
-        "detail": "extract.db_vacunacion",
+        "importPath": "extract.db_vacunacion_covid",
+        "description": "extract.db_vacunacion_covid",
+        "peekOfCode": "def get_db_vacunacion_covid_chunk(since: str, until: str, offset: int = 0, chunk_size: int = 100000) -> pl.DataFrame:\n    \"\"\"\n    Versión optimizada de la consulta con mejores prácticas SQL\n    \"\"\"\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    # Query optimizada con hints de Oracle y ORDER BY para consistencia\n    query = f\"\"\"\n            SELECT /*+ FIRST_ROWS({chunk_size}) INDEX_RANGE_SCAN */\n                ID_VAC_DEPU,\n                FECHA_APLICACION,",
+        "detail": "extract.db_vacunacion_covid",
         "documentation": {}
     },
     {
         "label": "get_count_db_vacunacion",
         "kind": 2,
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
+        "importPath": "extract.db_vacunacion_covid",
+        "description": "extract.db_vacunacion_covid",
         "peekOfCode": "def get_count_db_vacunacion(since, until):\n    db_vacunacion_engine = get_oracle_engine(DB_VACUNACION)\n    query = f\"\"\"\n            SELECT \n                COUNT(*) AS total_count\n            FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID\n            WHERE \n                FECHA_APLICACION BETWEEN TO_DATE('{since}', 'YYYY-MM-DD') \n                AND TO_DATE('{until}', 'YYYY-MM-DD')\n            \"\"\"  # Replace with actual query",
-        "detail": "extract.db_vacunacion",
+        "detail": "extract.db_vacunacion_covid",
         "documentation": {}
     },
     {
-        "label": "get_db_vacunaciones_parallel",
+        "label": "load_lake_db_vacunacion_covid",
         "kind": 2,
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
-        "peekOfCode": "def get_db_vacunaciones_parallel(since: str, until: str, chunk_size: int = 500000, max_workers: int = 4) -> None:\n    \"\"\"\n    Versión paralela optimizada para obtener datos de vacunación y persistirlos usando cola.\n    No retorna DataFrame, sino que persiste directamente cada chunk al lago de datos.\n    \"\"\"\n    logging.info(f\"|- Fetching vacunas (paralelo con {max_workers} workers)\")\n    start_total = time.time()\n    # Obtener total de registros\n    total = get_count_db_vacunacion(since, until)\n    logging.info(f\" |- Total de registros: {total:,}\")",
-        "detail": "extract.db_vacunacion",
+        "importPath": "extract.db_vacunacion_covid",
+        "description": "extract.db_vacunacion_covid",
+        "peekOfCode": "def load_lake_db_vacunacion_covid(since: str, until: str, chunk_size: int = 1000000):\n    \"\"\"\n    Carga datos de vacunación COVID en paralelo con persistencia directa en DuckDB\n    \"\"\"\n    total_count = get_count_db_vacunacion(since, until)\n    logging.info(f\"|- Total de registros a procesar: {total_count:,}\")\n    offset = 0\n    while offset < total_count:\n        logging.info(f\" |- Procesando chunk con offset {offset}\")\n        df_chunk = get_db_vacunacion_covid_chunk(since, until, offset, chunk_size)",
+        "detail": "extract.db_vacunacion_covid",
         "documentation": {}
     },
     {
         "label": "VACUNACION_SCHEMA",
         "kind": 5,
-        "importPath": "extract.db_vacunacion",
-        "description": "extract.db_vacunacion",
+        "importPath": "extract.db_vacunacion_covid",
+        "description": "extract.db_vacunacion_covid",
         "peekOfCode": "VACUNACION_SCHEMA = {\n    \"ID_VAC_DEPU\": pl.String,\n    \"FECHA_APLICACION\": pl.Date,\n    \"PUNTO_VACUNACION\": pl.String,\n    \"UNICODIGO\": pl.String,\n    \"TIPO_IDEN\": pl.String,\n    \"NUM_IDEN\": pl.String,\n    \"APELLIDOS\": pl.String,\n    \"NOMBRES\": pl.String,\n    \"NOMBRES_COMPLETOS\": pl.String,",
-        "detail": "extract.db_vacunacion",
+        "detail": "extract.db_vacunacion_covid",
         "documentation": {}
     },
     {
-        "label": "get_db_vacunacion_rutinario_optimized",
-        "kind": 2,
-        "importPath": "extract.db_vacunacion_rutinario",
-        "description": "extract.db_vacunacion_rutinario",
-        "peekOfCode": "def get_db_vacunacion_rutinario_optimized(since: str, until: str, offset: int = 0, chunk_size: int = 100000) -> pl.DataFrame:\n    \"\"\"\n    Versión optimizada de la consulta con mejores prácticas SQL\n    \"\"\"\n    db_vacunacion_engine = get_oracle_engine(DB_REPLICA)\n    # Query optimizada con hints de Oracle y ORDER BY para consistencia\n    query = f\"\"\"\n            SELECT /*+ FIRST_ROWS({chunk_size}) INDEX_RANGE_SCAN */\n                R.ID,\n                'HACUE_AMED',",
-        "detail": "extract.db_vacunacion_rutinario",
+        "label": "VACUNACION_COLUMNS",
+        "kind": 5,
+        "importPath": "extract.db_vacunacion_covid",
+        "description": "extract.db_vacunacion_covid",
+        "peekOfCode": "VACUNACION_COLUMNS = ['id_vac_depu', 'fecha_aplicacion', 'punto_vacunacion', 'unicodigo', 'tipo_iden', 'num_iden', 'apellidos', 'nombres', 'nombres_completos', 'sexo', 'fecha_nacimiento', 'nacionalidad', 'etnia', 'pobla_vacuna', 'grupo_riesgo', 'nombre_vacuna', 'lote_vacuna', 'dosis_aplicada', 'profesional_aplica', 'iden_profesional_aplica', 'fase_vacuna', 'fase_vacuna_depurada', 'grupo_riesgo_depurada', 'sistema', 'registro_civil', 'id_vac_cons']",
+        "detail": "extract.db_vacunacion_covid",
         "documentation": {}
     },
     {
-        "label": "get_db_vacunacion",
+        "label": "get_db_vacunacion_rutinario_chunk",
         "kind": 2,
         "importPath": "extract.db_vacunacion_rutinario",
         "description": "extract.db_vacunacion_rutinario",
-        "peekOfCode": "def get_db_vacunacion(since, until, offset=0, chunk_size=100000) -> pl.DataFrame:\n    return get_db_vacunacion_rutinario_optimized(since, until, offset, chunk_size)\ndef get_count_db_vacunacion_rutinario(since, until):\n    db_vacunacion_engine = get_oracle_engine(DB_REPLICA)\n    query = f\"\"\"\n            SELECT\n                count(*) as TOTAL_COUNT\n            FROM\n                HCUE_AMED.REGISTROVACUNACION R\n            WHERE",
+        "peekOfCode": "def get_db_vacunacion_rutinario_chunk(since: str, until: str, offset: int = 0, chunk_size: int = 100000) -> pl.DataFrame:\n    \"\"\"\n    Versión optimizada de la consulta con mejores prácticas SQL\n    \"\"\"\n    db_vacunacion_engine = get_oracle_engine(DB_REPLICA)\n    # Query optimizada con hints de Oracle y ORDER BY para consistencia\n    query = f\"\"\"\n            SELECT /*+ FIRST_ROWS({chunk_size}) INDEX_RANGE_SCAN */\n                R.ID,\n                'HACUE_AMED',",
         "detail": "extract.db_vacunacion_rutinario",
         "documentation": {}
     },
@@ -628,29 +571,11 @@
         "documentation": {}
     },
     {
-        "label": "get_db_vacunaciones_parallel_rutinario",
+        "label": "load_lake_db_vacunacion_rutinario",
         "kind": 2,
         "importPath": "extract.db_vacunacion_rutinario",
         "description": "extract.db_vacunacion_rutinario",
-        "peekOfCode": "def get_db_vacunaciones_parallel_rutinario(since: str, until: str, chunk_size: int = 500000, max_workers: int = 4) -> None:\n    \"\"\"\n    Versión paralela optimizada para obtener datos de vacunación y persistirlos usando cola.\n    No retorna DataFrame, sino que persiste directamente cada chunk al lago de datos.\n    \"\"\"\n    logging.info(f\"|- Fetching vacunas (paralelo con {max_workers} workers)\")\n    start_total = time.time()\n    # Obtener total de registros\n    total = get_count_db_vacunacion_rutinario(since, until)\n    logging.info(f\" |- Total de registros: {total:,}\")",
-        "detail": "extract.db_vacunacion_rutinario",
-        "documentation": {}
-    },
-    {
-        "label": "get_db_vacunaciones",
-        "kind": 2,
-        "importPath": "extract.db_vacunacion_rutinario",
-        "description": "extract.db_vacunacion_rutinario",
-        "peekOfCode": "def get_db_vacunaciones(since, until, chunk_size=500000) -> pl.DataFrame:\n    \"\"\"\n    Función principal optimizada - usa paralelización por defecto\n    \"\"\"\n    # Determinar número óptimo de workers basado en CPU\n    max_workers = min(4, os.cpu_count() or 1)\n    # Usar versión con cache si está disponible\n    try:\n        logging.warning(f\"Error con cache, usando versión paralela: {e}\")\n        # La función paralela ya no retorna DataFrame, persiste directamente",
-        "detail": "extract.db_vacunacion_rutinario",
-        "documentation": {}
-    },
-    {
-        "label": "get_db_vacunaciones_from_lake",
-        "kind": 2,
-        "importPath": "extract.db_vacunacion_rutinario",
-        "description": "extract.db_vacunacion_rutinario",
-        "peekOfCode": "def get_db_vacunaciones_from_lake() -> pl.DataFrame:\n    \"\"\"\n    Función de utilidad para cargar datos de vacunación directamente desde el lago.\n    Útil cuando se necesita el DataFrame completo después de usar la versión paralela.\n    \"\"\"\n    from lake.load_lake import load_data\n    logging.info(\"|- Cargando datos de vacunación desde el lago\")\n    df = load_data()\n    logging.info(f\" |- Cargados {df.shape[0]:,} registros, {df.shape[1]} columnas\")\n    return df",
+        "peekOfCode": "def load_lake_db_vacunacion_rutinario(since, until, chunk_size=100000):\n    \"\"\"\n    Carga los datos en el lago de datos desde la base de datos en chunks\n    \"\"\"\n    total_count = get_count_db_vacunacion_rutinario(since, until)\n    logging.info(f\"|- Total de registros a procesar: {total_count:,}\")\n    offset = 0\n    while offset < total_count:\n        logging.info(f\" |- Procesando chunk con offset {offset}\")\n        df_chunk = get_db_vacunacion_rutinario_chunk(since, until, offset, chunk_size)",
         "detail": "extract.db_vacunacion_rutinario",
         "documentation": {}
     },
@@ -673,11 +598,29 @@
         "documentation": {}
     },
     {
+        "label": "ingest_vacunacion",
+        "kind": 2,
+        "importPath": "extract.ingest_orchester",
+        "description": "extract.ingest_orchester",
+        "peekOfCode": "def ingest_vacunacion(since, until, chunk_size=500000, max_workers=4, use_cache=True):\n    load_lake_db_vacunacion_rutinario(since, until, chunk_size, max_workers, use_cache)\n    # Cargar datos desde el lago para obtener las identificaciones\n    logging.info(\"|- Cargando datos desde el lago para procesamiento posterior\")\n    df = get_identificaciones_data('vacunacion_esquema', 'lk_vacunacion_rutinario', 'NUMEROIDENTIFICACION')\n    # datos del registro civil\n    logging.info(\"|- Procesando datos del registro civil (MPI)\")\n    unique_identifiers = df['num_iden'].drop_nulls().drop_nans().unique().to_list()\n    logging.info(f\" |- Total de identificaciones únicas: {len(unique_identifiers):,}\")\n    mpi_df = get_mpi_data(unique_identifiers)",
+        "detail": "extract.ingest_orchester",
+        "documentation": {}
+    },
+    {
+        "label": "ingest_vacunacion_covid",
+        "kind": 2,
+        "importPath": "extract.ingest_orchester",
+        "description": "extract.ingest_orchester",
+        "peekOfCode": "def ingest_vacunacion_covid(since, until, chunk_size=1000000):\n    \"\"\"\n    Orquestador de ingesta optimizado con parámetros configurables\n    \"\"\"\n    logging.info(\"|- Usando versión paralela con persistencia automática\")\n    # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb\n    load_lake_db_vacunacion_covid(since, until, chunk_size)\n    ## obtiene los datos de vacunación de rutina\n    ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)\n    # Cargar datos desde el lago para obtener las identificaciones",
+        "detail": "extract.ingest_orchester",
+        "documentation": {}
+    },
+    {
         "label": "ingest_orchester",
         "kind": 2,
         "importPath": "extract.ingest_orchester",
         "description": "extract.ingest_orchester",
-        "peekOfCode": "def ingest_orchester(since, until, chunk_size=500000, max_workers=4, use_cache=True):\n    \"\"\"\n    Orquestador de ingesta optimizado con parámetros configurables\n    \"\"\"\n    logging.info(\"|- Usando versión paralela con persistencia automática\")\n    # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb\n    # get_db_vacunaciones_parallel(since, until, chunk_size, max_workers)\n    ## obtiene los datos de vacunación de rutina\n    ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)\n    # Cargar datos desde el lago para obtener las identificaciones",
+        "peekOfCode": "def ingest_orchester(since, until, chunk_size=1000000):\n    ingest_vacunacion_covid(since, until, chunk_size)\n    ##\n    ##ingest_vacunacion(since, until, chunk_size)",
         "detail": "extract.ingest_orchester",
         "documentation": {}
     },
@@ -767,7 +710,7 @@
         "kind": 2,
         "importPath": "lake.load_lake",
         "description": "lake.load_lake",
-        "peekOfCode": "def load_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database='./resources/data_lake/vacunacion.duckdb')\n    df = con.execute(\"SELECT * FROM vacunacion\").fetch_df()\n    df = pl.from_pandas(df)\n    logging.info(\" |- Datos cargados al lago\")\n    return df\ndef get_identificaciones_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake",
+        "peekOfCode": "def load_data(db, table) -> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database=f'./resources/data_lake/{db}.duckdb')\n    df = con.execute(f\"SELECT * FROM {table}\").fetch_df()\n    df = pl.from_pandas(df)\n    ## convertir los nombres de las columnas a minusculas\n    df.columns = [col.lower() for col in df.columns]\n    logging.info(\" |- Datos cargados al lago\")\n    return df",
         "detail": "lake.load_lake",
         "documentation": {}
     },
@@ -776,7 +719,7 @@
         "kind": 2,
         "importPath": "lake.load_lake",
         "description": "lake.load_lake",
-        "peekOfCode": "def get_identificaciones_data()-> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database='./resources/data_lake/vacunacion.duckdb')\n    df = con.execute(\"select distinct(v.num_iden) from vacunacion v \").fetch_df()\n    ## remover \" y ' de las identificaciones :\"\n    df['num_iden'] = df['num_iden'].str.replace(':','').str.replace('\"','').str.replace(\"'\",'')\n    df = pl.from_pandas(df)\n    logging.info(\" |- Datos cargados al lago\")\n    return df",
+        "peekOfCode": "def get_identificaciones_data(db, table, column_id) -> pl.DataFrame:\n    # Implement the logic to load data into the lake\n    logging.info(\"|- Cargando datos al lago\")\n    con = duckdb.connect(database=f'./resources/data_lake/{db}.duckdb')\n    df = con.execute(f\"select distinct(v.{column_id}) from {table} v \").fetch_df()\n    ## remover \" y ' de las identificaciones :\"\n    df['num_iden'] = df['num_iden'].str.replace(':','').str.replace('\"','').str.replace(\"'\",'')\n    df = pl.from_pandas(df)\n    logging.info(\" |- Datos cargados al lago\")\n    return df",
         "detail": "lake.load_lake",
         "documentation": {}
     },
@@ -848,7 +791,7 @@
         "kind": 2,
         "importPath": "process.clean_transform.dim_persona",
         "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = _crear_dataframe_con_moda_fecha(df)\n    df = _limpiar_columnas_texto(df, cols=[\"TIPO_IDEN\", \"NUM_IDEN\", \"APELLIDOS\", \"NOMBRES\",\"NOMBRES_COMPLETOS\", \"SEXO\", \"ETNIA\", \"NACIONALIDAD\"])\n    df = _limpiar_columnas_fecha(df, cols=[\"FECHA_NACIMIENTO\"])\n    df = _limpiar_identificacion(df)\n    df = _calcular_edad(df)\n    df = _calcular_grupo_etario(df)\n    df = _homologar_etnia(df)\n    return df",
+        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = _crear_dataframe_con_moda_fecha(df)\n    df = _limpiar_columnas_texto(df, cols=[\"tipo_iden\", \"num_iden\", \"apellidos\", \"nombres\",\"nombres_completos\", \"sexo\", \"etnia\", \"nacionalidad\"])\n    df = _limpiar_columnas_fecha(df, cols=[\"fecha_nacimiento\"])\n    df = _limpiar_identificacion(df)\n    df = _calcular_edad(df)\n    df = _calcular_grupo_etario(df)\n    df = _homologar_etnia(df)\n    return df",
         "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
@@ -893,7 +836,7 @@
         "kind": 2,
         "importPath": "process.clean_transform_orchester",
         "description": "process.clean_transform_orchester",
-        "peekOfCode": "def process_orchester():\n    '''\n    Orquesta el procesamiento de datos de vacunación\n    '''\n    df = load_data()\n    df = persona_orchester(df)\n    df = vacuna_orchester(df)\n    df = vacunacion_orchester(df)\n    return df",
+        "peekOfCode": "def process_orchester():\n    '''\n    Orquesta el procesamiento de datos de vacunación\n    '''\n    df = load_data('vacunacion', 'lk_vacunacion_covid')\n    df = persona_orchester(df)\n    df = vacuna_orchester(df)\n    df = vacunacion_orchester(df)\n    return df",
         "detail": "process.clean_transform_orchester",
         "documentation": {}
     },

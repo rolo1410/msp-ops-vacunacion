@@ -54,26 +54,26 @@ def _limpiar_identificacion(df: pl.DataFrame):
     
     ## Eliminar registros sin cédula
     logging.debug(f" |- REM Eliminando registros sin cédula o vacíos en el campo NUM_IDEN")
-    df = df.filter(pl.col("NUM_IDEN").is_not_null() & (pl.col("NUM_IDEN") != ""))
+    df = df.filter(pl.col("num_iden").is_not_null() & (pl.col("num_iden") != ""))
 
     ## si el registro es cedula y tiene 10 digitos
     logging.debug(f" |- EST Completando cedulas que tienen menos de 10 digitos con un 0 a la izquierda")
     df = df.with_columns(pl.when(
-        (pl.col("TIPO_IDEN") == "CÉDULA DE IDENTIDAD") & (pl.col("NUM_IDEN").str.len_chars() < 10)
+        (pl.col("tipo_iden") == "CÉDULA DE IDENTIDAD") & (pl.col("num_iden").str.len_chars() < 10)
     ).then(
-        pl.col("NUM_IDEN").str.zfill(10)
+        pl.col("num_iden").str.zfill(10)
     ).otherwise(
-        pl.col("NUM_IDEN")
-    ).alias("NUM_IDEN")
+        pl.col("num_iden")
+    ).alias("num_iden")
 )
     
     ## valida si las cédulas cumple con el digito verfificador crear una columna nueva
     logging.debug(f" |- Identificando cédulas válidas e inválidas")
     df = df.with_columns(
-        pl.when(pl.col("TIPO_IDEN") == "CÉDULA DE IDENTIDAD")
-            .then(pl.col("NUM_IDEN").map_elements(_es_cedula_valida, return_dtype=pl.Boolean))
+        pl.when(pl.col("tipo_iden") == "CÉDULA DE IDENTIDAD")
+            .then(pl.col("num_iden").map_elements(_es_cedula_valida, return_dtype=pl.Boolean))
             .otherwise(None)
-            .alias("CEDULA_ES_VALIDA")
+            .alias("cedula_es_valida")
     )
     
     return df
@@ -139,30 +139,30 @@ def _calcular_edad(df: pl.DataFrame):
     
     # Calcular diferencia total en días para referencia
     df = df.with_columns(
-        (pl.col("FECHA_APLICACION") - pl.col("FECHA_NACIMIENTO")).dt.total_days().alias("EDAD_TOTAL_DIAS")
+        (pl.col("fecha_aplicacion") - pl.col("fecha_nacimiento")).dt.total_days().alias("edad_total_dias")
     )
     
     # Aplicar la función de cálculo de edad exacta
     logging.debug(" |- Calculando edad exacta en años, meses y días")
     
     df = df.with_columns([
-        pl.struct(["FECHA_NACIMIENTO", "FECHA_APLICACION"])
+        pl.struct(["fecha_nacimiento", "fecha_aplicacion"])
         .map_elements(
-            lambda x: _calcular_diferencia_fechas(x["FECHA_NACIMIENTO"], x["FECHA_APLICACION"])[0] if x["FECHA_NACIMIENTO"] is not None and x["FECHA_APLICACION"] is not None else None,
+            lambda x: _calcular_diferencia_fechas(x["fecha_nacimiento"], x["fecha_aplicacion"])[0] if x["fecha_nacimiento"] is not None and x["fecha_aplicacion"] is not None else None,
             return_dtype=pl.Int32
-        ).alias("EDAD_ANIOS"),
+        ).alias("edad_anios"),
         
-        pl.struct(["FECHA_NACIMIENTO", "FECHA_APLICACION"])
+        pl.struct(["fecha_nacimiento", "fecha_aplicacion"])
         .map_elements(
-            lambda x: _calcular_diferencia_fechas(x["FECHA_NACIMIENTO"], x["FECHA_APLICACION"])[1] if x["FECHA_NACIMIENTO"] is not None and x["FECHA_APLICACION"] is not None else None,
+            lambda x: _calcular_diferencia_fechas(x["fecha_nacimiento"], x["fecha_aplicacion"])[1] if x["fecha_nacimiento"] is not None and x["fecha_aplicacion"] is not None else None,
             return_dtype=pl.Int32
-        ).alias("EDAD_MESES"),
+        ).alias("edad_meses"),
         
-        pl.struct(["FECHA_NACIMIENTO", "FECHA_APLICACION"])
+        pl.struct(["fecha_nacimiento", "fecha_aplicacion"])
         .map_elements(
-            lambda x: _calcular_diferencia_fechas(x["FECHA_NACIMIENTO"], x["FECHA_APLICACION"])[2] if x["FECHA_NACIMIENTO"] is not None and x["FECHA_APLICACION"] is not None else None,
+            lambda x: _calcular_diferencia_fechas(x["fecha_nacimiento"], x["fecha_aplicacion"])[2] if x["fecha_nacimiento"] is not None and x["fecha_aplicacion"] is not None else None,
             return_dtype=pl.Int32
-        ).alias("EDAD_DIAS")
+        ).alias("edad_dias")
     ])
     logging.debug(" |- Cálculo de edad completado")
     return df
@@ -176,31 +176,31 @@ def _calcular_grupo_etario(df: pl.DataFrame):
     logging.info("|- ENR Agregando grupo etario")
     
     # Verificar que la columna EDAD_ANIOS existe
-    if "EDAD_ANIOS" not in df.columns:
+    if "edad_anios" not in df.columns:
         logging.error(" |- Error: La columna EDAD_ANIOS no existe en el DataFrame")
         return df
     
     logging.debug(" |- Calculando grupos etarios basados en EDAD_ANIOS")
     
     df = df.with_columns(
-        pl.when(pl.col("EDAD_ANIOS").is_null())
+        pl.when(pl.col("edad_anios").is_null())
         .then(pl.lit("NO DEFINIDO"))
-        .when(pl.col("EDAD_ANIOS") < 1)
+        .when(pl.col("edad_anios") < 1)
         .then(pl.lit("MENOR DE 1 AÑO"))
-        .when(pl.col("EDAD_ANIOS").is_between(1, 4, closed="both"))
+        .when(pl.col("edad_anios").is_between(1, 4, closed="both"))
         .then(pl.lit("DE 1 A 4 AÑOS"))
-        .when(pl.col("EDAD_ANIOS").is_between(5, 9, closed="both"))
+        .when(pl.col("edad_anios").is_between(5, 9, closed="both"))
         .then(pl.lit("DE 5 A 9 AÑOS"))
-        .when(pl.col("EDAD_ANIOS").is_between(10, 14, closed="both"))
+        .when(pl.col("edad_anios").is_between(10, 14, closed="both"))
         .then(pl.lit("DE 10 A 14 AÑOS"))
-        .when(pl.col("EDAD_ANIOS").is_between(15, 19, closed="both"))
+        .when(pl.col("edad_anios").is_between(15, 19, closed="both"))
         .then(pl.lit("DE 15 A 19 AÑOS"))
-        .when(pl.col("EDAD_ANIOS").is_between(20, 64, closed="both"))
+        .when(pl.col("edad_anios").is_between(20, 64, closed="both"))
         .then(pl.lit("DE 20 A 64 AÑOS"))
-        .when(pl.col("EDAD_ANIOS") >= 65)
-        .then(pl.lit("DE 80 AÑOS Y MÁS"))
+        .when(pl.col("edad_anios") >= 65)
+        .then(pl.lit("DE 65 AÑOS Y MÁS"))
         .otherwise(pl.lit("NO DEFINIDO"))
-        .alias("GRUPO_ETARIO")
+        .alias("grupo_etario")
     )
     
 
@@ -211,18 +211,18 @@ def _calcular_grupo_etario(df: pl.DataFrame):
 def _crear_dataframe_con_moda_fecha(df: pl.DataFrame) -> pl.DataFrame:
     print(df.columns)
     df_moda = (
-        df.filter(pl.col("FECHA_APLICACION") != pl.date(1900, 1, 1))
-        .group_by("UNICODIGO", "NOMBRE_VACUNA")
-        .agg(pl.col("FECHA_APLICACION").mode().first().alias("moda"))
+        df.filter(pl.col("fecha_aplicacion") != pl.date(1900, 1, 1))
+        .group_by("unicodigo", "nombre_vacuna")
+        .agg(pl.col("fecha_aplicacion").mode().first().alias("moda"))
     )
     df_moda.write_csv("df_moda.csv")
-    
-    df_unido = df.join(df_moda, on=["UNICODIGO", "NOMBRE_VACUNA"], how="left")
+
+    df_unido = df.join(df_moda, on=["unicodigo", "nombre_vacuna"], how="left")
 
     df_final = df_unido.with_columns(
-        pl.when(pl.col("FECHA_APLICACION") == pl.date(1900, 1, 1))
+        pl.when(pl.col("fecha_aplicacion") == pl.date(1900, 1, 1))
         .then(pl.col("moda"))
-        .otherwise(pl.col("FECHA_APLICACION"))
+        .otherwise(pl.col("fecha_aplicacion"))
         .alias("FECHA_APLICACION_FINAL")
     ).drop("moda")
     
@@ -232,16 +232,16 @@ def _homologar_etnia(df: pl.DataFrame):
     logging.info("|- ENR Homologando etnia")
     logging.debug(" |- Homologando etnia")
     etnia_map = pl.read_csv("resources/homologations/per_etnia.csv")
-    df = df.join(etnia_map, left_on="ETNIA", right_on="valor_original", suffix="_map")
-    df = df.with_columns(pl.col("valor_homologado").alias("ETNIA_HOMOLOGADA"))
-    df = df.drop("ETNIA", "valor_homologado") 
-    df = df.rename({"ETNIA_HOMOLOGADA": "ETNIA"})
+    df = df.join(etnia_map, left_on="etnia", right_on="valor_original", suffix="_map")
+    df = df.with_columns(pl.col("valor_homologado").alias("etnia_homologada"))
+    df = df.drop("etnia", "valor_homologado") 
+    df = df.rename({"etnia_homologada": "etnia"})
     return df
 
 def persona_orchester(df: pl.DataFrame):
     df = _crear_dataframe_con_moda_fecha(df)
-    df = _limpiar_columnas_texto(df, cols=["TIPO_IDEN", "NUM_IDEN", "APELLIDOS", "NOMBRES","NOMBRES_COMPLETOS", "SEXO", "ETNIA", "NACIONALIDAD"])
-    df = _limpiar_columnas_fecha(df, cols=["FECHA_NACIMIENTO"])
+    df = _limpiar_columnas_texto(df, cols=["tipo_iden", "num_iden", "apellidos", "nombres","nombres_completos", "sexo", "etnia", "nacionalidad"])
+    df = _limpiar_columnas_fecha(df, cols=["fecha_nacimiento"])
     df = _limpiar_identificacion(df)
     df = _calcular_edad(df)
     df = _calcular_grupo_etario(df)

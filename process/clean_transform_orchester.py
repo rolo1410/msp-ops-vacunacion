@@ -10,7 +10,7 @@ def process_orchester():
     '''
     Orquesta el procesamiento de datos de vacunación
     '''
-    df = load_data()
+    df = load_data('vacunacion', 'lk_vacunacion_covid')
     df = persona_orchester(df)
     df = vacuna_orchester(df)
     df = vacunacion_orchester(df)
