@@ -54,13 +54,14 @@ def show_general():
     
     # Sección de filtros
     st.markdown("### 🔍 Filtros")
-    col_filtro1, col_filtro2, col_filtro3 = st.columns([1, 1, 2])
+    col_filtro1, col_filtro2 = st.columns([1, 1])
+    col_filtro3, col_filtro4 = st.columns([1, 1])
     
     with col_filtro1:
         # Filtro por año
         años_disponibles = sorted(df['anio_aplicacion'].unique()) if not df.empty else [2024]
         año_seleccionado = st.selectbox(
-            "Seleccionar Año:",
+            "📅 Seleccionar Año:",
             options=años_disponibles,
             index=len(años_disponibles)-1 if años_disponibles else 0
         )
@@ -79,14 +80,46 @@ def show_general():
         
         opciones_meses = ["Todos"] + [f"{mes} - {meses_nombres.get(mes, mes)}" for mes in meses_disponibles]
         mes_seleccionado = st.selectbox(
-            "Seleccionar Mes:",
+            "🗓️ Seleccionar Mes:",
             options=opciones_meses,
             index=0
         )
     
     with col_filtro3:
-        st.write("")  # Espacio vacío
-        if st.button("🔄 Actualizar Filtros"):
+        # Filtro por zona
+        if not df.empty and 'zona' in df.columns:
+            # Filtrar zonas según año y mes ya seleccionados
+            df_temp = df[df['anio_aplicacion'] == año_seleccionado]
+            if mes_seleccionado != "Todos":
+                try:
+                    mes_numero = int(mes_seleccionado.split(" - ")[0])
+                    df_temp = df_temp[df_temp['mes_aplicacion'] == mes_numero]
+                except (ValueError, IndexError):
+                    pass
+            
+            zonas_disponibles = sorted(df_temp['zona'].dropna().unique()) if not df_temp.empty else []
+            opciones_zonas = ["Todas"] + [str(zona) for zona in zonas_disponibles]
+            zona_seleccionada = st.selectbox(
+                "🌍 Seleccionar Zona:",
+                options=opciones_zonas,
+                index=0
+            )
+        else:
+            zona_seleccionada = "Todas"
+            st.selectbox(
+                "🌍 Seleccionar Zona:",
+                options=["Todas"],
+                index=0,
+                disabled=True
+            )
+    
+    with col_filtro4:
+        st.write("")  # Espacio para alineación
+        if st.button("🔄 Actualizar Filtros", use_container_width=True):
+            st.rerun()
+        
+        # Botón para limpiar filtros
+        if st.button("🗑️ Limpiar Filtros", use_container_width=True):
             st.rerun()
     
     # Aplicar filtros
