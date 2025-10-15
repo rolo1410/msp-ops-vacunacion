@@ -40,11 +40,7 @@ def fetch_and_save_parquet_oracle(
     service_name: str,
     table_name: str,
     parquet_file: str,
-<<<<<<< HEAD
     chunk_size: int = 5000000
-=======
-    chunk_size: int = 100000
->>>>>>> 7e8b8f0 (FEAT: Elimina funciones de caché obsoletas en db_vacunacion.py y optimiza la consulta en get_full_parquet.py aumentando el tamaño del chunk y ajustando la consulta total de filas.)
 ):
 
     connection_string = f'oracle+oracledb://{user}:{password}@{host}:{port}/?service_name={service_name}'
@@ -52,7 +48,6 @@ def fetch_and_save_parquet_oracle(
 
     offset = 0
     # Get total number of rows (only once, at the start)
-<<<<<<< HEAD
     total_query = f"SELECT COUNT(*) FROM {table_name} where FECHA_APLICACION <= TO_DATE('2025-01-01', 'YYYY-MM-DD')"
     total_rows = pd.read_sql(total_query, engine).iloc[0, 0]
     total_iters = (total_rows + chunk_size - 1) // chunk_size
@@ -61,12 +56,6 @@ def fetch_and_save_parquet_oracle(
     if os.path.exists(parquet_file):
         os.remove(parquet_file)
     
-=======
-    total_query = f"SELECT COUNT(*) FROM {table_name}"
-    total_rows = pd.read_sql(total_query, engine).iloc[0, 0]
-    total_iters = (total_rows + chunk_size - 1) // chunk_size
-    con = duckdb.connect(f"{parquet_file}.duckdb")
->>>>>>> 7e8b8f0 (FEAT: Elimina funciones de caché obsoletas en db_vacunacion.py y optimiza la consulta en get_full_parquet.py aumentando el tamaño del chunk y ajustando la consulta total de filas.)
     while offset < total_rows:
         iter_num = (offset // chunk_size) + 1
         start_time = time.time()
@@ -93,12 +82,8 @@ def fetch_and_save_parquet_oracle(
             del df
 
         offset += chunk_size
-<<<<<<< HEAD
     print(f"Proceso completado. Archivo parquet guardado: {parquet_file}")
 
-=======
-    con.close()
->>>>>>> 7e8b8f0 (FEAT: Elimina funciones de caché obsoletas en db_vacunacion.py y optimiza la consulta en get_full_parquet.py aumentando el tamaño del chunk y ajustando la consulta total de filas.)
 
 # Example usage:
 fetch_and_save_parquet_oracle(

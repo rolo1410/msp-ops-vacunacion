@@ -50,6 +50,15 @@
         "documentation": {}
     },
     {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
         "label": "dotenv",
         "kind": 6,
         "isExtraImport": true,
@@ -1091,7 +1100,7 @@
         "kind": 2,
         "importPath": "get_full_parquet",
         "description": "get_full_parquet",
-        "peekOfCode": "def fetch_and_save_parquet_oracle(\n    user: str,\n    password: str,\n    host: str,\n    port: int,\n    service_name: str,\n    table_name: str,\n    parquet_file: str,\n<<<<<<< HEAD\n    chunk_size: int = 5000000",
+        "peekOfCode": "def fetch_and_save_parquet_oracle(\n    user: str,\n    password: str,\n    host: str,\n    port: int,\n    service_name: str,\n    table_name: str,\n    parquet_file: str,\n    chunk_size: int = 5000000\n):",
         "detail": "get_full_parquet",
         "documentation": {}
     },
