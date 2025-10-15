@@ -98,6 +98,7 @@ def main():
         # Guardar datos procesados
         logging.info("Generando perfiles de datos")
         profiler_orchester(df)  # pyright: ignore[reportUndefinedVariable]
+        
         logging.info("Procesamiento completado exitosamente")
         
     except Exception as e:

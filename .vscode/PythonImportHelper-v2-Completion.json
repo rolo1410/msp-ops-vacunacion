@@ -362,6 +362,14 @@
         "documentation": {}
     },
     {
+        "label": "validar_cedula_ecuatoriana",
+        "importPath": "utils.df_utils",
+        "description": "utils.df_utils",
+        "isExtraImport": true,
+        "detail": "utils.df_utils",
+        "documentation": {}
+    },
+    {
         "label": "persona_orchester",
         "importPath": "process.clean_transform.dim_persona",
         "description": "process.clean_transform.dim_persona",
@@ -383,6 +391,14 @@
         "description": "process.clean_transform.dim_vacunacion",
         "isExtraImport": true,
         "detail": "process.clean_transform.dim_vacunacion",
+        "documentation": {}
+    },
+    {
+        "label": "clean_cedulas_orchester",
+        "importPath": "process.marquer.no_tranform_persona",
+        "description": "process.marquer.no_tranform_persona",
+        "isExtraImport": true,
+        "detail": "process.marquer.no_tranform_persona",
         "documentation": {}
     },
     {
@@ -598,11 +614,11 @@
         "documentation": {}
     },
     {
-        "label": "ingest_vacunacion",
+        "label": "ingest_vacunacion_rutina",
         "kind": 2,
         "importPath": "extract.ingest_orchester",
         "description": "extract.ingest_orchester",
-        "peekOfCode": "def ingest_vacunacion(since, until, chunk_size=500000, max_workers=4, use_cache=True):\n    load_lake_db_vacunacion_rutinario(since, until, chunk_size, max_workers, use_cache)\n    # Cargar datos desde el lago para obtener las identificaciones\n    logging.info(\"|- Cargando datos desde el lago para procesamiento posterior\")\n    df = get_identificaciones_data('vacunacion_esquema', 'lk_vacunacion_rutinario', 'NUMEROIDENTIFICACION')\n    # datos del registro civil\n    logging.info(\"|- Procesando datos del registro civil (MPI)\")\n    unique_identifiers = df['num_iden'].drop_nulls().drop_nans().unique().to_list()\n    logging.info(f\" |- Total de identificaciones únicas: {len(unique_identifiers):,}\")\n    mpi_df = get_mpi_data(unique_identifiers)",
+        "peekOfCode": "def ingest_vacunacion_rutina(since, until, chunk_size=500000, max_workers=4, use_cache=True):\n    load_lake_db_vacunacion_rutinario(since, until, chunk_size, max_workers, use_cache)\n    # Cargar datos desde el lago para obtener las identificaciones\n    logging.info(\"|- Cargando datos desde el lago para procesamiento posterior\")\n    df = get_identificaciones_data('vacunacion_esquema', 'lk_vacunacion_rutinario', 'NUMEROIDENTIFICACION')\n    # datos del registro civil\n    logging.info(\"|- Procesando datos del registro civil (MPI)\")\n    unique_identifiers = df['num_iden'].drop_nulls().drop_nans().unique().to_list()\n    logging.info(f\" |- Total de identificaciones únicas: {len(unique_identifiers):,}\")\n    mpi_df = get_mpi_data(unique_identifiers)",
         "detail": "extract.ingest_orchester",
         "documentation": {}
     },
@@ -620,7 +636,7 @@
         "kind": 2,
         "importPath": "extract.ingest_orchester",
         "description": "extract.ingest_orchester",
-        "peekOfCode": "def ingest_orchester(since, until, chunk_size=1000000):\n    ingest_vacunacion_covid(since, until, chunk_size)\n    ##\n    ##ingest_vacunacion(since, until, chunk_size)",
+        "peekOfCode": "def ingest_orchester(since, until, chunk_size=1000000):\n    ingest_vacunacion_covid(since, until, chunk_size)\n    ##\n    ##ingest_vacunacion_rutina(since, until, chunk_size)",
         "detail": "extract.ingest_orchester",
         "documentation": {}
     },
@@ -832,11 +848,47 @@
         "documentation": {}
     },
     {
+        "label": "add_0_prefix_cedula",
+        "kind": 2,
+        "importPath": "process.marquer.no_tranform_persona",
+        "description": "process.marquer.no_tranform_persona",
+        "peekOfCode": "def add_0_prefix_cedula(cedula):\n    # completar con un 0 a la izquierda si tiene 9 dígitos\n    if len(cedula) == 9:\n        cedula = '0' + cedula\n    if not validar_cedula_ecuatoriana(cedula):\n        return cedula\n    return cedula\ndef process_incomplete_cedulas(df:pl.DataFrame) -> pl.DataFrame:\n    # a todos los campos cuya identificacion tenga 9 digitos y que tipo identificacion se  cedula, agregarle un 0 a la izquierda\n    df = df.with_columns(",
+        "detail": "process.marquer.no_tranform_persona",
+        "documentation": {}
+    },
+    {
+        "label": "process_incomplete_cedulas",
+        "kind": 2,
+        "importPath": "process.marquer.no_tranform_persona",
+        "description": "process.marquer.no_tranform_persona",
+        "peekOfCode": "def process_incomplete_cedulas(df:pl.DataFrame) -> pl.DataFrame:\n    # a todos los campos cuya identificacion tenga 9 digitos y que tipo identificacion se  cedula, agregarle un 0 a la izquierda\n    df = df.with_columns(\n        pl.when((pl.col('tipo_iden') == 'CÉDULA DE IDENTIDAD') & (pl.col('num_iden').str.lengths() == 9))\n        .then(pl.col('num_iden').apply(add_0_prefix_cedula))\n        .otherwise(pl.col('num_iden'))\n        .alias('num_iden')\n    )\n    return df\ndef marcar_cedula_no_valida(df):",
+        "detail": "process.marquer.no_tranform_persona",
+        "documentation": {}
+    },
+    {
+        "label": "marcar_cedula_no_valida",
+        "kind": 2,
+        "importPath": "process.marquer.no_tranform_persona",
+        "description": "process.marquer.no_tranform_persona",
+        "peekOfCode": "def marcar_cedula_no_valida(df):\n    # crear una columna con la cedulas que no cumplan son el digito verificador \n    df = df.with_columns(\n        pl.when((pl.col('tipo_iden') == 'CÉDULA DE IDENTIDAD') & (~pl.col('num_iden').apply(validar_cedula_ecuatoriana)))\n        .then(pl.lit(True))\n        .otherwise(pl.lit(False))\n        .alias('cedula_no_valida')\n    )\n    return df\ndef clean_cedulas_orchester(df):",
+        "detail": "process.marquer.no_tranform_persona",
+        "documentation": {}
+    },
+    {
+        "label": "clean_cedulas_orchester",
+        "kind": 2,
+        "importPath": "process.marquer.no_tranform_persona",
+        "description": "process.marquer.no_tranform_persona",
+        "peekOfCode": "def clean_cedulas_orchester(df):\n    df = process_incomplete_cedulas(df)\n    df = marcar_cedula_no_valida(df)\n    return df",
+        "detail": "process.marquer.no_tranform_persona",
+        "documentation": {}
+    },
+    {
         "label": "process_orchester",
         "kind": 2,
         "importPath": "process.clean_transform_orchester",
         "description": "process.clean_transform_orchester",
-        "peekOfCode": "def process_orchester():\n    '''\n    Orquesta el procesamiento de datos de vacunación\n    '''\n    df = load_data('vacunacion', 'lk_vacunacion_covid')\n    df = persona_orchester(df)\n    df = vacuna_orchester(df)\n    df = vacunacion_orchester(df)\n    return df",
+        "peekOfCode": "def process_orchester():\n    '''\n    Orquesta el procesamiento de datos de vacunación\n    '''\n    df = load_data('vacunacion', 'lk_vacunacion_covid')\n    df = persona_orchester(df)\n    df = vacuna_orchester(df)\n    df = vacunacion_orchester(df)\n    df = clean_cedulas_orchester(df)\n    return df",
         "detail": "process.clean_transform_orchester",
         "documentation": {}
     },
@@ -859,11 +911,11 @@
         "documentation": {}
     },
     {
-        "label": "convertir_columnas_a_minusculas",
+        "label": "validar_cedula_ecuatoriana",
         "kind": 2,
         "importPath": "utils.df_utils",
         "description": "utils.df_utils",
-        "peekOfCode": "def convertir_columnas_a_minusculas(df):\n    \"\"\"\n    Convierte los nombres de las columnas de un DataFrame a minúsculas.\n    Parámetros:\n    df (pandas.DataFrame): El DataFrame cuyas columnas se desean convertir.\n    Retorna:\n    pandas.DataFrame: El DataFrame con los nombres de las columnas en minúsculas.\n    \"\"\"\n    df.columns = [col.lower() for col in df.columns]\n    return df",
+        "peekOfCode": "def validar_cedula_ecuatoriana(cedula: str) -> bool:\n    \"\"\"\n    Valida el formato y el dígito verificador de una cédula de identidad ecuatoriana.\n    Utiliza el algoritmo \"Módulo 10\".\n    :param cedula: La cadena de 10 dígitos de la cédula.\n    :return: True si la cédula es válida, False en caso contrario.\n    \"\"\"\n    # 1. Validar longitud y que sean dígitos\n    if not cedula.isdigit() or len(cedula) != 10:\n        return False",
         "detail": "utils.df_utils",
         "documentation": {}
     },

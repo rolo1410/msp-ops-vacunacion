@@ -8,7 +8,7 @@ from lake.init_lake import add_new_elements_to_lake
 from lake.load_lake import get_identificaciones_data
 
 
-def ingest_vacunacion(since, until, chunk_size=500000, max_workers=4, use_cache=True):
+def ingest_vacunacion_rutina(since, until, chunk_size=500000, max_workers=4, use_cache=True):
     load_lake_db_vacunacion_rutinario(since, until, chunk_size, max_workers, use_cache)
     
     # Cargar datos desde el lago para obtener las identificaciones
@@ -65,4 +65,4 @@ def ingest_vacunacion_covid(since, until, chunk_size=1000000):
 def ingest_orchester(since, until, chunk_size=1000000):
     ingest_vacunacion_covid(since, until, chunk_size)
     ##
-    ##ingest_vacunacion(since, until, chunk_size)
+    ##ingest_vacunacion_rutina(since, until, chunk_size)
