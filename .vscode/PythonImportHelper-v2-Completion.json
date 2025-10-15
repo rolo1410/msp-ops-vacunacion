@@ -443,6 +443,15 @@
         "documentation": {}
     },
     {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
+        "documentation": {}
+    },
+    {
         "label": "glob",
         "kind": 6,
         "isExtraImport": true,
@@ -1057,6 +1066,15 @@
         "description": "process.clean_transform_orchester",
         "peekOfCode": "def process_orchester():\n    '''\n    Orquesta el procesamiento de datos de vacunación\n    '''\n    df = load_data('vacunacion', 'lk_vacunacion_covid')\n    df = persona_orchester(df)\n    df = vacuna_orchester(df)\n    df = vacunacion_orchester(df)\n    df = clean_cedulas_orchester(df)\n    return df",
         "detail": "process.clean_transform_orchester",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "streamlit-app.src.app",
+        "description": "streamlit-app.src.app",
+        "peekOfCode": "def main():\n    st.title(\"Bienvenido a la Aplicación Streamlit\")\n    st.write(\"Esta es la interfaz principal de la aplicación.\")\n    # Aquí puedes agregar más lógica y componentes a tu aplicación\nif __name__ == \"__main__\":\n    main()",
+        "detail": "streamlit-app.src.app",
         "documentation": {}
     },
     {

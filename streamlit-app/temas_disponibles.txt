@@ -1,0 +1,118 @@
+# Configuraciones de Temas para Streamlit
+# Copia la configuración que te guste en el archivo config.toml
+
+# =============================================================================
+# TEMA 1: OSCURO MODERNO (YA APLICADO)
+# =============================================================================
+[theme]
+primaryColor = "#FF6B6B"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#262730"
+textColor = "#FAFAFA"
+font = "sans serif"
+
+# =============================================================================
+# TEMA 2: CLARO MINIMALISTA
+# =============================================================================
+[theme]
+primaryColor = "#1F77B4"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F8F9FA"
+textColor = "#212529"
+font = "sans serif"
+
+# =============================================================================
+# TEMA 3: MÉDICO PROFESIONAL (Verde/Azul)
+# =============================================================================
+[theme]
+primaryColor = "#2E8B57"
+backgroundColor = "#F0F8FF"
+secondaryBackgroundColor = "#E6F3FF"
+textColor = "#2F4F4F"
+font = "sans serif"
+
+# =============================================================================
+# TEMA 4: SALUD PÚBLICA (Azul MSP)
+# =============================================================================
+[theme]
+primaryColor = "#0066CC"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F7FA"
+textColor = "#1A365D"
+font = "sans serif"
+
+# =============================================================================
+# TEMA 5: OSCURO AZUL
+# =============================================================================
+[theme]
+primaryColor = "#00D4AA"
+backgroundColor = "#1E1E1E"
+secondaryBackgroundColor = "#2D2D2D"
+textColor = "#FFFFFF"
+font = "sans serif"
+
+# =============================================================================
+# TEMA 6: SUNSET (Naranja/Rosa)
+# =============================================================================
+[theme]
+primaryColor = "#FF8C42"
+backgroundColor = "#FFF8F3"
+secondaryBackgroundColor = "#FFF0E6"
+textColor = "#8B4513"
+font = "monospace"
+
+# =============================================================================
+# TEMA 7: FOREST (Verde Oscuro)
+# =============================================================================
+[theme]
+primaryColor = "#32CD32"
+backgroundColor = "#0F2027"
+secondaryBackgroundColor = "#203A43"
+textColor = "#F0F8FF"
+font = "sans serif"
+
+# =============================================================================
+# TEMA 8: CORPORATE (Azul Corporativo)
+# =============================================================================
+[theme]
+primaryColor = "#4285F4"
+backgroundColor = "#FAFBFC"
+secondaryBackgroundColor = "#F1F3F4"
+textColor = "#202124"
+font = "sans serif"
+
+# =============================================================================
+# TEMA 9: ELEGANTE (Gris/Púrpura)
+# =============================================================================
+[theme]
+primaryColor = "#8E44AD"
+backgroundColor = "#F8F9FA"
+secondaryBackgroundColor = "#E9ECEF"
+textColor = "#495057"
+font = "serif"
+
+# =============================================================================
+# TEMA 10: HIGH CONTRAST (Alto Contraste)
+# =============================================================================
+[theme]
+primaryColor = "#FF0000"
+backgroundColor = "#000000"
+secondaryBackgroundColor = "#333333"
+textColor = "#FFFFFF"
+font = "monospace"
+
+# =============================================================================
+# INSTRUCCIONES DE USO:
+# =============================================================================
+# 1. Copia la sección [theme] del tema que te guste
+# 2. Reemplaza la sección [theme] en tu archivo config.toml
+# 3. Reinicia la aplicación Streamlit para ver los cambios
+# 4. Puedes personalizar cualquier color usando códigos hexadecimales
+
+# COLORES POPULARES PARA primaryColor:
+# Azul: #1E88E5, #4285F4, #0066CC, #007BFF
+# Verde: #28A745, #2E8B57, #32CD32, #00D4AA  
+# Rojo: #DC3545, #FF6B6B, #E74C3C, #FF4444
+# Naranja: #FF8C42, #FD7E14, #FF6347, #FF8500
+# Púrpura: #8E44AD, #6F42C1, #9C27B0, #7B68EE
+# Rosa: #E91E63, #FF69B4, #FF1493, #FF6B9D
