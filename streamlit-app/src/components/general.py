@@ -4,12 +4,52 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from data.source import QUERY_VACUNAS_TEMPORAL_FULL, get_duck_db_data
+
+
+def total_establecimiento(df: pd.DataFrame) -> int:
+    """
+    Calcula el total de establecimientos únicos en el DataFrame proporcionado.
+    """
+    return df['unicodigo'].nunique()
+
+
+def delta_total_vacunas(df: pd.DataFrame) -> int:
+    """
+    Calcula la diferencia en el total de vacunas aplicadas entre el último día y el día anterior.
+    """
+    df_sorted = df.sort_values(by='fecha_aplicacion')
+    if len(df_sorted) < 2:
+        return 0
+    # Agrupa por fecha y suma el total de vacunas por día
+    vacunas_por_dia = df.groupby("fecha_aplicacion").size().sort_index()
+    # Si hay menos de 2 días, retorna 0
+    if len(vacunas_por_dia) < 2:
+        return 0
+    # Diferencia entre el último día y el anterior
+    return int(vacunas_por_dia.iloc[-1] - vacunas_por_dia.iloc[-2])
+def delta_vacunados(df: pd.DataFrame) -> int:
+    """
+    Calcula la diferencia en el total de vacunados entre el último día y el día anterior.
+    """
+    df_sorted = df.sort_values(by='fecha_aplicacion')
+    if len(df_sorted) < 2:
+        return 0
+    # Agrupa por fecha y cuenta los vacunados únicos por día
+    vacunados_por_dia = df.groupby("fecha_aplicacion")['num_iden'].nunique().sort_index()
+    # Si hay menos de 2 días, retorna 0
+    if len(vacunados_por_dia) < 2:
+        return 0
+    # Diferencia entre el último día y el anterior
+    return int(vacunados_por_dia.iloc[-1] - vacunados_por_dia.iloc[-2])
 
 
 def show_general():
     """
     Página principal con información general del sistema de vacunación
     """
+    df = get_duck_db_data(QUERY_VACUNAS_TEMPORAL_FULL)
+    
     st.header("🏠 Vista General del Sistema")
     
     # Métricas principales
@@ -18,22 +58,22 @@ def show_general():
     with col1:
         st.metric(
             label="Total Vacunas Aplicadas",
-            value="1,245,670",
-            delta="12,340"
+            value=f"{df.groupby('num_iden').size().sum()}",
+            delta=f"{delta_total_vacunas(df)}"
         )
     
     with col2:
         st.metric(
-            label="Centros de Vacunación",
-            value="156",
+            label="Total Establecimientos",
+            value=f"{total_establecimiento(df)}",
             delta="2"
         )
     
     with col3:
         st.metric(
-            label="Cobertura Nacional",
-            value="78.5%",
-            delta="2.1%"
+            label="Vacunados",
+            value=f"{df['num_iden'].nunique()}",
+            delta=f"{delta_vacunados(df)}"
         )
     
     with col4:
