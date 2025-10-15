@@ -25,6 +25,7 @@ select
 	mes_aplicacion ,
 	num_iden,
 	nombre_vacuna ,
+	sexo,
 	dosis_aplicada 
 from
 	vacunacion.main.vacunacion limit 100542
