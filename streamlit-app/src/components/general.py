@@ -50,21 +50,27 @@ def show_general():
     """
     df = get_duck_db_data(QUERY_VACUNAS_TEMPORAL_FULL)
     
-    st.header("🏠 Vista General del Sistema")
+    st.header("Vista General del Sistema")
     
     # Sección de filtros
-    st.markdown("### 🔍 Filtros")
-    col_filtro1, col_filtro2 = st.columns([1, 1])
-    col_filtro3, col_filtro4 = st.columns([1, 1])
+    st.markdown("### Filtros")
+    col_filtro1, col_filtro2, col_filtro3 = st.columns([1, 1, 1])
+    col_filtro4, col_filtro5, col_filtro6 = st.columns([1, 1, 1])
     
     with col_filtro1:
-        # Filtro por año
+        # Filtro por año (multiselect)
         años_disponibles = sorted(df['anio_aplicacion'].unique()) if not df.empty else [2024]
-        año_seleccionado = st.selectbox(
-            "📅 Seleccionar Año:",
+        años_seleccionados = st.multiselect(
+            "Seleccionar Año(s):",
             options=años_disponibles,
-            index=len(años_disponibles)-1 if años_disponibles else 0
+            default=[años_disponibles[-1]] if años_disponibles else [2024],
+            help="Puedes seleccionar múltiples años para comparar"
         )
+        
+        # Validar que se haya seleccionado al menos un año
+        if not años_seleccionados:
+            st.warning("Debes seleccionar al menos un año")
+            años_seleccionados = [años_disponibles[-1]] if años_disponibles else [2024]
     
     with col_filtro2:
         # Filtro por mes
@@ -74,22 +80,29 @@ def show_general():
             9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"
         }
         
-        # Obtener meses disponibles para el año seleccionado
-        df_año = df[df['anio_aplicacion'] == año_seleccionado] if not df.empty else df
-        meses_disponibles = sorted(df_año['mes_aplicacion'].unique()) if not df_año.empty else [1]
+        # Obtener meses disponibles para los años seleccionados
+        if años_seleccionados and not df.empty:
+            df_años = df[df['anio_aplicacion'].isin(años_seleccionados)]
+            meses_disponibles = sorted(df_años['mes_aplicacion'].unique()) if not df_años.empty else [1]
+        else:
+            meses_disponibles = [1]
         
         opciones_meses = ["Todos"] + [f"{mes} - {meses_nombres.get(mes, mes)}" for mes in meses_disponibles]
         mes_seleccionado = st.selectbox(
-            "🗓️ Seleccionar Mes:",
+            "Seleccionar Mes:",
             options=opciones_meses,
             index=0
         )
     
     with col_filtro3:
-        # Filtro por zona
-        if not df.empty and 'zona' in df.columns:
-            # Filtrar zonas según año y mes ya seleccionados
-            df_temp = df[df['anio_aplicacion'] == año_seleccionado]
+        # Filtro por sexo
+        if not df.empty and 'sexo' in df.columns:
+            # Filtrar sexos según años y mes ya seleccionados
+            if años_seleccionados:
+                df_temp = df[df['anio_aplicacion'].isin(años_seleccionados)]
+            else:
+                df_temp = df.copy()
+                
             if mes_seleccionado != "Todos":
                 try:
                     mes_numero = int(mes_seleccionado.split(" - ")[0])
@@ -97,46 +110,102 @@ def show_general():
                 except (ValueError, IndexError):
                     pass
             
+            sexos_disponibles = sorted(df_temp['sexo'].dropna().unique()) if not df_temp.empty else []
+            opciones_sexos = ["Todos"] + [str(sexo) for sexo in sexos_disponibles]
+            sexo_seleccionado = st.selectbox(
+                "Seleccionar Sexo:",
+                options=opciones_sexos,
+                index=0
+            )
+        else:
+            sexo_seleccionado = "Todos"
+            st.selectbox(
+                "Seleccionar Sexo:",
+                options=["Todos"],
+                index=0,
+                disabled=True
+            )
+    
+    with col_filtro4:
+        # Filtro por zona
+        if not df.empty and 'zona' in df.columns:
+            # Filtrar zonas según años, mes y sexo ya seleccionados
+            if años_seleccionados:
+                df_temp = df[df['anio_aplicacion'].isin(años_seleccionados)]
+            else:
+                df_temp = df.copy()
+                
+            if mes_seleccionado != "Todos":
+                try:
+                    mes_numero = int(mes_seleccionado.split(" - ")[0])
+                    df_temp = df_temp[df_temp['mes_aplicacion'] == mes_numero]
+                except (ValueError, IndexError):
+                    pass
+            
+            if sexo_seleccionado != "Todos" and 'sexo' in df_temp.columns:
+                df_temp = df_temp[df_temp['sexo'] == sexo_seleccionado]
+            
             zonas_disponibles = sorted(df_temp['zona'].dropna().unique()) if not df_temp.empty else []
             opciones_zonas = ["Todas"] + [str(zona) for zona in zonas_disponibles]
             zona_seleccionada = st.selectbox(
-                "🌍 Seleccionar Zona:",
+                "Seleccionar Zona:",
                 options=opciones_zonas,
                 index=0
             )
         else:
             zona_seleccionada = "Todas"
             st.selectbox(
-                "🌍 Seleccionar Zona:",
+                "Seleccionar Zona:",
                 options=["Todas"],
                 index=0,
                 disabled=True
             )
     
-    with col_filtro4:
+    with col_filtro5:
         st.write("")  # Espacio para alineación
-        if st.button("🔄 Actualizar Filtros", use_container_width=True):
+        if st.button("Actualizar Filtros", use_container_width=True):
             st.rerun()
-        
-        # Botón para limpiar filtros
-        if st.button("🗑️ Limpiar Filtros", use_container_width=True):
+    
+    with col_filtro6:
+        st.write("")  # Espacio para alineación
+        if st.button("Limpiar Filtros", use_container_width=True):
             st.rerun()
     
     # Aplicar filtros
     df_filtrado = df.copy()
     if not df.empty:
-        df_filtrado = df_filtrado[df_filtrado['anio_aplicacion'] == año_seleccionado]
+        # Filtrar por años (múltiples)
+        if años_seleccionados:
+            df_filtrado = df_filtrado[df_filtrado['anio_aplicacion'].isin(años_seleccionados)]
         
+        # Filtrar por mes
         if mes_seleccionado != "Todos":
             try:
                 mes_numero = int(mes_seleccionado.split(" - ")[0])
                 df_filtrado = df_filtrado[df_filtrado['mes_aplicacion'] == mes_numero]
             except (ValueError, IndexError):
-                # En caso de error, mantener todos los datos del año
+                # En caso de error, mantener todos los datos de los años
                 pass
+        
+        # Filtrar por sexo
+        if sexo_seleccionado != "Todos" and 'sexo' in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado['sexo'] == sexo_seleccionado]
+        
+        # Filtrar por zona
+        if zona_seleccionada != "Todas" and 'zona' in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado['zona'] == zona_seleccionada]
     
     # Mostrar información de filtros aplicados
     if not df_filtrado.empty:
+        # Texto de los años
+        if len(años_seleccionados) == 1:
+            años_texto = str(años_seleccionados[0])
+        elif len(años_seleccionados) <= 3:
+            años_texto = ", ".join(map(str, años_seleccionados))
+        else:
+            años_texto = f"{años_seleccionados[0]}-{años_seleccionados[-1]} ({len(años_seleccionados)} años)"
+        
+        # Texto del mes
         mes_texto = " (Todos los meses)"
         if mes_seleccionado != "Todos":
             try:
@@ -144,9 +213,24 @@ def show_general():
             except IndexError:
                 mes_texto = f" - {mes_seleccionado}"
         
-        st.info(f"📊 Mostrando datos para: {año_seleccionado}{mes_texto}")
+        # Texto de la zona
+        zona_texto = ""
+        if zona_seleccionada != "Todas":
+            zona_texto = f" | Zona: {zona_seleccionada}"
+        
+        # Texto del sexo
+        sexo_texto = ""
+        if sexo_seleccionado != "Todos":
+            sexo_texto = f" | Sexo: {sexo_seleccionado}"
+        
+        st.info(f"Mostrando datos para: {años_texto}{mes_texto}{zona_texto}{sexo_texto}")
+        
+        # Mostrar resumen de registros filtrados
+        total_registros = len(df_filtrado)
+        porcentaje_filtrado = (total_registros / len(df) * 100) if len(df) > 0 else 0
+        st.caption(f"{total_registros:,} registros ({porcentaje_filtrado:.1f}% del total)")
     else:
-        st.warning("⚠️ No hay datos disponibles para los filtros seleccionados")
+        st.warning("No hay datos disponibles para los filtros seleccionados")
     
     st.markdown("---")
     
@@ -181,11 +265,27 @@ def show_general():
         )
     
     with col4:
-        st.metric(
-            label="Meta Mensual",
-            value="95.2%",
-            delta="-4.8%"
-        )
+        if sexo_seleccionado == "Todos" and not df_filtrado.empty and 'sexo' in df_filtrado.columns:
+            # Mostrar distribución por sexo
+            distribucion_sexo = df_filtrado['sexo'].value_counts()
+            if len(distribucion_sexo) > 0:
+                porcentaje_f = (distribucion_sexo.get('F', 0) / len(df_filtrado) * 100) if len(df_filtrado) > 0 else 0
+                st.metric(
+                    label="Distribución F/M",
+                    value=f"{porcentaje_f:.1f}% / {100-porcentaje_f:.1f}%"
+                )
+            else:
+                st.metric(
+                    label="Meta Mensual",
+                    value="95.2%",
+                    delta="-4.8%"
+                )
+        else:
+            st.metric(
+                label="Meta Mensual",
+                value="95.2%",
+                delta="-4.8%"
+            )
     
     # Información adicional de filtros aplicados
     if not df_filtrado.empty:
@@ -218,9 +318,91 @@ def show_general():
                     value=f"{len(df_filtrado):,}"
                 )
     
+    # Estadísticas por sexo (si hay datos y el sexo no está filtrado)
+    if not df_filtrado.empty and sexo_seleccionado == "Todos" and 'sexo' in df_filtrado.columns:
+        st.markdown("---")
+        st.subheader("Distribución por Sexo")
+        
+        # Calcular estadísticas por sexo
+        stats_sexo = df_filtrado.groupby('sexo').agg({
+            'num_iden': 'nunique',  # Vacunados únicos
+            'unicodigo': 'nunique'  # Establecimientos únicos
+        }).reset_index()
+        
+        # Contar total de vacunas por sexo
+        vacunas_por_sexo = df_filtrado.groupby('sexo').size().reset_index()
+        vacunas_por_sexo.columns = ['sexo', 'total_vacunas']
+        
+        # Combinar estadísticas
+        stats_sexo = stats_sexo.merge(vacunas_por_sexo, on='sexo')
+        stats_sexo.columns = ['Sexo', 'Vacunados', 'Establecimientos', 'Total Vacunas']
+        
+        # Mostrar en columnas
+        col_sexo1, col_sexo2 = st.columns([2, 1])
+        
+        with col_sexo1:
+            # Tabla de estadísticas por sexo
+            st.dataframe(
+                stats_sexo.sort_values('Total Vacunas', ascending=False),
+                hide_index=True,
+                use_container_width=True
+            )
+        
+        with col_sexo2:
+            # Gráfico de pastel de distribución por sexo
+            fig_pie_sexo = px.pie(
+                stats_sexo,
+                values='Total Vacunas',
+                names='Sexo',
+                title='Distribución de Vacunas por Sexo'
+            )
+            fig_pie_sexo.update_layout(height=300)
+            st.plotly_chart(fig_pie_sexo, use_container_width=True)
+    
+    # Estadísticas por zona (si hay datos y la zona no está filtrada)
+    if not df_filtrado.empty and zona_seleccionada == "Todas" and 'zona' in df_filtrado.columns:
+        st.markdown("---")
+        st.subheader("Distribución por Zonas")
+        
+        # Calcular estadísticas por zona
+        stats_zona = df_filtrado.groupby('zona').agg({
+            'num_iden': 'nunique',  # Vacunados únicos
+            'unicodigo': 'nunique'  # Establecimientos únicos
+        }).reset_index()
+        
+        # Contar total de vacunas por zona
+        vacunas_por_zona = df_filtrado.groupby('zona').size().reset_index()
+        vacunas_por_zona.columns = ['zona', 'total_vacunas']
+        
+        # Combinar estadísticas
+        stats_zona = stats_zona.merge(vacunas_por_zona, on='zona')
+        stats_zona.columns = ['Zona', 'Vacunados', 'Establecimientos', 'Total Vacunas']
+        
+        # Mostrar en columnas
+        col_zona1, col_zona2 = st.columns([2, 1])
+        
+        with col_zona1:
+            # Tabla de estadísticas por zona
+            st.dataframe(
+                stats_zona.sort_values('Total Vacunas', ascending=False),
+                hide_index=True,
+                use_container_width=True
+            )
+        
+        with col_zona2:
+            # Gráfico de pastel de distribución por zona
+            fig_pie = px.pie(
+                stats_zona,
+                values='Total Vacunas',
+                names='Zona',
+                title='Distribución de Vacunas por Zona'
+            )
+            fig_pie.update_layout(height=300)
+            st.plotly_chart(fig_pie, use_container_width=True)
+    
     # Sección de resumen
     st.markdown("---")
-    st.subheader("📊 Resumen Ejecutivo")
+    st.subheader("Resumen Ejecutivo")
     
     col1, col2 = st.columns([2, 1])
     
@@ -248,45 +430,70 @@ def show_general():
                 except IndexError:
                     nombre_mes = mes_seleccionado
                 
+                # Título para el gráfico diario
+                titulo_años = años_texto if len(años_seleccionados) <= 2 else f"Años seleccionados"
+                
                 fig.update_layout(
-                    title=f"Vacunas Aplicadas por Día - {nombre_mes} {año_seleccionado}",
+                    title=f"Vacunas Aplicadas por Día - {nombre_mes} {titulo_años}",
                     xaxis_title="Día del Mes",
                     yaxis_title="Número de Vacunas",
                     height=400
                 )
                 
             else:
-                # Progreso mensual del año seleccionado
+                # Progreso mensual de los años seleccionados
                 meses_nombres = {
                     1: "Ene", 2: "Feb", 3: "Mar", 4: "Abr",
                     5: "May", 6: "Jun", 7: "Jul", 8: "Ago",
                     9: "Sep", 10: "Oct", 11: "Nov", 12: "Dic"
                 }
                 
-                vacunas_por_mes = df_filtrado.groupby('mes_aplicacion').size().sort_index()
-                meses_labels = [meses_nombres.get(mes, str(mes)) for mes in vacunas_por_mes.index]
-                
-                # Meta estimada (puedes ajustar este valor)
-                meta_mensual = vacunas_por_mes.mean() * 1.2 if len(vacunas_por_mes) > 0 else 60000
-                meta = [meta_mensual] * len(vacunas_por_mes)
-                
                 fig = go.Figure()
-                fig.add_trace(go.Bar(
-                    x=meses_labels,
-                    y=vacunas_por_mes.values,
-                    name='Vacunas Aplicadas',
-                    marker_color='lightblue'
-                ))
-                fig.add_trace(go.Scatter(
-                    x=meses_labels,
-                    y=meta,
-                    mode='lines+markers',
-                    name='Meta',
-                    line=dict(color='red', dash='dash')
-                ))
+                
+                if len(años_seleccionados) == 1:
+                    # Un solo año: gráfico simple
+                    vacunas_por_mes = df_filtrado.groupby('mes_aplicacion').size().sort_index()
+                    meses_labels = [meses_nombres.get(mes, str(mes)) for mes in vacunas_por_mes.index]
+                    
+                    # Meta estimada (puedes ajustar este valor)
+                    meta_mensual = vacunas_por_mes.mean() * 1.2 if len(vacunas_por_mes) > 0 else 60000
+                    meta = [meta_mensual] * len(vacunas_por_mes)
+                    
+                    fig.add_trace(go.Bar(
+                        x=meses_labels,
+                        y=vacunas_por_mes.values,
+                        name='Vacunas Aplicadas',
+                        marker_color='lightblue'
+                    ))
+                    fig.add_trace(go.Scatter(
+                        x=meses_labels,
+                        y=meta,
+                        mode='lines+markers',
+                        name='Meta',
+                        line=dict(color='red', dash='dash')
+                    ))
+                else:
+                    # Múltiples años: comparación por año
+                    colores = ['lightblue', 'lightgreen', 'lightcoral', 'lightyellow', 'lightpink']
+                    
+                    for i, año in enumerate(años_seleccionados):
+                        df_año = df_filtrado[df_filtrado['anio_aplicacion'] == año]
+                        vacunas_por_mes = df_año.groupby('mes_aplicacion').size().sort_index()
+                        meses_labels = [meses_nombres.get(mes, str(mes)) for mes in vacunas_por_mes.index]
+                        
+                        fig.add_trace(go.Bar(
+                            x=meses_labels,
+                            y=vacunas_por_mes.values,
+                            name=f'Año {año}',
+                            marker_color=colores[i % len(colores)],
+                            opacity=0.8
+                        ))
+                
+                # Título para el gráfico mensual
+                titulo_años = años_texto if len(años_seleccionados) <= 3 else f"Múltiples años"
                 
                 fig.update_layout(
-                    title=f"Vacunas Aplicadas vs Meta - Año {año_seleccionado}",
+                    title=f"Vacunas Aplicadas vs Meta - {titulo_años}",
                     xaxis_title="Mes",
                     yaxis_title="Número de Vacunas",
                     height=400
@@ -334,22 +541,22 @@ def show_general():
             st.warning("No hay datos para el período seleccionado")
         
         st.write("### Estado del Sistema")
-        st.success("**Sistema:** ✅ Operativo")
+        st.success("**Sistema:** Operativo")
         
         # Acciones rápidas
         st.write("### Acciones Rápidas")
-        if st.button("📋 Generar Reporte"):
+        if st.button("Generar Reporte"):
             st.success("Reporte generado exitosamente")
         
-        if st.button("📧 Enviar Notificaciones"):
+        if st.button("Enviar Notificaciones"):
             st.success("Notificaciones enviadas")
         
-        if st.button("🔄 Actualizar Datos"):
+        if st.button("Actualizar Datos"):
             st.rerun()
     
     # Sección de noticias/alertas
     st.markdown("---")
-    st.subheader("📢 Alertas y Notificaciones")
+    st.subheader("Alertas y Notificaciones")
     
     alertas = [
         {"tipo": "warning", "mensaje": "Centro de Salud Norte requiere reabastecimiento de vacunas"},
@@ -359,8 +566,8 @@ def show_general():
     
     for alerta in alertas:
         if alerta["tipo"] == "warning":
-            st.warning(f"⚠️ {alerta['mensaje']}")
+            st.warning(f"{alerta['mensaje']}")
         elif alerta["tipo"] == "info":
-            st.info(f"ℹ️ {alerta['mensaje']}")
+            st.info(f"{alerta['mensaje']}")
         elif alerta["tipo"] == "success":
-            st.success(f"✅ {alerta['mensaje']}")
+            st.success(f"{alerta['mensaje']}")

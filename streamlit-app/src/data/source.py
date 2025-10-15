@@ -25,10 +25,11 @@ select
 	mes_aplicacion ,
 	num_iden,
 	nombre_vacuna ,
+	'ge' grupo_edad,
 	sexo,
 	dosis_aplicada 
 from
-	vacunacion.main.vacunacion limit 100542
+	vacunacion.main.vacunacion limit 5000000
 """
 
 def get_duck_db_data(query: str) -> pd.DataFrame:
