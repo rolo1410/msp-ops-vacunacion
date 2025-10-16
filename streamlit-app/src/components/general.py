@@ -54,8 +54,7 @@ def show_general():
     
     # Sección de filtros
     st.markdown("### Filtros")
-    col_filtro1, col_filtro2, col_filtro3 = st.columns([1, 1, 1])
-    col_filtro4, col_filtro5, col_filtro6 = st.columns([1, 1, 1])
+    col_filtro1, col_filtro2, col_filtro3, col_filtro4, col_filtro5, col_filtro6,col_filtro7, col_filtro8 = st.columns([2, 1, 1, 1, 1, 1, 1, 1])
     
     with col_filtro1:
         # Filtro por año (multiselect)
@@ -162,13 +161,17 @@ def show_general():
             )
     
     with col_filtro5:
-        st.write("")  # Espacio para alineación
-        if st.button("Actualizar Filtros", use_container_width=True):
-            st.rerun()
+        st.write("")  
     
     with col_filtro6:
+        st.write("")  
+    
+    with col_filtro7:
+        st.write("")  
+    
+    with col_filtro8:
         st.write("")  # Espacio para alineación
-        if st.button("Limpiar Filtros", use_container_width=True):
+        if st.button("Limpiar Filtros"):
             st.rerun()
     
     # Aplicar filtros
@@ -345,7 +348,7 @@ def show_general():
             st.dataframe(
                 stats_sexo.sort_values('Total Vacunas', ascending=False),
                 hide_index=True,
-                use_container_width=True
+                width=True
             )
         
         with col_sexo2:
@@ -386,7 +389,7 @@ def show_general():
             st.dataframe(
                 stats_zona.sort_values('Total Vacunas', ascending=False),
                 hide_index=True,
-                use_container_width=True
+                width=True
             )
         
         with col_zona2:
@@ -543,31 +546,3 @@ def show_general():
         st.write("### Estado del Sistema")
         st.success("**Sistema:** Operativo")
         
-        # Acciones rápidas
-        st.write("### Acciones Rápidas")
-        if st.button("Generar Reporte"):
-            st.success("Reporte generado exitosamente")
-        
-        if st.button("Enviar Notificaciones"):
-            st.success("Notificaciones enviadas")
-        
-        if st.button("Actualizar Datos"):
-            st.rerun()
-    
-    # Sección de noticias/alertas
-    st.markdown("---")
-    st.subheader("Alertas y Notificaciones")
-    
-    alertas = [
-        {"tipo": "warning", "mensaje": "Centro de Salud Norte requiere reabastecimiento de vacunas"},
-        {"tipo": "info", "mensaje": "Nueva actualización del sistema disponible"},
-        {"tipo": "success", "mensaje": "Meta de vacunación superada en la región Sur"}
-    ]
-    
-    for alerta in alertas:
-        if alerta["tipo"] == "warning":
-            st.warning(f"{alerta['mensaje']}")
-        elif alerta["tipo"] == "info":
-            st.info(f"{alerta['mensaje']}")
-        elif alerta["tipo"] == "success":
-            st.success(f"{alerta['mensaje']}")

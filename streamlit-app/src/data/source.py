@@ -29,7 +29,7 @@ select
 	sexo,
 	dosis_aplicada 
 from
-	vacunacion.main.vacunacion limit 5000000
+	vacunacion.main.vacunacion limit 100000
 """
 
 def get_duck_db_data(query: str) -> pd.DataFrame:

@@ -49,7 +49,7 @@ def show_calidad():
         # Gráfico de evolución de calidad
         st.write("### Evolución de Indicadores de Calidad")
         
-        fechas = pd.date_range(start='2024-01-01', end='2024-06-30', freq='M')
+        fechas = pd.date_range(start='2024-01-01', end='2024-06-30', freq='ME')
         completitud = np.random.normal(94, 2, len(fechas))
         precision = np.random.normal(97, 1, len(fechas))
         
