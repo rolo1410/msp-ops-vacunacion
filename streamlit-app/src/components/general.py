@@ -161,7 +161,42 @@ def show_general():
             )
     
     with col_filtro5:
-        st.write("")  
+        # Filtro por grupo etario
+        if not df.empty and 'grupo_etario' in df.columns:
+            # Filtrar grupos etarios según años, mes, sexo y zona ya seleccionados
+            if años_seleccionados:
+                df_temp = df[df['anio_aplicacion'].isin(años_seleccionados)]
+            else:
+                df_temp = df.copy()
+                
+            if mes_seleccionado != "Todos":
+                try:
+                    mes_numero = int(mes_seleccionado.split(" - ")[0])
+                    df_temp = df_temp[df_temp['mes_aplicacion'] == mes_numero]
+                except (ValueError, IndexError):
+                    pass
+            
+            if sexo_seleccionado != "Todos" and 'sexo' in df_temp.columns:
+                df_temp = df_temp[df_temp['sexo'] == sexo_seleccionado]
+            
+            if zona_seleccionada != "Todas" and 'zona' in df_temp.columns:
+                df_temp = df_temp[df_temp['zona'] == zona_seleccionada]
+            
+            grupos_disponibles = sorted(df_temp['grupo_etario'].dropna().unique()) if not df_temp.empty else []
+            opciones_grupos = ["Todos"] + [str(grupo) for grupo in grupos_disponibles]
+            grupo_etario_seleccionado = st.selectbox(
+                "Seleccionar Grupo Etario:",
+                options=opciones_grupos,
+                index=0
+            )
+        else:
+            grupo_etario_seleccionado = "Todos"
+            st.selectbox(
+                "Seleccionar Grupo Etario:",
+                options=["Todos"],
+                index=0,
+                disabled=True
+            )
     
     with col_filtro6:
         st.write("")  
@@ -197,6 +232,10 @@ def show_general():
         # Filtrar por zona
         if zona_seleccionada != "Todas" and 'zona' in df_filtrado.columns:
             df_filtrado = df_filtrado[df_filtrado['zona'] == zona_seleccionada]
+        
+        # Filtrar por grupo etario
+        if grupo_etario_seleccionado != "Todos" and 'grupo_etario' in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado['grupo_etario'] == grupo_etario_seleccionado]
     
     # Mostrar información de filtros aplicados
     if not df_filtrado.empty:
@@ -226,7 +265,12 @@ def show_general():
         if sexo_seleccionado != "Todos":
             sexo_texto = f" | Sexo: {sexo_seleccionado}"
         
-        st.info(f"Mostrando datos para: {años_texto}{mes_texto}{zona_texto}{sexo_texto}")
+        # Texto del grupo etario
+        grupo_etario_texto = ""
+        if grupo_etario_seleccionado != "Todos":
+            grupo_etario_texto = f" | Grupo Etario: {grupo_etario_seleccionado}"
+        
+        st.info(f"Mostrando datos para: {años_texto}{mes_texto}{zona_texto}{sexo_texto}{grupo_etario_texto}")
         
         # Mostrar resumen de registros filtrados
         total_registros = len(df_filtrado)
@@ -239,7 +283,7 @@ def show_general():
     
     
     # Métricas principales
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12 = st.columns(12)
     
     with col1:
         total_vacunas = df_filtrado.groupby('num_iden').size().sum() if not df_filtrado.empty else 0
@@ -267,58 +311,30 @@ def show_general():
             delta=f"{delta_vacunados_val}"
         )
     
-    with col4:
-        if sexo_seleccionado == "Todos" and not df_filtrado.empty and 'sexo' in df_filtrado.columns:
-            # Mostrar distribución por sexo
-            distribucion_sexo = df_filtrado['sexo'].value_counts()
-            if len(distribucion_sexo) > 0:
-                porcentaje_f = (distribucion_sexo.get('F', 0) / len(df_filtrado) * 100) if len(df_filtrado) > 0 else 0
-                st.metric(
-                    label="Distribución F/M",
-                    value=f"{porcentaje_f:.1f}% / {100-porcentaje_f:.1f}%"
-                )
-            else:
-                st.metric(
-                    label="Meta Mensual",
-                    value="95.2%",
-                    delta="-4.8%"
-                )
+    with col5:
+        st.metric(
+            label="Fechas en Período",
+            value=f"{df_filtrado['fecha_aplicacion'].nunique()}"
+        )
+    
+    with col6:
+        vacunas_unicas = df_filtrado['nombre_vacuna'].nunique() if 'nombre_vacuna' in df_filtrado.columns else 0
+        st.metric(
+            label="Tipos de Vacunas",
+            value=f"{vacunas_unicas}"
+        )
+    
+    with col7:
+        if 'zona' in df_filtrado.columns:
+            zonas_activas = df_filtrado['zona'].nunique()
+            st.metric(
+                label="Zonas Activas",
+                value=f"{zonas_activas}"
+            )
         else:
             st.metric(
-                label="Meta Mensual",
-                value="95.2%",
-                delta="-4.8%"
-            )
-    
-    # Información adicional de filtros aplicados
-    if not df_filtrado.empty:
-        st.markdown("---")
-        col_info1, col_info2, col_info3 = st.columns(3)
-        
-        with col_info1:
-            st.metric(
-                label="Fechas en Período",
-                value=f"{df_filtrado['fecha_aplicacion'].nunique()}"
-            )
-        
-        with col_info2:
-            vacunas_unicas = df_filtrado['nombre_vacuna'].nunique() if 'nombre_vacuna' in df_filtrado.columns else 0
-            st.metric(
-                label="Tipos de Vacunas",
-                value=f"{vacunas_unicas}"
-            )
-        
-        with col_info3:
-            if 'zona' in df_filtrado.columns:
-                zonas_activas = df_filtrado['zona'].nunique()
-                st.metric(
-                    label="Zonas Activas",
-                    value=f"{zonas_activas}"
-                )
-            else:
-                st.metric(
-                    label="Registros Totales",
-                    value=f"{len(df_filtrado):,}"
+                label="Registros Totales",
+                value=f"{len(df_filtrado):,}"
                 )
     
     # Estadísticas por sexo (si hay datos y el sexo no está filtrado)
@@ -348,9 +364,9 @@ def show_general():
             st.dataframe(
                 stats_sexo.sort_values('Total Vacunas', ascending=False),
                 hide_index=True,
-                width=True
+                use_container_width=True
             )
-        
+            
         with col_sexo2:
             # Gráfico de pastel de distribución por sexo
             fig_pie_sexo = px.pie(
@@ -389,8 +405,7 @@ def show_general():
             st.dataframe(
                 stats_zona.sort_values('Total Vacunas', ascending=False),
                 hide_index=True,
-                width=True
-            )
+                use_container_width=True)
         
         with col_zona2:
             # Gráfico de pastel de distribución por zona
@@ -402,6 +417,47 @@ def show_general():
             )
             fig_pie.update_layout(height=300)
             st.plotly_chart(fig_pie, use_container_width=True)
+    
+    # Estadísticas por grupo etario (si hay datos y el grupo etario no está filtrado)
+    if not df_filtrado.empty and grupo_etario_seleccionado == "Todos" and 'grupo_etario' in df_filtrado.columns:
+        st.markdown("---")
+        st.subheader("Distribución por Grupo Etario")
+        
+        # Calcular estadísticas por grupo etario
+        stats_grupo = df_filtrado.groupby('grupo_etario').agg({
+            'num_iden': 'nunique',  # Vacunados únicos
+            'unicodigo': 'nunique'  # Establecimientos únicos
+        }).reset_index()
+        
+        # Contar total de vacunas por grupo etario
+        vacunas_por_grupo = df_filtrado.groupby('grupo_etario').size().reset_index()
+        vacunas_por_grupo.columns = ['grupo_etario', 'total_vacunas']
+        
+        # Combinar estadísticas
+        stats_grupo = stats_grupo.merge(vacunas_por_grupo, on='grupo_etario')
+        stats_grupo.columns = ['Grupo Etario', 'Vacunados', 'Establecimientos', 'Total Vacunas']
+        
+        # Mostrar en columnas
+        col_grupo1, col_grupo2 = st.columns([2, 1])
+        
+        with col_grupo1:
+            # Tabla de estadísticas por grupo etario
+            st.dataframe(
+                stats_grupo.sort_values('Total Vacunas', ascending=False),
+                hide_index=True,
+                width=True
+            )
+        
+        with col_grupo2:
+            # Gráfico de pastel de distribución por grupo etario
+            fig_pie_grupo = px.pie(
+                stats_grupo,
+                values='Total Vacunas',
+                names='Grupo Etario',
+                title='Distribución de Vacunas por Grupo Etario'
+            )
+            fig_pie_grupo.update_layout(height=300)
+            st.plotly_chart(fig_pie_grupo, use_container_width=True)
     
     # Análisis de Dosis Aplicadas
     if not df_filtrado.empty and 'dosis_aplicada' in df_filtrado.columns:
@@ -751,10 +807,156 @@ def show_general():
                                 value="N/A"
                             )
     
+    # Análisis de grupo etario por sexo
+    if not df_filtrado.empty and sexo_seleccionado == "Todos" and grupo_etario_seleccionado == "Todos" and 'grupo_etario' in df_filtrado.columns and 'sexo' in df_filtrado.columns:
+        st.markdown("---")
+        st.subheader("Distribución de Grupo Etario por Sexo")
+        
+        # Crear datos para el análisis cruzado de grupo etario y sexo
+        grupo_sexo = df_filtrado.groupby(['grupo_etario', 'sexo']).size().unstack(fill_value=0)
+        
+        if not grupo_sexo.empty:
+            # Crear dos columnas para los gráficos
+            col_grupo_sexo1, col_grupo_sexo2 = st.columns([3, 2])
+            
+            with col_grupo_sexo1:
+                # Gráfico de barras apiladas para grupo etario por sexo
+                fig_barras_grupo = go.Figure()
+                
+                # Colores para hombre y mujer
+                colores_sexo = {'M': '#3498db', 'F': '#e74c3c'}
+                
+                # Preparar datos
+                grupos_etarios = list(grupo_sexo.index)
+                
+                # Obtener valores para hombres y mujeres con validación
+                if 'M' in grupo_sexo.columns:
+                    valores_hombres = grupo_sexo['M'].values.tolist()
+                    fig_barras_grupo.add_trace(go.Bar(
+                        name='Hombres',
+                        x=grupos_etarios,
+                        y=valores_hombres,
+                        marker_color='#3498db',
+                        text=[f'{val:,}' for val in valores_hombres],
+                        textposition='auto'
+                    ))
+                
+                if 'F' in grupo_sexo.columns:
+                    valores_mujeres = grupo_sexo['F'].values.tolist()
+                    fig_barras_grupo.add_trace(go.Bar(
+                        name='Mujeres',
+                        x=grupos_etarios,
+                        y=valores_mujeres,
+                        marker_color='#e74c3c',
+                        text=[f'{val:,}' for val in valores_mujeres],
+                        textposition='auto'
+                    ))
+                
+                fig_barras_grupo.update_layout(
+                    title='Distribución por Grupo Etario y Sexo',
+                    xaxis_title='Grupo Etario',
+                    yaxis_title='Cantidad de Vacunas',
+                    barmode='group',
+                    height=400,
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="center",
+                        x=0.5
+                    )
+                )
+                
+                st.plotly_chart(fig_barras_grupo, use_container_width=True)
+            
+            with col_grupo_sexo2:
+                # Gráfico de pastel para totales por grupo etario
+                total_por_grupo = df_filtrado['grupo_etario'].value_counts()
+                
+                fig_pie_grupo_total = px.pie(
+                    values=total_por_grupo.values,
+                    names=total_por_grupo.index,
+                    title='Total por Grupo Etario'
+                )
+                fig_pie_grupo_total.update_layout(height=400)
+                st.plotly_chart(fig_pie_grupo_total, use_container_width=True)
+            
+            # Tabla detallada de grupo etario por sexo
+            st.write("#### Detalle por Grupo Etario y Sexo")
+            
+            # Crear tabla resumen
+            tabla_grupo_sexo = []
+            
+            for grupo in grupo_sexo.index:
+                fila = {'Grupo Etario': grupo}
+                
+                for sexo in grupo_sexo.columns:
+                    sexo_label = 'Hombres' if sexo == 'M' else 'Mujeres' if sexo == 'F' else f'Sexo {sexo}'
+                    fila[sexo_label] = grupo_sexo.loc[grupo, sexo]
+                
+                # Calcular total y porcentajes
+                total_fila = sum([grupo_sexo.loc[grupo, sexo] for sexo in grupo_sexo.columns])
+                fila['Total'] = total_fila
+                
+                # Calcular porcentaje de participación femenina si hay ambos sexos
+                if 'F' in grupo_sexo.columns and 'M' in grupo_sexo.columns and total_fila > 0:
+                    porcentaje_f = (grupo_sexo.loc[grupo, 'F'] / total_fila * 100)
+                    fila['% Mujeres'] = f"{porcentaje_f:.1f}%"
+                
+                tabla_grupo_sexo.append(fila)
+            
+            df_tabla_grupo_sexo = pd.DataFrame(tabla_grupo_sexo)
+            
+            # Configurar formato de columnas
+            column_config_grupo = {}
+            for col in df_tabla_grupo_sexo.columns:
+                if col not in ['Grupo Etario', '% Mujeres']:
+                    column_config_grupo[col] = st.column_config.NumberColumn(
+                        col,
+                        format="%d"
+                    )
+            
+            st.dataframe(
+                df_tabla_grupo_sexo,
+                hide_index=True,
+                use_container_width=True,
+                column_config=column_config_grupo
+            )
+            
+            # Métricas por grupo etario
+            col_grupo_metr1, col_grupo_metr2, col_grupo_metr3 = st.columns(3)
+            
+            with col_grupo_metr1:
+                grupo_dominante = total_por_grupo.index[0] if len(total_por_grupo) > 0 else "N/A"
+                st.metric(
+                    label="Grupo Etario Dominante",
+                    value=str(grupo_dominante),
+                    delta=f"{total_por_grupo.values[0]:,} dosis" if len(total_por_grupo) > 0 else "N/A"
+                )
+            
+            with col_grupo_metr2:
+                total_grupos = len(total_por_grupo)
+                st.metric(
+                    label="Grupos Etarios Activos",
+                    value=f"{total_grupos}"
+                )
+            
+            with col_grupo_metr3:
+                if len(total_por_grupo) > 1:
+                    diferencia_grupos = total_por_grupo.values[0] - total_por_grupo.values[1]
+                    st.metric(
+                        label="Diferencia 1° vs 2°",
+                        value=f"{diferencia_grupos:,}",
+                        delta="Brecha entre grupos"
+                    )
+                else:
+                    st.metric(
+                        label="Diferencia 1° vs 2°",
+                        value="N/A"
+                    )
+    
     # Sección de resumen
     st.markdown("---")
-    st.subheader("Resumen Ejecutivo")
-    
     col1, col2 = st.columns([2, 1])
     
     with col1:
