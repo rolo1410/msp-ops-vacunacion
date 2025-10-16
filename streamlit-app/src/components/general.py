@@ -403,6 +403,354 @@ def show_general():
             fig_pie.update_layout(height=300)
             st.plotly_chart(fig_pie, use_container_width=True)
     
+    # Análisis de Dosis Aplicadas
+    if not df_filtrado.empty and 'dosis_aplicada' in df_filtrado.columns:
+        st.markdown("---")
+        st.subheader("Análisis de Dosis Aplicadas")
+        
+        # Calcular estadísticas de dosis
+        dosis_stats = df_filtrado['dosis_aplicada'].value_counts().sort_index()
+        
+        if len(dosis_stats) > 0:
+            # Crear dos columnas para el análisis de dosis
+            col_dosis1, col_dosis2 = st.columns([2, 1])
+            
+            with col_dosis1:
+                # Gráfico de barras de dosis aplicadas
+                fig_dosis = px.bar(
+                    x=dosis_stats.index,
+                    y=dosis_stats.values,
+                    labels={'x': 'Tipo de Dosis', 'y': 'Cantidad'},
+                    title='Distribución de Dosis Aplicadas',
+                    color=dosis_stats.values,
+                    color_continuous_scale='viridis'
+                )
+                
+                # Personalizar el gráfico
+                fig_dosis.update_layout(
+                    height=400,
+                    showlegend=False,
+                    xaxis_title="Tipo de Dosis",
+                    yaxis_title="Cantidad de Aplicaciones"
+                )
+                
+                # Agregar valores en las barras
+                fig_dosis.update_traces(
+                    texttemplate='%{y:,}',
+                    textposition='outside'
+                )
+                
+                st.plotly_chart(fig_dosis, use_container_width=True)
+            
+            with col_dosis2:
+                # Gráfico de pastel de distribución de dosis
+                fig_pie_dosis = px.pie(
+                    values=dosis_stats.values,
+                    names=dosis_stats.index,
+                    title='Proporción de Dosis'
+                )
+                fig_pie_dosis.update_layout(height=400)
+                st.plotly_chart(fig_pie_dosis, use_container_width=True)
+            
+            # Tabla detallada de dosis
+            st.write("#### Detalle por Tipo de Dosis")
+            
+            # Crear DataFrame con estadísticas detalladas
+            dosis_detalle = []
+            for dosis in dosis_stats.index:
+                df_dosis = df_filtrado[df_filtrado['dosis_aplicada'] == dosis]
+                detalle = {
+                    'Tipo de Dosis': dosis,
+                    'Total Aplicaciones': len(df_dosis),
+                    'Personas Únicas': df_dosis['num_iden'].nunique(),
+                    'Establecimientos': df_dosis['unicodigo'].nunique(),
+                    'Porcentaje': f"{(len(df_dosis) / len(df_filtrado) * 100):.1f}%"
+                }
+                dosis_detalle.append(detalle)
+            
+            df_dosis_detalle = pd.DataFrame(dosis_detalle)
+            
+            # Mostrar tabla con formato
+            st.dataframe(
+                df_dosis_detalle,
+                hide_index=True,
+                use_container_width=True,
+                column_config={
+                    "Total Aplicaciones": st.column_config.NumberColumn(
+                        "Total Aplicaciones",
+                        format="%d"
+                    ),
+                    "Personas Únicas": st.column_config.NumberColumn(
+                        "Personas Únicas",
+                        format="%d"
+                    ),
+                    "Establecimientos": st.column_config.NumberColumn(
+                        "Establecimientos",
+                        format="%d"
+                    )
+                }
+            )
+            
+            # Métricas adicionales de dosis
+            col_metr1, col_metr2, col_metr3 = st.columns(3)
+            
+            with col_metr1:
+                dosis_mas_aplicada = dosis_stats.index[0]
+                cantidad_mas_aplicada = dosis_stats.values[0]
+                st.metric(
+                    label="Dosis Más Aplicada",
+                    value=f"{dosis_mas_aplicada}",
+                    delta=f"{cantidad_mas_aplicada:,} aplicaciones"
+                )
+            
+            with col_metr2:
+                promedio_por_tipo = dosis_stats.mean()
+                st.metric(
+                    label="Promedio por Tipo",
+                    value=f"{promedio_por_tipo:,.0f}"
+                )
+            
+            with col_metr3:
+                total_tipos_dosis = len(dosis_stats)
+                st.metric(
+                    label="Tipos de Dosis",
+                    value=f"{total_tipos_dosis}"
+                )
+            
+            # Análisis de dosis por sexo
+            if 'sexo' in df_filtrado.columns:
+                st.write("#### Distribución de Dosis por Sexo")
+                
+                # Crear datos para el análisis cruzado de dosis y sexo
+                dosis_sexo = df_filtrado.groupby(['dosis_aplicada', 'sexo']).size().unstack(fill_value=0)
+                
+                if not dosis_sexo.empty:
+                    # Crear dos columnas para los gráficos de sexo
+                    col_sexo_dosis1, col_sexo_dosis2 = st.columns([3, 2])
+                    
+                    with col_sexo_dosis1:
+                        # Gráfico de mariposa (butterfly chart) para dosis por sexo
+                        fig_mariposa = go.Figure()
+                        
+                        # Colores para hombre y mujer
+                        colores_sexo = {'M': '#3498db', 'F': '#e74c3c'}
+                        
+                        # Preparar datos para el gráfico de mariposa
+                        tipos_dosis = list(dosis_sexo.index)
+                        
+                        # Obtener valores para hombres y mujeres con validación
+                        if 'M' in dosis_sexo.columns:
+                            valores_hombres = dosis_sexo['M'].values.tolist()
+                        else:
+                            valores_hombres = [0] * len(tipos_dosis)
+                            
+                        if 'F' in dosis_sexo.columns:
+                            valores_mujeres = dosis_sexo['F'].values.tolist()
+                        else:
+                            valores_mujeres = [0] * len(tipos_dosis)
+                        
+                        # Los valores de hombres van hacia la izquierda (negativos)
+                        valores_hombres_negativos = [-valor for valor in valores_hombres]
+                        
+                        # Agregar barras para hombres (lado izquierdo)
+                        fig_mariposa.add_trace(go.Bar(
+                            name='Hombres',
+                            y=tipos_dosis,
+                            x=valores_hombres_negativos,
+                            orientation='h',
+                            marker_color='#3498db',
+                            text=[f'{abs(val):,}' for val in valores_hombres_negativos],
+                            textposition='outside',
+                            hovertemplate='<b>%{y}</b><br>Hombres: %{text}<extra></extra>',
+                            offsetgroup=1
+                        ))
+                        
+                        # Agregar barras para mujeres (lado derecho)
+                        fig_mariposa.add_trace(go.Bar(
+                            name='Mujeres',
+                            y=tipos_dosis,
+                            x=valores_mujeres,
+                            orientation='h',
+                            marker_color='#e74c3c',
+                            text=[f'{val:,}' for val in valores_mujeres],
+                            textposition='outside',
+                            hovertemplate='<b>%{y}</b><br>Mujeres: %{text}<extra></extra>',
+                            offsetgroup=2
+                        ))
+                        
+                        # Calcular el rango máximo para centrar el gráfico
+                        max_hombres = max(valores_hombres) if valores_hombres and len(valores_hombres) > 0 else 0
+                        max_mujeres = max(valores_mujeres) if valores_mujeres and len(valores_mujeres) > 0 else 0
+                        max_valor = max(max_hombres, max_mujeres)
+                        rango_x = max_valor * 1.2 if max_valor > 0 else 1000
+                        
+                        # Configurar el layout del gráfico de mariposas
+                        fig_mariposa.update_layout(
+                            title='Distribución de Dosis por Sexo (Gráfico Mariposa)',
+                            xaxis=dict(
+                                title='Cantidad de Dosis',
+                                range=[-rango_x, rango_x],
+                                tickvals=[-rango_x * 0.75, -rango_x * 0.5, -rango_x * 0.25, 0, 
+                                         rango_x * 0.25, rango_x * 0.5, rango_x * 0.75],
+                                ticktext=[f'{int(abs(rango_x * 0.75)):,}', f'{int(abs(rango_x * 0.5)):,}', 
+                                         f'{int(abs(rango_x * 0.25)):,}', '0', 
+                                         f'{int(abs(rango_x * 0.25)):,}', f'{int(abs(rango_x * 0.5)):,}', 
+                                         f'{int(abs(rango_x * 0.75)):,}'],
+                                zeroline=True,
+                                zerolinecolor='gray',
+                                zerolinewidth=2,
+                                showgrid=True,
+                                gridcolor='lightgray'
+                            ),
+                            yaxis=dict(
+                                title='Tipo de Dosis',
+                                autorange='reversed'  # Para que las categorías aparezcan en orden natural
+                            ),
+                            barmode='relative',
+                            height=500,
+                            legend=dict(
+                                orientation="h",
+                                yanchor="bottom",
+                                y=1.02,
+                                xanchor="center",
+                                x=0.5
+                            ),
+                            plot_bgcolor='white',
+                            paper_bgcolor='white'
+                        )
+                        
+                        # Agregar anotaciones para indicar los lados
+                        fig_mariposa.add_annotation(
+                            text="← Hombres",
+                            x=-rango_x * 0.6,
+                            y=len(tipos_dosis),
+                            showarrow=False,
+                            font=dict(size=12, color='#3498db'),
+                            xanchor="center"
+                        )
+                        
+                        fig_mariposa.add_annotation(
+                            text="Mujeres →",
+                            x=rango_x * 0.6,
+                            y=len(tipos_dosis),
+                            showarrow=False,
+                            font=dict(size=12, color='#e74c3c'),
+                            xanchor="center"
+                        )
+                        
+                        st.plotly_chart(fig_mariposa, use_container_width=True)
+                    
+                    with col_sexo_dosis2:
+                        # Gráfico de pastel para totales por sexo (todas las dosis)
+                        total_por_sexo = df_filtrado['sexo'].value_counts()
+                        
+                        # Mapear etiquetas de sexo
+                        total_por_sexo_labels = []
+                        for sexo in total_por_sexo.index:
+                            if sexo == 'M':
+                                total_por_sexo_labels.append('Hombres')
+                            elif sexo == 'F':
+                                total_por_sexo_labels.append('Mujeres')
+                            else:
+                                total_por_sexo_labels.append(f'Sexo {sexo}')
+                        
+                        fig_pie_sexo_total = px.pie(
+                            values=total_por_sexo.values,
+                            names=total_por_sexo_labels,
+                            title='Total General por Sexo',
+                            color_discrete_map={'Hombres': '#3498db', 'Mujeres': '#e74c3c'}
+                        )
+                        fig_pie_sexo_total.update_layout(height=400)
+                        st.plotly_chart(fig_pie_sexo_total, use_container_width=True)
+                    
+                    # Tabla detallada de dosis por sexo
+                    st.write("#### Detalle de Dosis por Sexo")
+                    
+                    # Crear tabla resumen
+                    tabla_dosis_sexo = []
+                    
+                    for dosis in dosis_sexo.index:
+                        fila = {'Tipo de Dosis': dosis}
+                        
+                        for sexo in dosis_sexo.columns:
+                            sexo_label = 'Hombres' if sexo == 'M' else 'Mujeres' if sexo == 'F' else f'Sexo {sexo}'
+                            fila[sexo_label] = dosis_sexo.loc[dosis, sexo]
+                        
+                        # Calcular total y porcentajes
+                        total_fila = sum([dosis_sexo.loc[dosis, sexo] for sexo in dosis_sexo.columns])
+                        fila['Total'] = total_fila
+                        
+                        # Calcular porcentaje de participación femenina si hay ambos sexos
+                        if 'F' in dosis_sexo.columns and 'M' in dosis_sexo.columns and total_fila > 0:
+                            porcentaje_f = (dosis_sexo.loc[dosis, 'F'] / total_fila * 100)
+                            fila['% Mujeres'] = f"{porcentaje_f:.1f}%"
+                        
+                        tabla_dosis_sexo.append(fila)
+                    
+                    df_tabla_dosis_sexo = pd.DataFrame(tabla_dosis_sexo)
+                    
+                    # Configurar formato de columnas
+                    column_config = {}
+                    for col in df_tabla_dosis_sexo.columns:
+                        if col not in ['Tipo de Dosis', '% Mujeres']:
+                            column_config[col] = st.column_config.NumberColumn(
+                                col,
+                                format="%d"
+                            )
+                    
+                    st.dataframe(
+                        df_tabla_dosis_sexo,
+                        hide_index=True,
+                        use_container_width=True,
+                        column_config=column_config
+                    )
+                    
+                    # Métricas comparativas por sexo
+                    col_comp1, col_comp2, col_comp3 = st.columns(3)
+                    
+                    with col_comp1:
+                        if 'F' in total_por_sexo.index and 'M' in total_por_sexo.index:
+                            diferencia = abs(total_por_sexo['F'] - total_por_sexo['M'])
+                            st.metric(
+                                label="Diferencia H/M",
+                                value=f"{diferencia:,}",
+                                delta=f"Brecha de género"
+                            )
+                        else:
+                            st.metric(
+                                label="Diferencia H/M",
+                                value="N/A"
+                            )
+                    
+                    with col_comp2:
+                        if len(total_por_sexo) > 0:
+                            sexo_dominante = 'Mujeres' if total_por_sexo.index[0] == 'F' else 'Hombres' if total_por_sexo.index[0] == 'M' else f'Sexo {total_por_sexo.index[0]}'
+                            st.metric(
+                                label="Sexo Predominante",
+                                value=sexo_dominante,
+                                delta=f"{total_por_sexo.values[0]:,} dosis"
+                            )
+                        else:
+                            st.metric(
+                                label="Sexo Predominante",
+                                value="N/A"
+                            )
+                    
+                    with col_comp3:
+                        if 'F' in total_por_sexo.index and 'M' in total_por_sexo.index:
+                            total_general = total_por_sexo['F'] + total_por_sexo['M']
+                            paridad = min(total_por_sexo['F'], total_por_sexo['M']) / max(total_por_sexo['F'], total_por_sexo['M']) * 100
+                            st.metric(
+                                label="Índice de Paridad",
+                                value=f"{paridad:.1f}%",
+                                delta="Equilibrio de género"
+                            )
+                        else:
+                            st.metric(
+                                label="Índice de Paridad",
+                                value="N/A"
+                            )
+    
     # Sección de resumen
     st.markdown("---")
     st.subheader("Resumen Ejecutivo")
