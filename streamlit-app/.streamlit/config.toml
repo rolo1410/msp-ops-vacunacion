@@ -1,0 +1,25 @@
+[global]
+# Configuración global de la aplicación
+
+[server]
+# Configuración del servidor
+port = 8501
+enableCORS = false
+maxUploadSize = 200
+
+[theme]
+# Tema personalizado basado en MSP
+primaryColor = "#FF6B6B"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#262730"
+textColor = "#FAFAFA"
+font = "sans serif"
+
+[client]
+# Configuración del cliente
+showErrorDetails = false
+toolbarMode = "minimal"
+
+[browser]
+# Configuración del navegador
+gatherUsageStats = false

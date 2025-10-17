@@ -17,6 +17,32 @@ except ImportError:
 from data.source import QUERY_VACUNAS_TEMPORAL_FULL, get_duck_db_data
 
 
+def safe_get_unique_values(df, column_name, default_values=None):
+    """
+    Obtiene valores únicos de una columna de manera segura.
+    
+    Args:
+        df: DataFrame
+        column_name: Nombre de la columna
+        default_values: Valores por defecto si hay error
+    
+    Returns:
+        list: Lista de valores únicos o valores por defecto
+    """
+    if default_values is None:
+        default_values = []
+    
+    try:
+        if df.empty or column_name not in df.columns:
+            return default_values
+        
+        unique_values = [val for val in df[column_name].unique() if not pd.isna(val)]
+        return sorted(unique_values) if unique_values else default_values
+    
+    except Exception:
+        return default_values
+
+
 def total_establecimiento(df: pd.DataFrame) -> int:
     """
     Calcula el total de establecimientos únicos en el DataFrame proporcionado.
@@ -224,7 +250,35 @@ def show_general():
     """
     Página principal con información general del sistema de vacunación
     """
-    df = get_duck_db_data(QUERY_VACUNAS_TEMPORAL_FULL)
+    # Obtener datos con manejo de errores
+    try:
+        df = get_duck_db_data(QUERY_VACUNAS_TEMPORAL_FULL)
+        
+        # Verificar que el DataFrame no esté vacío y tenga las columnas necesarias
+        if df.empty:
+            st.error("⚠️ No se encontraron datos de vacunación. Verifique la conexión a la base de datos.")
+            st.info("💡 **Posibles causas:**\n"
+                   "- Base de datos no disponible\n"
+                   "- Tabla 'vacunacion.main.vacunacion' vacía\n"
+                   "- Error en la consulta SQL")
+            return
+            
+        # Verificar columnas requeridas
+        required_columns = ['anio_aplicacion', 'mes_aplicacion', 'dia_aplicacion', 'fecha_aplicacion']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        
+        if missing_columns:
+            st.error(f"⚠️ Faltan columnas requeridas en los datos: {', '.join(missing_columns)}")
+            st.info("📋 **Columnas disponibles:** " + ", ".join(df.columns.tolist()))
+            return
+            
+    except Exception as e:
+        st.error(f"❌ Error al cargar los datos: {str(e)}")
+        st.info("🔧 **Soluciones posibles:**\n"
+               "- Verificar configuración de la base de datos\n"
+               "- Revisar la variable DUCK_DB_PATH\n"
+               "- Confirmar que el archivo .env está configurado")
+        return
     
     st.header("Vista General del Sistema")
     
@@ -233,8 +287,13 @@ def show_general():
     col_filtro1, col_filtro2, col_filtro3, col_filtro4, col_filtro5, col_filtro6,col_filtro7, col_filtro8 = st.columns([2, 1, 1, 1, 1, 1, 1, 1])
     
     with col_filtro1:
-        # Filtro por año (multiselect)
-        años_disponibles = sorted(df['anio_aplicacion'].unique()) if not df.empty else [2024]
+        # Filtro por año (multiselect) con manejo seguro
+        años_disponibles = safe_get_unique_values(df, 'anio_aplicacion', [2024])
+        
+        if not años_disponibles:
+            años_disponibles = [2024]
+            st.warning("⚠️ No se encontraron años válidos en los datos, usando 2024 por defecto")
+            
         años_seleccionados = st.multiselect(
             "Seleccionar Año(s):",
             options=años_disponibles,
@@ -248,7 +307,7 @@ def show_general():
             años_seleccionados = [años_disponibles[-1]] if años_disponibles else [2024]
     
     with col_filtro2:
-        # Filtro por mes
+        # Filtro por mes con manejo seguro
         meses_nombres = {
             1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",
             5: "Mayo", 6: "Junio", 7: "Julio", 8: "Agosto",
@@ -257,8 +316,11 @@ def show_general():
         
         # Obtener meses disponibles para los años seleccionados
         if años_seleccionados and not df.empty:
-            df_años = df[df['anio_aplicacion'].isin(años_seleccionados)]
-            meses_disponibles = sorted(df_años['mes_aplicacion'].unique()) if not df_años.empty else [1]
+            try:
+                df_años = df[df['anio_aplicacion'].isin(años_seleccionados)]
+                meses_disponibles = safe_get_unique_values(df_años, 'mes_aplicacion', [1])
+            except Exception:
+                meses_disponibles = [1]
         else:
             meses_disponibles = [1]
         

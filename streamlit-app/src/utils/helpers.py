@@ -3,10 +3,60 @@ Utilidades comunes para la aplicación de vacunación MSP
 """
 
 from datetime import datetime, timedelta
+import os
 
 import numpy as np
 import pandas as pd
 import streamlit as st
+
+
+def get_asset_path(asset_name):
+    """
+    Obtiene la ruta a un archivo de asset.
+    
+    Args:
+        asset_name (str): Nombre del archivo de asset
+        
+    Returns:
+        str: Ruta completa al archivo o None si no existe
+    """
+    # Obtener la ruta base del proyecto
+    current_dir = os.path.dirname(os.path.dirname(__file__))  # Subir dos niveles desde utils
+    asset_path = os.path.join(current_dir, 'assets', 'images', asset_name)
+    
+    if os.path.exists(asset_path):
+        return asset_path
+    else:
+        return None
+
+
+def get_favicon_path():
+    """
+    Obtiene la ruta al favicon de la aplicación.
+    
+    Returns:
+        str: Ruta al favicon o emoji de fallback
+    """
+    favicon_path = get_asset_path('faicon.png')
+    return favicon_path if favicon_path else "⚕️"
+
+
+def load_image_as_base64(image_path):
+    """
+    Carga una imagen y la convierte a base64 para uso en HTML/CSS.
+    
+    Args:
+        image_path (str): Ruta a la imagen
+        
+    Returns:
+        str: Imagen en formato base64 o None si hay error
+    """
+    try:
+        import base64
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    except Exception:
+        return None
 
 
 def format_number(number):

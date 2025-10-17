@@ -4,13 +4,14 @@ from components.analisis_temporal import show_analisis_temporal
 from components.calidad import show_calidad
 from components.general import show_general
 from components.geografico import show_geografico
+from utils.helpers import get_favicon_path
 
 
 def main():
-    # Configuración de la página
+    # Configuración de la página con favicon personalizado
     st.set_page_config(
         page_title="Sistema de Vacunación MSP",
-        page_icon="⚕️",
+        page_icon=get_favicon_path(),
         layout="wide",
         initial_sidebar_state="collapsed"
     )
