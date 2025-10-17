@@ -6,3 +6,6 @@ scikit-learn
 plotly
 seaborn
 datetime
+geopandas
+folium
+streamlit-folium
