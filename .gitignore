@@ -16,3 +16,8 @@ parquets/*.parquet
 .vscode/*
 .vscode/*.json
 
+
+
+borrar.*
+
+.vscode/PythonImportHelper-v2-Completion.json

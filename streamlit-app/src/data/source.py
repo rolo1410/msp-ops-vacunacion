@@ -1,6 +1,7 @@
-import pandas as pd
-import duckdb
 import os
+
+import duckdb
+import pandas as pd
 from dotenv import load_dotenv
 
 # Conexión a DuckDB (ajusta la ruta al archivo si es necesario)

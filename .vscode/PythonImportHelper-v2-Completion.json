@@ -1,46 +1,5 @@
 [
     {
-        "label": "absolute_import",
-        "importPath": "__future__",
-        "description": "__future__",
-        "isExtraImport": true,
-        "detail": "__future__",
-        "documentation": {}
-    },
-    {
-        "label": "division",
-        "importPath": "__future__",
-        "description": "__future__",
-        "isExtraImport": true,
-        "detail": "__future__",
-        "documentation": {}
-    },
-    {
-        "label": "print_function",
-        "importPath": "__future__",
-        "description": "__future__",
-        "isExtraImport": true,
-        "detail": "__future__",
-        "documentation": {}
-    },
-    {
-        "label": "Image",
-        "importPath": "PIL",
-        "description": "PIL",
-        "isExtraImport": true,
-        "detail": "PIL",
-        "documentation": {}
-    },
-    {
-        "label": "imagehash",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "imagehash",
-        "description": "imagehash",
-        "detail": "imagehash",
-        "documentation": {}
-    },
-    {
         "label": "os",
         "kind": 6,
         "isExtraImport": true,
@@ -314,6 +273,22 @@
         "documentation": {}
     },
     {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
         "label": "load_lake_db_vacunacion_covid",
         "importPath": "extract.db_vacunacion_covid",
         "description": "extract.db_vacunacion_covid",
@@ -534,6 +509,15 @@
         "documentation": {}
     },
     {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
         "label": "numpy",
         "kind": 6,
         "isExtraImport": true,
@@ -668,15 +652,6 @@
         "documentation": {}
     },
     {
-        "label": "argparse",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "argparse",
-        "description": "argparse",
-        "detail": "argparse",
-        "documentation": {}
-    },
-    {
         "label": "ingest_orchester",
         "importPath": "extract.ingest_orchester",
         "description": "extract.ingest_orchester",
@@ -698,132 +673,6 @@
         "description": "process.clean_transform_orchester",
         "isExtraImport": true,
         "detail": "process.clean_transform_orchester",
-        "documentation": {}
-    },
-    {
-        "label": "find_similar_images",
-        "kind": 2,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "def find_similar_images(userpaths, hashfunc=imagehash.average_hash):\n\tdef is_image(filename):\n\t\tf = filename.lower()\n\t\treturn f.endswith('.png') or f.endswith('.jpg') or \\\n\t\t\tf.endswith('.jpeg') or f.endswith('.bmp') or \\\n\t\t\tf.endswith('.gif') or '.jpg' in f or f.endswith('.svg')\n\timage_filenames = []\n\tfor userpath in userpaths:\n\t\timage_filenames += [os.path.join(userpath, path) for path in os.listdir(userpath) if is_image(path)]\n\timages = {}",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\t\tf",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\t\tf = filename.lower()\n\t\treturn f.endswith('.png') or f.endswith('.jpg') or \\\n\t\t\tf.endswith('.jpeg') or f.endswith('.bmp') or \\\n\t\t\tf.endswith('.gif') or '.jpg' in f or f.endswith('.svg')\n\timage_filenames = []\n\tfor userpath in userpaths:\n\t\timage_filenames += [os.path.join(userpath, path) for path in os.listdir(userpath) if is_image(path)]\n\timages = {}\n\tfor img in sorted(image_filenames):\n\t\ttry:",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\timage_filenames",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\timage_filenames = []\n\tfor userpath in userpaths:\n\t\timage_filenames += [os.path.join(userpath, path) for path in os.listdir(userpath) if is_image(path)]\n\timages = {}\n\tfor img in sorted(image_filenames):\n\t\ttry:\n\t\t\thash = hashfunc(Image.open(img))\n\t\texcept Exception as e:\n\t\t\tprint('Problem:', e, 'with', img)\n\t\t\tcontinue",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\timages",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\timages = {}\n\tfor img in sorted(image_filenames):\n\t\ttry:\n\t\t\thash = hashfunc(Image.open(img))\n\t\texcept Exception as e:\n\t\t\tprint('Problem:', e, 'with', img)\n\t\t\tcontinue\n\t\tif hash in images:\n\t\t\tprint(img, '  already exists as', ' '.join(images[hash]))\n\t\t\tif 'dupPictures' in img:",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\t\t\thash",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\t\t\thash = hashfunc(Image.open(img))\n\t\texcept Exception as e:\n\t\t\tprint('Problem:', e, 'with', img)\n\t\t\tcontinue\n\t\tif hash in images:\n\t\t\tprint(img, '  already exists as', ' '.join(images[hash]))\n\t\t\tif 'dupPictures' in img:\n\t\t\t\tprint('rm -v', img)\n\t\timages[hash] = images.get(hash, []) + [img]\n\t# for k, img_list in six.iteritems(images):",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\t\timages[hash]",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\t\timages[hash] = images.get(hash, []) + [img]\n\t# for k, img_list in six.iteritems(images):\n\t# \tif len(img_list) > 1:\n\t# \t\tprint(\" \".join(img_list))\nif __name__ == '__main__':  # noqa: C901\n\timport os\n\timport sys\n\tdef usage():\n\t\tsys.stderr.write(\"\"\"SYNOPSIS: %s [ahash|phash|dhash|...] [<directory>]\nIdentifies similar images in the directory.",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\thashmethod",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\thashmethod = sys.argv[1] if len(sys.argv) > 1 else usage()\n\tif hashmethod == 'ahash':\n\t\thashfunc = imagehash.average_hash\n\telif hashmethod == 'phash':\n\t\thashfunc = imagehash.phash\n\telif hashmethod == 'dhash':\n\t\thashfunc = imagehash.dhash\n\telif hashmethod == 'whash-haar':\n\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\t\thashfunc",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\t\thashfunc = imagehash.average_hash\n\telif hashmethod == 'phash':\n\t\thashfunc = imagehash.phash\n\telif hashmethod == 'dhash':\n\t\thashfunc = imagehash.dhash\n\telif hashmethod == 'whash-haar':\n\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':\n\t\tdef hashfunc(img):\n\t\t\treturn imagehash.whash(img, mode='db4')",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\t\thashfunc",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\t\thashfunc = imagehash.phash\n\telif hashmethod == 'dhash':\n\t\thashfunc = imagehash.dhash\n\telif hashmethod == 'whash-haar':\n\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':\n\t\tdef hashfunc(img):\n\t\t\treturn imagehash.whash(img, mode='db4')\n\telif hashmethod == 'colorhash':\n\t\thashfunc = imagehash.colorhash",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\t\thashfunc",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\t\thashfunc = imagehash.dhash\n\telif hashmethod == 'whash-haar':\n\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':\n\t\tdef hashfunc(img):\n\t\t\treturn imagehash.whash(img, mode='db4')\n\telif hashmethod == 'colorhash':\n\t\thashfunc = imagehash.colorhash\n\telif hashmethod == 'crop-resistant':\n\t\thashfunc = imagehash.crop_resistant_hash",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\t\thashfunc",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\t\thashfunc = imagehash.whash\n\telif hashmethod == 'whash-db4':\n\t\tdef hashfunc(img):\n\t\t\treturn imagehash.whash(img, mode='db4')\n\telif hashmethod == 'colorhash':\n\t\thashfunc = imagehash.colorhash\n\telif hashmethod == 'crop-resistant':\n\t\thashfunc = imagehash.crop_resistant_hash\n\telse:\n\t\tusage()",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\t\thashfunc",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\t\thashfunc = imagehash.colorhash\n\telif hashmethod == 'crop-resistant':\n\t\thashfunc = imagehash.crop_resistant_hash\n\telse:\n\t\tusage()\n\tuserpaths = sys.argv[2:] if len(sys.argv) > 2 else '.'\n\tfind_similar_images(userpaths=userpaths, hashfunc=hashfunc)",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\t\thashfunc",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\t\thashfunc = imagehash.crop_resistant_hash\n\telse:\n\t\tusage()\n\tuserpaths = sys.argv[2:] if len(sys.argv) > 2 else '.'\n\tfind_similar_images(userpaths=userpaths, hashfunc=hashfunc)",
-        "detail": ".venv.bin.find_similar_images",
-        "documentation": {}
-    },
-    {
-        "label": "\tuserpaths",
-        "kind": 5,
-        "importPath": ".venv.bin.find_similar_images",
-        "description": ".venv.bin.find_similar_images",
-        "peekOfCode": "\tuserpaths = sys.argv[2:] if len(sys.argv) > 2 else '.'\n\tfind_similar_images(userpaths=userpaths, hashfunc=hashfunc)",
-        "detail": ".venv.bin.find_similar_images",
         "documentation": {}
     },
     {
@@ -1256,6 +1105,60 @@
         "description": "process.clean_transform_orchester",
         "peekOfCode": "def process_orchester():\n    '''\n    Orquesta el procesamiento de datos de vacunación\n    '''\n    df = load_data('vacunacion', 'lk_vacunacion_covid')\n    df = persona_orchester(df)\n    print(f\"Dim persona - columnas: {len(df)}\")\n    df = vacuna_orchester(df)\n    print(f\"Dim vacuna - columnas: {len(df)}\")\n    df = vacunacion_orchester(df)",
         "detail": "process.clean_transform_orchester",
+        "documentation": {}
+    },
+    {
+        "label": "get_tables",
+        "kind": 2,
+        "importPath": "resources.data_lake.borrar.test.duckb",
+        "description": "resources.data_lake.borrar.test.duckb",
+        "peekOfCode": "def get_tables(conn) -> List[Tuple[str,str,str]]:\n    q = \"\"\"\n    SELECT table_schema, table_name, table_type\n    FROM information_schema.tables\n    WHERE table_schema NOT IN ('information_schema','pg_catalog')\n    ORDER BY table_schema, table_name;\n    \"\"\"\n    return conn.execute(q).fetchall()\ndef get_columns(conn, schema: str, table: str):\n    q = \"\"\"",
+        "detail": "resources.data_lake.borrar.test.duckb",
+        "documentation": {}
+    },
+    {
+        "label": "get_columns",
+        "kind": 2,
+        "importPath": "resources.data_lake.borrar.test.duckb",
+        "description": "resources.data_lake.borrar.test.duckb",
+        "peekOfCode": "def get_columns(conn, schema: str, table: str):\n    q = \"\"\"\n    SELECT column_name, data_type, is_nullable, ordinal_position,\n           COALESCE(character_maximum_length::VARCHAR, '') AS char_len,\n           COALESCE(numeric_precision::VARCHAR, '') AS num_prec,\n           COALESCE(numeric_scale::VARCHAR, '') AS num_scale\n    FROM information_schema.columns\n    WHERE table_schema = ? AND table_name = ?\n    ORDER BY ordinal_position;\n    \"\"\"",
+        "detail": "resources.data_lake.borrar.test.duckb",
+        "documentation": {}
+    },
+    {
+        "label": "get_primary_key",
+        "kind": 2,
+        "importPath": "resources.data_lake.borrar.test.duckb",
+        "description": "resources.data_lake.borrar.test.duckb",
+        "peekOfCode": "def get_primary_key(conn, schema: str, table: str) -> List[str]:\n    q = \"\"\"\n    SELECT k.column_name\n    FROM information_schema.table_constraints t\n    JOIN information_schema.key_column_usage k\n      ON t.constraint_name = k.constraint_name\n     AND t.table_schema    = k.table_schema\n     AND t.table_name      = k.table_name\n    WHERE t.table_schema = ? AND t.table_name = ? AND t.constraint_type = 'PRIMARY KEY'\n    ORDER BY k.ordinal_position;",
+        "detail": "resources.data_lake.borrar.test.duckb",
+        "documentation": {}
+    },
+    {
+        "label": "format_type",
+        "kind": 2,
+        "importPath": "resources.data_lake.borrar.test.duckb",
+        "description": "resources.data_lake.borrar.test.duckb",
+        "peekOfCode": "def format_type(row):\n    # row: (column_name, data_type, is_nullable, ordinal_position, char_len, num_prec, num_scale)\n    data_type = row[1]\n    char_len = row[4]\n    num_prec = row[5]\n    num_scale = row[6]\n    if char_len:\n        return f\"{data_type}({char_len})\"\n    if num_prec:\n        if num_scale:",
+        "detail": "resources.data_lake.borrar.test.duckb",
+        "documentation": {}
+    },
+    {
+        "label": "build_create",
+        "kind": 2,
+        "importPath": "resources.data_lake.borrar.test.duckb",
+        "description": "resources.data_lake.borrar.test.duckb",
+        "peekOfCode": "def build_create(schema: str, table: str, cols, pk_cols: List[str]) -> str:\n    parts = []\n    for c in cols:\n        name = c[0]\n        coltype = format_type(c)\n        notnull = \" NOT NULL\" if c[2] == 'NO' else \"\"\n        parts.append(f'  \"{name}\" {coltype}{notnull}')\n    if pk_cols:\n        pk = \", \".join(f'\"{c}\"' for c in pk_cols)\n        parts.append(f\"  PRIMARY KEY ({pk})\")",
+        "detail": "resources.data_lake.borrar.test.duckb",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "resources.data_lake.borrar.test.duckb",
+        "description": "resources.data_lake.borrar.test.duckb",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser(description=\"Leer esquema de una base DuckDB\")\n    parser.add_argument(\"--db\", \"-d\", default=\"vacunacion.duckdb\", help=\"Ruta al archivo .duckdb (por defecto: vacunacion.duckdb)\")\n    args = parser.parse_args()\n    try:\n        conn = duckdb.connect(database=args.db, read_only=True)\n    except Exception as e:\n        print(f\"Error abriendo la base de datos '{args.db}': {e}\", file=sys.stderr)\n        sys.exit(1)\n    tables = get_tables(conn)",
+        "detail": "resources.data_lake.borrar.test.duckb",
         "documentation": {}
     },
     {
