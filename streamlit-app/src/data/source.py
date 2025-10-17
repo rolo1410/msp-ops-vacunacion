@@ -13,22 +13,22 @@ select
 	unicodigo,
 	'q' uni_lat, 
 	'v' uni_long,
-	zona,
+	'z' zona,
 	'c' circuito,
 	'd' distrito,
 	'p' provincia,
 	'ct' canton,
 	'pa' parroquia,
 	fecha_aplicacion,
-	CAST(anio_aplicacion AS INTEGER) as anio_aplicacion,
-	CAST(dia_aplicacion AS INTEGER) as dia_aplicacion,
-	CAST(mes_aplicacion AS INTEGER) as mes_aplicacion,
+	date_part('year', fecha_aplicacion) as anio_aplicacion,
+	date_part('month', fecha_aplicacion) as mes_aplicacion,
+	date_part('day', fecha_aplicacion) as dia_aplicacion,
 	num_iden,
 	nombre_vacuna,
 	sexo,
 	dosis_aplicada 
 from
-	vacunacion.main.vacunacion limit 1000000
+	vacunacion.main.lk_vacunacion_covid limit 1000000
 """
 
 def get_duck_db_data(query: str) -> pd.DataFrame:

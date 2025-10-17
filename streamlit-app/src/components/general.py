@@ -259,7 +259,7 @@ def show_general():
             st.error("⚠️ No se encontraron datos de vacunación. Verifique la conexión a la base de datos.")
             st.info("💡 **Posibles causas:**\n"
                    "- Base de datos no disponible\n"
-                   "- Tabla 'vacunacion.main.vacunacion' vacía\n"
+                   "- Tabla 'vacunacion.main.lk_vacunacion_covid' vacía\n"
                    "- Error en la consulta SQL")
             return
             
