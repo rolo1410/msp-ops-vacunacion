@@ -76,6 +76,14 @@
         "documentation": {}
     },
     {
+        "label": "load_dotenv",
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "isExtraImport": true,
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
         "label": "polars",
         "kind": 6,
         "isExtraImport": true,
@@ -387,6 +395,54 @@
         "documentation": {}
     },
     {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
         "label": "generate_profile_report",
         "importPath": "load.generate_profile",
         "description": "load.generate_profile",
@@ -443,21 +499,12 @@
         "documentation": {}
     },
     {
-        "label": "streamlit",
+        "label": "numpy",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "streamlit",
-        "description": "streamlit",
-        "detail": "streamlit",
-        "documentation": {}
-    },
-    {
-        "label": "glob",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "glob",
-        "description": "glob",
-        "detail": "glob",
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
         "documentation": {}
     },
     {
@@ -467,6 +514,106 @@
         "importPath": "pandas",
         "description": "pandas",
         "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "plotly.express",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "plotly.express",
+        "description": "plotly.express",
+        "detail": "plotly.express",
+        "documentation": {}
+    },
+    {
+        "label": "plotly.graph_objects",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "plotly.graph_objects",
+        "description": "plotly.graph_objects",
+        "detail": "plotly.graph_objects",
+        "documentation": {}
+    },
+    {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
+        "documentation": {}
+    },
+    {
+        "label": "QUERY_VACUNAS_TEMPORAL_FULL",
+        "importPath": "data.source",
+        "description": "data.source",
+        "isExtraImport": true,
+        "detail": "data.source",
+        "documentation": {}
+    },
+    {
+        "label": "get_duck_db_data",
+        "importPath": "data.source",
+        "description": "data.source",
+        "isExtraImport": true,
+        "detail": "data.source",
+        "documentation": {}
+    },
+    {
+        "label": "get_duck_db_data",
+        "importPath": "data.source",
+        "description": "data.source",
+        "isExtraImport": true,
+        "detail": "data.source",
+        "documentation": {}
+    },
+    {
+        "label": "show_analisis_temporal",
+        "importPath": "components.analisis_temporal",
+        "description": "components.analisis_temporal",
+        "isExtraImport": true,
+        "detail": "components.analisis_temporal",
+        "documentation": {}
+    },
+    {
+        "label": "show_calidad",
+        "importPath": "components.calidad",
+        "description": "components.calidad",
+        "isExtraImport": true,
+        "detail": "components.calidad",
+        "documentation": {}
+    },
+    {
+        "label": "show_general",
+        "importPath": "components.general",
+        "description": "components.general",
+        "isExtraImport": true,
+        "detail": "components.general",
+        "documentation": {}
+    },
+    {
+        "label": "show_geografico",
+        "importPath": "components.geografico",
+        "description": "components.geografico",
+        "isExtraImport": true,
+        "detail": "components.geografico",
+        "documentation": {}
+    },
+    {
+        "label": "get_favicon_path",
+        "importPath": "utils.helpers",
+        "description": "utils.helpers",
+        "isExtraImport": true,
+        "detail": "utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "glob",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "glob",
+        "description": "glob",
+        "detail": "glob",
         "documentation": {}
     },
     {
@@ -803,7 +950,7 @@
         "kind": 2,
         "importPath": "extract.ingest_orchester",
         "description": "extract.ingest_orchester",
-        "peekOfCode": "def ingest_vacunacion_covid(since, until, chunk_size=1000000):\n    \"\"\"\n    Orquestador de ingesta optimizado con parámetros configurables\n    \"\"\"\n    logging.info(\"|- Usando versión paralela con persistencia automática\")\n    # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb\n    load_lake_db_vacunacion_covid(since, until, chunk_size)\n    ## obtiene los datos de vacunación de rutina\n    ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)\n    # Cargar datos desde el lago para obtener las identificaciones",
+        "peekOfCode": "def ingest_vacunacion_covid(since, until, chunk_size=1000000):\n    \"\"\"\n    Orquestador de ingesta optimizado con parámetros configurables\n    \"\"\"\n    logging.info(\"|- Usando versión paralela con persistencia automática\")\n    # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb\n    #load_lake_db_vacunacion_covid(since, until, chunk_size)\n    ## obtiene los datos de vacunación de rutina\n    ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)\n    # Cargar datos desde el lago para obtener las identificaciones",
         "detail": "extract.ingest_orchester",
         "documentation": {}
     },
@@ -929,7 +1076,7 @@
         "kind": 2,
         "importPath": "load.profilers.persona_profiler",
         "description": "load.profilers.persona_profiler",
-        "peekOfCode": "def profiler_orchester(df: pl.DataFrame):\n    if os.getenv('GENERATE_PERFILER', 'False') == 'True':\n        __generic_profiler(df,'vacuna', ['NOMBRE_VACUNA', 'LOTE_VACUNA'], 'vacuna')\n        __generic_profiler(df,'vacunacion', ['FECHA_APLICACION', 'UNICODIGO'], 'vacunacion')\n        __generic_profiler(df,'establecimiento', ['UNICODIGO', 'PUNTO_VACUNACION'], 'establecimiento')\n        __generic_profiler(df,'persona', ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], 'persona')\n    return df",
+        "peekOfCode": "def profiler_orchester(df: pl.DataFrame):\n    if os.getenv('GENERATE_PERFILER', 'False') == 'True':\n        __generic_profiler(df,'vacuna', ['nombre_vacuna', 'lote_vacuna'], 'vacuna')\n        __generic_profiler(df,'vacunacion', ['fecha_aplicacion', 'unicodigo'], 'vacunacion')\n        __generic_profiler(df,'establecimiento', ['unicodigo', 'punto_vacunacion'], 'establecimiento')\n        __generic_profiler(df,'persona', ['num_iden', 'fecha_aplicacion', 'unicodigo'], 'persona')\n    return df",
         "detail": "load.profilers.persona_profiler",
         "documentation": {}
     },
@@ -1037,7 +1184,7 @@
         "kind": 2,
         "importPath": "process.marquer.no_tranform_persona",
         "description": "process.marquer.no_tranform_persona",
-        "peekOfCode": "def process_incomplete_cedulas(df:pl.DataFrame) -> pl.DataFrame:\n    # a todos los campos cuya identificacion tenga 9 digitos y que tipo identificacion se  cedula, agregarle un 0 a la izquierda\n    df = df.with_columns(\n        pl.when((pl.col('tipo_iden') == 'CÉDULA DE IDENTIDAD') & (pl.col('num_iden').str.lengths() == 9))\n        .then(pl.col('num_iden').apply(add_0_prefix_cedula))\n        .otherwise(pl.col('num_iden'))\n        .alias('num_iden')\n    )\n    return df\ndef marcar_cedula_no_valida(df):",
+        "peekOfCode": "def process_incomplete_cedulas(df:pl.DataFrame) -> pl.DataFrame:\n    # a todos los campos cuya identificacion tenga 9 digitos y que tipo identificacion se  cedula, agregarle un 0 a la izquierda\n    df = df.with_columns(\n        pl.when((pl.col('tipo_iden') == 'CÉDULA DE IDENTIDAD') & (pl.col('num_iden').str.len_chars() == 9))\n        .then(pl.col('num_iden').map_elements(add_0_prefix_cedula, return_dtype=pl.Utf8))\n        .otherwise(pl.col('num_iden'))\n        .alias('num_iden')\n    )\n    return df\ndef marcar_cedula_no_valida(df):",
         "detail": "process.marquer.no_tranform_persona",
         "documentation": {}
     },
@@ -1046,7 +1193,7 @@
         "kind": 2,
         "importPath": "process.marquer.no_tranform_persona",
         "description": "process.marquer.no_tranform_persona",
-        "peekOfCode": "def marcar_cedula_no_valida(df):\n    # crear una columna con la cedulas que no cumplan son el digito verificador \n    df = df.with_columns(\n        pl.when((pl.col('tipo_iden') == 'CÉDULA DE IDENTIDAD') & (~pl.col('num_iden').apply(validar_cedula_ecuatoriana)))\n        .then(pl.lit(True))\n        .otherwise(pl.lit(False))\n        .alias('cedula_no_valida')\n    )\n    return df\ndef clean_cedulas_orchester(df):",
+        "peekOfCode": "def marcar_cedula_no_valida(df):\n    # crear una columna con la cedulas que no cumplan son el digito verificador \n    df = df.with_columns(\n        pl.when((pl.col('tipo_iden') == 'CÉDULA DE IDENTIDAD') & (~pl.col('num_iden').map_elements(validar_cedula_ecuatoriana, return_dtype=pl.Boolean)))\n        .then(pl.lit(True))\n        .otherwise(pl.lit(False))\n        .alias('cedula_no_valida')\n    )\n    return df\ndef clean_cedulas_orchester(df):",
         "detail": "process.marquer.no_tranform_persona",
         "documentation": {}
     },
@@ -1069,12 +1216,453 @@
         "documentation": {}
     },
     {
+        "label": "show_analisis_temporal",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.analisis_temporal",
+        "description": "streamlit-app.src.components.analisis_temporal",
+        "peekOfCode": "def show_analisis_temporal():\n    \"\"\"\n    Página de análisis temporal del sistema de vacunación\n    \"\"\"\n    st.header(\"📈 Análisis Temporal\")\n    # Controles de filtrado temporal\n    col1, col2, col3 = st.columns(3)\n    with col1:\n        periodo = st.selectbox(\n            \"Período de Análisis\",",
+        "detail": "streamlit-app.src.components.analisis_temporal",
+        "documentation": {}
+    },
+    {
+        "label": "show_calidad",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.calidad",
+        "description": "streamlit-app.src.components.calidad",
+        "peekOfCode": "def show_calidad():\n    \"\"\"\n    Página de control de calidad del sistema de vacunación\n    \"\"\"\n    st.header(\"✅ Control de Calidad\")\n    # Tabs para organizar la información de calidad\n    tab1, tab2, tab3, tab4 = st.tabs([\n        \"📊 Métricas de Calidad\", \n        \"🔍 Validación de Datos\", \n        \"⚠️ Alertas de Calidad\",",
+        "detail": "streamlit-app.src.components.calidad",
+        "documentation": {}
+    },
+    {
+        "label": "safe_get_unique_values",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.general",
+        "description": "streamlit-app.src.components.general",
+        "peekOfCode": "def safe_get_unique_values(df, column_name, default_values=None):\n    \"\"\"\n    Obtiene valores únicos de una columna de manera segura.\n    Args:\n        df: DataFrame\n        column_name: Nombre de la columna\n        default_values: Valores por defecto si hay error\n    Returns:\n        list: Lista de valores únicos o valores por defecto\n    \"\"\"",
+        "detail": "streamlit-app.src.components.general",
+        "documentation": {}
+    },
+    {
+        "label": "total_establecimiento",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.general",
+        "description": "streamlit-app.src.components.general",
+        "peekOfCode": "def total_establecimiento(df: pd.DataFrame) -> int:\n    \"\"\"\n    Calcula el total de establecimientos únicos en el DataFrame proporcionado.\n    \"\"\"\n    return df['unicodigo'].nunique()\ndef delta_total_vacunas(df: pd.DataFrame) -> int:\n    \"\"\"\n    Calcula la diferencia en el total de vacunas aplicadas entre el último día y el día anterior.\n    \"\"\"\n    df_sorted = df.sort_values(by='fecha_aplicacion')",
+        "detail": "streamlit-app.src.components.general",
+        "documentation": {}
+    },
+    {
+        "label": "delta_total_vacunas",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.general",
+        "description": "streamlit-app.src.components.general",
+        "peekOfCode": "def delta_total_vacunas(df: pd.DataFrame) -> int:\n    \"\"\"\n    Calcula la diferencia en el total de vacunas aplicadas entre el último día y el día anterior.\n    \"\"\"\n    df_sorted = df.sort_values(by='fecha_aplicacion')\n    if len(df_sorted) < 2:\n        return 0\n    # Agrupa por fecha y suma el total de vacunas por día\n    vacunas_por_dia = df.groupby(\"fecha_aplicacion\").size().sort_index()\n    # Si hay menos de 2 días, retorna 0",
+        "detail": "streamlit-app.src.components.general",
+        "documentation": {}
+    },
+    {
+        "label": "delta_vacunados",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.general",
+        "description": "streamlit-app.src.components.general",
+        "peekOfCode": "def delta_vacunados(df: pd.DataFrame) -> int:\n    \"\"\"\n    Calcula la diferencia en el total de vacunados entre el último día y el día anterior.\n    \"\"\"\n    df_sorted = df.sort_values(by='fecha_aplicacion')\n    if len(df_sorted) < 2:\n        return 0\n    # Agrupa por fecha y cuenta los vacunados únicos por día\n    vacunados_por_dia = df.groupby(\"fecha_aplicacion\")['num_iden'].nunique().sort_index()\n    # Si hay menos de 2 días, retorna 0",
+        "detail": "streamlit-app.src.components.general",
+        "documentation": {}
+    },
+    {
+        "label": "load_zonas_planificacion",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.general",
+        "description": "streamlit-app.src.components.general",
+        "peekOfCode": "def load_zonas_planificacion():\n    \"\"\"\n    Carga los datos de zonas de planificación de SENPLADES desde el shapefile.\n    \"\"\"\n    if not GEOSPATIAL_AVAILABLE:\n        return None\n    try:\n        # Ruta al archivo shapefile\n        shapefile_path = os.path.join(\n            os.path.dirname(__file__), ",
+        "detail": "streamlit-app.src.components.general",
+        "documentation": {}
+    },
+    {
+        "label": "create_zona_distribution_map",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.general",
+        "description": "streamlit-app.src.components.general",
+        "peekOfCode": "def create_zona_distribution_map(df_filtrado: pd.DataFrame, gdf_zonas: gpd.GeoDataFrame):\n    \"\"\"\n    Crea un mapa de distribución de vacunación por zonas usando folium.\n    \"\"\"\n    if not GEOSPATIAL_AVAILABLE or gdf_zonas is None:\n        return None\n    try:\n        # Calcular estadísticas de vacunación por zona\n        if 'zona' not in df_filtrado.columns:\n            st.warning(\"La columna 'zona' no está disponible en los datos\")",
+        "detail": "streamlit-app.src.components.general",
+        "documentation": {}
+    },
+    {
+        "label": "show_general",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.general",
+        "description": "streamlit-app.src.components.general",
+        "peekOfCode": "def show_general():\n    \"\"\"\n    Página principal con información general del sistema de vacunación\n    \"\"\"\n    # Obtener datos con manejo de errores\n    try:\n        df = get_duck_db_data(QUERY_VACUNAS_TEMPORAL_FULL)\n        # Verificar que el DataFrame no esté vacío y tenga las columnas necesarias\n        if df.empty:\n            st.error(\"⚠️ No se encontraron datos de vacunación. Verifique la conexión a la base de datos.\")",
+        "detail": "streamlit-app.src.components.general",
+        "documentation": {}
+    },
+    {
+        "label": "show_geografico",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.geografico",
+        "description": "streamlit-app.src.components.geografico",
+        "peekOfCode": "def show_geografico():\n    \"\"\"\n    Muestra el análisis geográfico de las vacunas aplicadas\n    \"\"\"\n    st.header(\"🗺️ Análisis Geográfico\")\n    st.markdown(\"Distribución geográfica de las vacunas aplicadas por región, provincia y cantón.\")\n    # Cargar datos\n    with st.spinner(\"Cargando datos geográficos...\"):\n        # Query básica para obtener datos geográficos\n        query_geografico = \"\"\"",
+        "detail": "streamlit-app.src.components.geografico",
+        "documentation": {}
+    },
+    {
+        "label": "REGIONES",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.config",
+        "description": "streamlit-app.src.data.config",
+        "peekOfCode": "REGIONES = {\n    \"Norte\": {\n        \"codigo\": \"REG01\",\n        \"poblacion\": 1250000,\n        \"centros_vacunacion\": 45,\n        \"meta_mensual\": 62500\n    },\n    \"Sur\": {\n        \"codigo\": \"REG02\", \n        \"poblacion\": 1580000,",
+        "detail": "streamlit-app.src.data.config",
+        "documentation": {}
+    },
+    {
+        "label": "TIPOS_VACUNAS",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.config",
+        "description": "streamlit-app.src.data.config",
+        "peekOfCode": "TIPOS_VACUNAS = {\n    \"COVID-19\": {\n        \"codigo\": \"COV19\",\n        \"dosis_requeridas\": 2,\n        \"intervalo_dias\": 21,\n        \"vigencia_meses\": 12\n    },\n    \"Influenza\": {\n        \"codigo\": \"FLU\", \n        \"dosis_requeridas\": 1,",
+        "detail": "streamlit-app.src.data.config",
+        "documentation": {}
+    },
+    {
+        "label": "GRUPOS_EDAD",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.config",
+        "description": "streamlit-app.src.data.config",
+        "peekOfCode": "GRUPOS_EDAD = {\n    \"0-17\": {\"min_edad\": 0, \"max_edad\": 17, \"descripcion\": \"Niños y adolescentes\"},\n    \"18-39\": {\"min_edad\": 18, \"max_edad\": 39, \"descripcion\": \"Adultos jóvenes\"},\n    \"40-59\": {\"min_edad\": 40, \"max_edad\": 59, \"descripcion\": \"Adultos\"},\n    \"60+\": {\"min_edad\": 60, \"max_edad\": 120, \"descripcion\": \"Adultos mayores\"}\n}\n# Configuración de alertas\nCONFIGURACION_ALERTAS = {\n    \"completitud_minima\": 95.0,  # Porcentaje mínimo de completitud\n    \"precision_minima\": 97.0,    # Porcentaje mínimo de precisión",
+        "detail": "streamlit-app.src.data.config",
+        "documentation": {}
+    },
+    {
+        "label": "CONFIGURACION_ALERTAS",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.config",
+        "description": "streamlit-app.src.data.config",
+        "peekOfCode": "CONFIGURACION_ALERTAS = {\n    \"completitud_minima\": 95.0,  # Porcentaje mínimo de completitud\n    \"precision_minima\": 97.0,    # Porcentaje mínimo de precisión\n    \"duplicados_maximo\": 0.5,    # Porcentaje máximo de duplicados\n    \"tiempo_respuesta_maximo\": 5.0,  # Segundos máximos de respuesta\n    \"centros_inactivos_maximo\": 3,   # Número máximo de centros inactivos\n}\n# Métricas objetivo\nMETRICAS_OBJETIVO = {\n    \"cobertura_nacional\": 80.0,      # Porcentaje objetivo de cobertura",
+        "detail": "streamlit-app.src.data.config",
+        "documentation": {}
+    },
+    {
+        "label": "METRICAS_OBJETIVO",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.config",
+        "description": "streamlit-app.src.data.config",
+        "peekOfCode": "METRICAS_OBJETIVO = {\n    \"cobertura_nacional\": 80.0,      # Porcentaje objetivo de cobertura\n    \"meta_mensual_nacional\": 340500,  # Meta mensual nacional\n    \"centros_activos_minimo\": 95,    # Porcentaje mínimo de centros activos\n    \"tiempo_procesamiento_maximo\": 24,  # Horas máximas para procesar datos\n}\n# Configuración de reportes\nCONFIGURACION_REPORTES = {\n    \"formatos_disponibles\": [\"PDF\", \"Excel\", \"CSV\"],\n    \"frecuencias\": [\"Diario\", \"Semanal\", \"Mensual\", \"Trimestral\"],",
+        "detail": "streamlit-app.src.data.config",
+        "documentation": {}
+    },
+    {
+        "label": "CONFIGURACION_REPORTES",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.config",
+        "description": "streamlit-app.src.data.config",
+        "peekOfCode": "CONFIGURACION_REPORTES = {\n    \"formatos_disponibles\": [\"PDF\", \"Excel\", \"CSV\"],\n    \"frecuencias\": [\"Diario\", \"Semanal\", \"Mensual\", \"Trimestral\"],\n    \"tipos\": [\n        \"Reporte Completo\",\n        \"Métricas de Calidad\", \n        \"Errores Detectados\",\n        \"Tendencias\",\n        \"Cobertura por Región\"\n    ]",
+        "detail": "streamlit-app.src.data.config",
+        "documentation": {}
+    },
+    {
+        "label": "COLORES_GRAFICOS",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.config",
+        "description": "streamlit-app.src.data.config",
+        "peekOfCode": "COLORES_GRAFICOS = {\n    \"primario\": \"#1E88E5\",\n    \"secundario\": \"#43A047\", \n    \"alerta\": \"#FFC107\",\n    \"error\": \"#F44336\",\n    \"exito\": \"#4CAF50\",\n    \"info\": \"#2196F3\",\n    \"escala_azules\": [\"#E3F2FD\", \"#BBDEFB\", \"#90CAF9\", \"#64B5F6\", \"#42A5F5\", \"#2196F3\", \"#1E88E5\", \"#1976D2\", \"#1565C0\", \"#0D47A1\"],\n    \"escala_verdes\": [\"#E8F5E8\", \"#C8E6C9\", \"#A5D6A7\", \"#81C784\", \"#66BB6A\", \"#4CAF50\", \"#43A047\", \"#388E3C\", \"#2E7D32\", \"#1B5E20\"]\n}",
+        "detail": "streamlit-app.src.data.config",
+        "documentation": {}
+    },
+    {
+        "label": "DATABASE_CONFIG",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.config",
+        "description": "streamlit-app.src.data.config",
+        "peekOfCode": "DATABASE_CONFIG = {\n    \"host\": \"localhost\",\n    \"port\": 5432,\n    \"database\": \"vacunacion_msp\",\n    \"schema\": \"public\",\n    \"tables\": {\n        \"vacunaciones\": \"tbl_vacunaciones\",\n        \"centros\": \"tbl_centros_vacunacion\", \n        \"pacientes\": \"tbl_pacientes\",\n        \"vacunas\": \"tbl_catalogo_vacunas\",",
+        "detail": "streamlit-app.src.data.config",
+        "documentation": {}
+    },
+    {
+        "label": "TEXTOS_APP",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.config",
+        "description": "streamlit-app.src.data.config",
+        "peekOfCode": "TEXTOS_APP = {\n    \"titulo_principal\": \"💉 Sistema de Vacunación MSP\",\n    \"descripcion\": \"Sistema de análisis y control de vacunación del Ministerio de Salud Pública\",\n    \"menu_items\": {\n        \"general\": \"🏠 General\",\n        \"calidad\": \"✅ Calidad\", \n        \"temporal\": \"📈 Análisis Temporal\"\n    },\n    \"mensajes\": {\n        \"cargando\": \"Cargando datos...\",",
+        "detail": "streamlit-app.src.data.config",
+        "documentation": {}
+    },
+    {
+        "label": "get_duck_db_data",
+        "kind": 2,
+        "importPath": "streamlit-app.src.data.source",
+        "description": "streamlit-app.src.data.source",
+        "peekOfCode": "def get_duck_db_data(query: str) -> pd.DataFrame:\n    \"\"\"Función para ejecutar una consulta SQL en DuckDB y devolver un DataFrame de pandas.\"\"\"\n    con = None\n    try:\n        con = duckdb.connect(DB_PATH, read_only=True)\n        con.execute(\"SET memory_limit='4GB';\")  # Limitar el uso de memoria a 4GB\n        result = con.execute(query).df()\n        # Aplicar limpieza de tipos de datos\n        #result = clean_data_types(result)\n        return result",
+        "detail": "streamlit-app.src.data.source",
+        "documentation": {}
+    },
+    {
+        "label": "clean_data_types",
+        "kind": 2,
+        "importPath": "streamlit-app.src.data.source",
+        "description": "streamlit-app.src.data.source",
+        "peekOfCode": "def clean_data_types(df: pd.DataFrame) -> pd.DataFrame:\n    \"\"\"\n    Limpia y convierte los tipos de datos del DataFrame a los tipos correctos.\n    Args:\n        df: DataFrame con los datos de vacunación\n    Returns:\n        DataFrame con tipos de datos corregidos\n    \"\"\"\n    if df.empty:\n        return df",
+        "detail": "streamlit-app.src.data.source",
+        "documentation": {}
+    },
+    {
+        "label": "DB_PATH",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.source",
+        "description": "streamlit-app.src.data.source",
+        "peekOfCode": "DB_PATH = os.getenv(\"DUCK_DB_PATH\")\n# Consulta SQL\nQUERY_VACUNAS_TEMPORAL_FULL = \"\"\"\nselect\n\tunicodigo,\n\t'q' uni_lat, \n\t'v' uni_long,\n\t'z' zona,664\n\t'c' circuito,\n\t'd' distrito,",
+        "detail": "streamlit-app.src.data.source",
+        "documentation": {}
+    },
+    {
+        "label": "QUERY_VACUNAS_TEMPORAL_FULL",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.source",
+        "description": "streamlit-app.src.data.source",
+        "peekOfCode": "QUERY_VACUNAS_TEMPORAL_FULL = \"\"\"\nselect\n\tunicodigo,\n\t'q' uni_lat, \n\t'v' uni_long,\n\t'z' zona,664\n\t'c' circuito,\n\t'd' distrito,\n\t'p' provincia,\n\t'ct' canton,",
+        "detail": "streamlit-app.src.data.source",
+        "documentation": {}
+    },
+    {
+        "label": "DataQualityChecker",
+        "kind": 6,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "class DataQualityChecker:\n    \"\"\"\n    Clase para verificar la calidad de los datos\n    \"\"\"\n    @staticmethod\n    def check_completeness(df, required_columns):\n        \"\"\"\n        Verifica la completitud de las columnas requeridas\n        \"\"\"\n        missing_data = {}",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_asset_path",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def get_asset_path(asset_name):\n    \"\"\"\n    Obtiene la ruta a un archivo de asset.\n    Args:\n        asset_name (str): Nombre del archivo de asset\n    Returns:\n        str: Ruta completa al archivo o None si no existe\n    \"\"\"\n    # Obtener la ruta base del proyecto\n    current_dir = os.path.dirname(os.path.dirname(__file__))  # Subir dos niveles desde utils",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_favicon_path",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def get_favicon_path():\n    \"\"\"\n    Obtiene la ruta al favicon de la aplicación.\n    Returns:\n        str: Ruta al favicon o emoji de fallback\n    \"\"\"\n    favicon_path = get_asset_path('faicon.png')\n    return favicon_path if favicon_path else \"⚕️\"\ndef load_image_as_base64(image_path):\n    \"\"\"",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "load_image_as_base64",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def load_image_as_base64(image_path):\n    \"\"\"\n    Carga una imagen y la convierte a base64 para uso en HTML/CSS.\n    Args:\n        image_path (str): Ruta a la imagen\n    Returns:\n        str: Imagen en formato base64 o None si hay error\n    \"\"\"\n    try:\n        import base64",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "format_number",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def format_number(number):\n    \"\"\"\n    Formatea números con separadores de miles\n    \"\"\"\n    return f\"{number:,}\".replace(\",\", \".\")\ndef calculate_percentage_change(current, previous):\n    \"\"\"\n    Calcula el cambio porcentual entre dos valores\n    \"\"\"\n    if previous == 0:",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_percentage_change",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def calculate_percentage_change(current, previous):\n    \"\"\"\n    Calcula el cambio porcentual entre dos valores\n    \"\"\"\n    if previous == 0:\n        return 0\n    return ((current - previous) / previous) * 100\ndef generate_sample_data(start_date='2024-01-01', end_date='2024-10-15', freq='D'):\n    \"\"\"\n    Genera datos de muestra para el sistema de vacunación",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "generate_sample_data",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def generate_sample_data(start_date='2024-01-01', end_date='2024-10-15', freq='D'):\n    \"\"\"\n    Genera datos de muestra para el sistema de vacunación\n    \"\"\"\n    dates = pd.date_range(start=start_date, end=end_date, freq=freq)\n    # Simulación de datos de vacunación con tendencia y estacionalidad\n    base_value = 2000\n    trend = np.linspace(0, 500, len(dates))\n    seasonal = 300 * np.sin(2 * np.pi * np.arange(len(dates)) / 365.25)\n    weekly_pattern = 200 * np.sin(2 * np.pi * np.arange(len(dates)) / 7)",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_alert_color",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def get_alert_color(severity):\n    \"\"\"\n    Retorna el color apropiado para las alertas según su severidad\n    \"\"\"\n    colors = {\n        'Alta': '#FF4B4B',\n        'Media': '#FFA500',\n        'Baja': '#4CAF50'\n    }\n    return colors.get(severity, '#808080')",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "create_metrics_cards",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def create_metrics_cards(metrics_data):\n    \"\"\"\n    Crea tarjetas de métricas usando columnas de Streamlit\n    \"\"\"\n    cols = st.columns(len(metrics_data))\n    for i, (label, value, delta) in enumerate(metrics_data):\n        with cols[i]:\n            st.metric(label=label, value=value, delta=delta)\ndef validate_date_range(start_date, end_date):\n    \"\"\"",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "validate_date_range",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def validate_date_range(start_date, end_date):\n    \"\"\"\n    Valida que el rango de fechas sea correcto\n    \"\"\"\n    if start_date > end_date:\n        st.error(\"La fecha de inicio no puede ser posterior a la fecha de fin\")\n        return False\n    if (end_date - start_date).days > 365:\n        st.warning(\"El rango de fechas es muy amplio. Se recomienda un período menor a 1 año\")\n    return True",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "export_data_to_csv",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def export_data_to_csv(data, filename):\n    \"\"\"\n    Prepara datos para exportación a CSV\n    \"\"\"\n    csv = data.to_csv(index=False)\n    return csv\ndef get_color_scale(values, colorscale='Blues'):\n    \"\"\"\n    Genera una escala de colores para visualizaciones\n    \"\"\"",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_color_scale",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def get_color_scale(values, colorscale='Blues'):\n    \"\"\"\n    Genera una escala de colores para visualizaciones\n    \"\"\"\n    import plotly.express as px\n    return px.colors.sequential.Blues\nclass DataQualityChecker:\n    \"\"\"\n    Clase para verificar la calidad de los datos\n    \"\"\"",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "show_loading_spinner",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def show_loading_spinner(message=\"Cargando...\"):\n    \"\"\"\n    Muestra un spinner de carga\n    \"\"\"\n    return st.spinner(message)\ndef create_download_button(data, filename, label=\"Descargar\"):\n    \"\"\"\n    Crea un botón de descarga para datos\n    \"\"\"\n    if isinstance(data, pd.DataFrame):",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "create_download_button",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def create_download_button(data, filename, label=\"Descargar\"):\n    \"\"\"\n    Crea un botón de descarga para datos\n    \"\"\"\n    if isinstance(data, pd.DataFrame):\n        csv = data.to_csv(index=False)\n        return st.download_button(\n            label=label,\n            data=csv,\n            file_name=filename,",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_vaccine_types",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def get_vaccine_types():\n    \"\"\"\n    Retorna la lista de tipos de vacunas disponibles\n    \"\"\"\n    return [\n        \"COVID-19\",\n        \"Influenza\",\n        \"Hepatitis B\",\n        \"MMR (Sarampión, Paperas, Rubéola)\",\n        \"DPT (Difteria, Pertussis, Tétanos)\",",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_regions",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def get_regions():\n    \"\"\"\n    Retorna la lista de regiones del país\n    \"\"\"\n    return [\n        \"Norte\",\n        \"Sur\", \n        \"Este\",\n        \"Oeste\",\n        \"Centro\",",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "format_date_spanish",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def format_date_spanish(date):\n    \"\"\"\n    Formatea fecha en español\n    \"\"\"\n    months = {\n        1: 'enero', 2: 'febrero', 3: 'marzo', 4: 'abril',\n        5: 'mayo', 6: 'junio', 7: 'julio', 8: 'agosto',\n        9: 'septiembre', 10: 'octubre', 11: 'noviembre', 12: 'diciembre'\n    }\n    if isinstance(date, str):",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_vaccination_rate",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def calculate_vaccination_rate(vaccinated, population):\n    \"\"\"\n    Calcula la tasa de vacunación\n    \"\"\"\n    if population == 0:\n        return 0\n    return (vaccinated / population) * 100\ndef get_status_icon(status):\n    \"\"\"\n    Retorna el ícono apropiado para diferentes estados",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
+        "label": "get_status_icon",
+        "kind": 2,
+        "importPath": "streamlit-app.src.utils.helpers",
+        "description": "streamlit-app.src.utils.helpers",
+        "peekOfCode": "def get_status_icon(status):\n    \"\"\"\n    Retorna el ícono apropiado para diferentes estados\n    \"\"\"\n    icons = {\n        'activo': '✅',\n        'inactivo': '❌',\n        'pendiente': '⏳',\n        'en_proceso': '🔄',\n        'completado': '✅',",
+        "detail": "streamlit-app.src.utils.helpers",
+        "documentation": {}
+    },
+    {
         "label": "main",
         "kind": 2,
         "importPath": "streamlit-app.src.app",
         "description": "streamlit-app.src.app",
-        "peekOfCode": "def main():\n    st.title(\"Bienvenido a la Aplicación Streamlit\")\n    st.write(\"Esta es la interfaz principal de la aplicación.\")\n    # Aquí puedes agregar más lógica y componentes a tu aplicación\nif __name__ == \"__main__\":\n    main()",
+        "peekOfCode": "def main():\n    # Configuración de la página con favicon personalizado\n    st.set_page_config(\n        page_title=\"Sistema de Vacunación MSP\",\n        page_icon=get_favicon_path(),\n        layout=\"wide\",\n        initial_sidebar_state=\"collapsed\"\n    )\n    # Ocultar el sidebar completamente con CSS\n    st.markdown(\"\"\"",
         "detail": "streamlit-app.src.app",
+        "documentation": {}
+    },
+    {
+        "label": "check_favicon",
+        "kind": 2,
+        "importPath": "streamlit-app.check_favicon",
+        "description": "streamlit-app.check_favicon",
+        "peekOfCode": "def check_favicon():\n    favicon_path = 'src/assets/images/faicon.png'\n    if os.path.exists(favicon_path):\n        size = os.path.getsize(favicon_path)\n        print(f\"✅ Favicon encontrado: {favicon_path}\")\n        print(f\"📁 Tamaño: {size:,} bytes\")\n        return True\n    else:\n        print(f\"❌ Favicon NO encontrado: {favicon_path}\")\n        return False",
+        "detail": "streamlit-app.check_favicon",
+        "documentation": {}
+    },
+    {
+        "label": "check_app_config",
+        "kind": 2,
+        "importPath": "streamlit-app.check_favicon",
+        "description": "streamlit-app.check_favicon",
+        "peekOfCode": "def check_app_config():\n    app_path = 'src/app.py'\n    if os.path.exists(app_path):\n        with open(app_path, 'r') as f:\n            content = f.read()\n            if 'get_favicon_path()' in content:\n                print(\"✅ app.py configurado para usar favicon personalizado\")\n                return True\n            else:\n                print(\"❌ app.py NO configurado para favicon\")",
+        "detail": "streamlit-app.check_favicon",
+        "documentation": {}
+    },
+    {
+        "label": "test_data_loading",
+        "kind": 2,
+        "importPath": "streamlit-app.test_error_fix",
+        "description": "streamlit-app.test_error_fix",
+        "peekOfCode": "def test_data_loading():\n    \"\"\"Prueba la carga de datos de manera segura\"\"\"\n    print(\"🔍 Probando carga de datos...\")\n    try:\n        from data.source import get_duck_db_data, QUERY_VACUNAS_TEMPORAL_FULL\n        # Intentar cargar datos\n        df = get_duck_db_data(QUERY_VACUNAS_TEMPORAL_FULL)\n        print(f\"✅ Datos cargados correctamente\")\n        print(f\"📊 Forma del DataFrame: {df.shape}\")\n        if df.empty:",
+        "detail": "streamlit-app.test_error_fix",
+        "documentation": {}
+    },
+    {
+        "label": "test_safe_function",
+        "kind": 2,
+        "importPath": "streamlit-app.test_error_fix",
+        "description": "streamlit-app.test_error_fix",
+        "peekOfCode": "def test_safe_function():\n    \"\"\"Prueba la función safe_get_unique_values\"\"\"\n    print(\"\\n🔧 Probando función auxiliar...\")\n    try:\n        from components.general import safe_get_unique_values\n        import pandas as pd\n        # Crear DataFrame de prueba\n        test_df = pd.DataFrame({\n            'anio_aplicacion': [2024, 2023, 2024, None],\n            'mes_aplicacion': [1, 12, 6, None]",
+        "detail": "streamlit-app.test_error_fix",
+        "documentation": {}
+    },
+    {
+        "label": "test_general_component",
+        "kind": 2,
+        "importPath": "streamlit-app.test_error_fix",
+        "description": "streamlit-app.test_error_fix",
+        "peekOfCode": "def test_general_component():\n    \"\"\"Prueba la función show_general de manera limitada\"\"\"\n    print(\"\\n🎯 Probando componente general...\")\n    try:\n        # Solo importar y verificar que no hay errores de sintaxis\n        from components.general import show_general\n        print(\"✅ Componente general importado correctamente\")\n        print(\"🎉 No hay errores de sintaxis\")\n        return True\n    except Exception as e:",
+        "detail": "streamlit-app.test_error_fix",
+        "documentation": {}
+    },
+    {
+        "label": "test_favicon",
+        "kind": 2,
+        "importPath": "streamlit-app.test_favicon",
+        "description": "streamlit-app.test_favicon",
+        "peekOfCode": "def test_favicon():\n    print(\"🔍 Verificando configuración del favicon...\")\n    # Verificar que el archivo favicon existe\n    favicon_path = os.path.join('src', 'assets', 'images', 'faicon.png')\n    if os.path.exists(favicon_path):\n        file_size = os.path.getsize(favicon_path)\n        print(f\"✅ Archivo favicon encontrado: {favicon_path}\")\n        print(f\"📁 Tamaño del archivo: {file_size} bytes\")\n        # Verificar que no está vacío\n        if file_size > 0:",
+        "detail": "streamlit-app.test_favicon",
+        "documentation": {}
+    },
+    {
+        "label": "test_streamlit_config",
+        "kind": 2,
+        "importPath": "streamlit-app.test_favicon",
+        "description": "streamlit-app.test_favicon",
+        "peekOfCode": "def test_streamlit_config():\n    print(\"\\n🔧 Verificando configuración de Streamlit...\")\n    config_path = '.streamlit/config.toml'\n    if os.path.exists(config_path):\n        print(f\"✅ Archivo de configuración encontrado: {config_path}\")\n        with open(config_path, 'r') as f:\n            content = f.read()\n            if 'theme' in content:\n                print(\"✅ Configuración de tema presente\")\n            if 'primaryColor' in content:",
+        "detail": "streamlit-app.test_favicon",
         "documentation": {}
     },
     {

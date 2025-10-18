@@ -23,7 +23,7 @@ def show_geografico():
             COUNT(*) as total_vacunas,
             COUNT(DISTINCT unicodigo) as total_establecimientos,
             COUNT(DISTINCT cedula) as personas_vacunadas
-        FROM vacunas 
+        FROM lk_vacunacion_covid 
         WHERE provincia IS NOT NULL 
         AND canton IS NOT NULL
         GROUP BY provincia, canton, distrito

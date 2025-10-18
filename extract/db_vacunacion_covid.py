@@ -110,7 +110,7 @@ def load_lake_db_vacunacion_covid(since: str, until: str, chunk_size: int = 1000
         df_chunk = get_db_vacunacion_covid_chunk(since, until, offset, chunk_size)
         ## convertir en minusculas las columnas 
         df_chunk.columns = [col.lower() for col in df_chunk.columns]
-        add_new_elements_to_lake('vacunacion', 'lk_vacunacion_covid', ['num_iden','num_iden'], df_chunk)
+        add_new_elements_to_lake('vacunacion', 'lk_vacunacion_covid', ['num_iden','fecha_aplicacion'], df_chunk)
         offset += chunk_size
         logging.info(f" |- Chunk con offset {offset} procesado y almacenado en el lago")
     

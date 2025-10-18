@@ -21,8 +21,8 @@ def __generic_profiler(df: pl.DataFrame, schema:str,  columns: list[str], name: 
 
 def profiler_orchester(df: pl.DataFrame):
     if os.getenv('GENERATE_PERFILER', 'False') == 'True':
-        __generic_profiler(df,'vacuna', ['NOMBRE_VACUNA', 'LOTE_VACUNA'], 'vacuna')
-        __generic_profiler(df,'vacunacion', ['FECHA_APLICACION', 'UNICODIGO'], 'vacunacion')
-        __generic_profiler(df,'establecimiento', ['UNICODIGO', 'PUNTO_VACUNACION'], 'establecimiento')
-        __generic_profiler(df,'persona', ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], 'persona')
+        __generic_profiler(df,'vacuna', ['nombre_vacuna', 'lote_vacuna'], 'vacuna')
+        __generic_profiler(df,'vacunacion', ['fecha_aplicacion', 'unicodigo'], 'vacunacion')
+        __generic_profiler(df,'establecimiento', ['unicodigo', 'punto_vacunacion'], 'establecimiento')
+        __generic_profiler(df,'persona', ['num_iden', 'fecha_aplicacion', 'unicodigo'], 'persona')
     return df

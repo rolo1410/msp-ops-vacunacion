@@ -13,7 +13,7 @@ select
 	unicodigo,
 	'q' uni_lat, 
 	'v' uni_long,
-	'z' zona,
+	'z' zona,664
 	'c' circuito,
 	'd' distrito,
 	'p' provincia,

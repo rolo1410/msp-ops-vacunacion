@@ -16,6 +16,30 @@ def main():
         initial_sidebar_state="collapsed"
     )
     
+    # Ocultar el sidebar completamente con CSS
+    st.markdown("""
+        <style>
+        .css-1d391kg {
+            display: none;
+        }
+        [data-testid="stSidebar"] {
+            display: none;
+        }
+        .css-1lcbmhc {
+            display: none;
+        }
+        .css-17eq0hr {
+            display: none;
+        }
+        /* Ajustar el contenido principal para usar todo el ancho */
+        .main .block-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+            max-width: none;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     # Título principal
     st.title("Sistema de Vacunación MSP")
     
@@ -34,15 +58,6 @@ def main():
     
     with tab4:
         show_geografico()
-    
-    # Información adicional en el sidebar (opcional)
-    with st.sidebar:
-        st.markdown("### ℹ️ Información")
-        st.info("Utiliza las pestañas horizontales superiores para navegar entre las diferentes secciones del sistema.")
-        
-        # Fecha actual
-        from datetime import datetime
-        st.markdown(f"**📅 Fecha:** {datetime.now().strftime('%d/%m/%Y')}")
 
 
 if __name__ == "__main__":
