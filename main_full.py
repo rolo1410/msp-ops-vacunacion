@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from extract.ingest_orchester import ingest_orchester
 from lake.init_lake import add_new_elements_to_lake
-from load.profilers.persona_profiler import profiler_orchester
+from load.profilers.data_profiler import profiler_orchester
 from process.clean_transform_orchester import process_orchester
 
 load_dotenv(override=True) 

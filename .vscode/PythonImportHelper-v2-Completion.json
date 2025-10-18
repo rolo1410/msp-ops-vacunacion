@@ -371,6 +371,23 @@
         "documentation": {}
     },
     {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
         "label": "datetime",
         "importPath": "datetime",
         "description": "datetime",
@@ -440,6 +457,24 @@
         "description": "datetime",
         "isExtraImport": true,
         "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "great_expectations",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "great_expectations",
+        "description": "great_expectations",
+        "detail": "great_expectations",
         "documentation": {}
     },
     {
@@ -505,15 +540,6 @@
         "importPath": "numpy",
         "description": "numpy",
         "detail": "numpy",
-        "documentation": {}
-    },
-    {
-        "label": "pandas",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "pandas",
-        "description": "pandas",
-        "detail": "pandas",
         "documentation": {}
     },
     {
@@ -643,10 +669,10 @@
     },
     {
         "label": "profiler_orchester",
-        "importPath": "load.profilers.persona_profiler",
-        "description": "load.profilers.persona_profiler",
+        "importPath": "load.profilers.data_profiler",
+        "description": "load.profilers.data_profiler",
         "isExtraImport": true,
-        "detail": "load.profilers.persona_profiler",
+        "detail": "load.profilers.data_profiler",
         "documentation": {}
     },
     {
@@ -1072,12 +1098,21 @@
         "documentation": {}
     },
     {
+        "label": "configure_and_profile",
+        "kind": 2,
+        "importPath": "load.dataquality.covid_data_qa",
+        "description": "load.dataquality.covid_data_qa",
+        "peekOfCode": "def configure_and_profile(\n    df: pd.DataFrame,\n    suite_name: str = \"covid_auto_suite\",\n    output_root: str = \"./great_expectations\",\n):\n    \"\"\"\n    Genera una Expectation Suite a partir de un DataFrame, valida el dataset\n    y guarda la suite y el resultado de validación en disco.\n    Parámetros:\n        df: pandas.DataFrame a validar",
+        "detail": "load.dataquality.covid_data_qa",
+        "documentation": {}
+    },
+    {
         "label": "profiler_orchester",
         "kind": 2,
-        "importPath": "load.profilers.persona_profiler",
-        "description": "load.profilers.persona_profiler",
+        "importPath": "load.profilers.data_profiler",
+        "description": "load.profilers.data_profiler",
         "peekOfCode": "def profiler_orchester(df: pl.DataFrame):\n    if os.getenv('GENERATE_PERFILER', 'False') == 'True':\n        __generic_profiler(df,'vacuna', ['nombre_vacuna', 'lote_vacuna'], 'vacuna')\n        __generic_profiler(df,'vacunacion', ['fecha_aplicacion', 'unicodigo'], 'vacunacion')\n        __generic_profiler(df,'establecimiento', ['unicodigo', 'punto_vacunacion'], 'establecimiento')\n        __generic_profiler(df,'persona', ['num_iden', 'fecha_aplicacion', 'unicodigo'], 'persona')\n    return df",
-        "detail": "load.profilers.persona_profiler",
+        "detail": "load.profilers.data_profiler",
         "documentation": {}
     },
     {
@@ -1130,7 +1165,7 @@
         "kind": 2,
         "importPath": "process.clean_transform.dim_persona",
         "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = _crear_dataframe_con_moda_fecha(df)\n    df = _limpiar_columnas_texto(df, cols=[\"tipo_iden\", \"num_iden\", \"apellidos\", \"nombres\",\"nombres_completos\", \"sexo\", \"etnia\", \"nacionalidad\"])\n    df = _limpiar_columnas_fecha(df, cols=[\"fecha_nacimiento\"])\n    df = _limpiar_identificacion(df)\n    df = _calcular_edad(df)\n    df = _calcular_grupo_etario(df)\n    df = _homologar_etnia(df)\n    return df",
+        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = _crear_dataframe_con_moda_fecha(df)\n    df = _limpiar_columnas_texto(df, cols=[\"tipo_iden\", \"num_iden\", \"apellidos\", \"nombres\",\"nombres_completos\", \"sexo\", \"etnia\", \"nacionalidad\"])\n    df = _limpiar_columnas_fecha(df, cols=[\"fecha_nacimiento\"])\n    df = _limpiar_identificacion(df)\n    df = _homologar_nacionalidad(df)\n    df = _calcular_edad(df)\n    df = _calcular_grupo_etario(df)\n    df = _homologar_etnia(df)\n    return df",
         "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },

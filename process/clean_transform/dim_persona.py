@@ -234,8 +234,22 @@ def _homologar_etnia(df: pl.DataFrame):
     etnia_map = pl.read_csv("resources/homologations/per_etnia.csv")
     df = df.join(etnia_map, left_on="etnia", right_on="valor_original", suffix="_map")
     df = df.with_columns(pl.col("valor_homologado").alias("etnia_homologada"))
+    # eliminar espacion en blanco al inicio y al fin de valor homologado
+    df = df.with_columns(pl.col("etnia_homologada").str.strip_chars())
     df = df.drop("etnia", "valor_homologado") 
     df = df.rename({"etnia_homologada": "etnia"})
+    return df
+
+def _homologar_nacionalidad(df: pl.DataFrame):
+    logging.info("|- ENR Homologando nacionalidad")
+    logging.debug(" |- Homologando nacionalidad")
+    nacionalidad_map = pl.read_csv("resources/homologations/per_nacionalidad_pais.csv")
+    df = df.join(nacionalidad_map, left_on="nacionalidad", right_on="valor_original", suffix="_map")
+    df = df.with_columns(pl.col("valor_homologado").alias("nacionalidad_homologada"))
+    # eliminar espacion en blanco al inicio y al fin de valor homologado
+    df = df.with_columns(pl.col("nacionalidad_homologada").str.strip_chars())
+    df = df.drop("nacionalidad", "valor_homologado") 
+    df = df.rename({"nacionalidad_homologada": "nacionalidad"})
     return df
 
 def persona_orchester(df: pl.DataFrame):
@@ -243,6 +257,7 @@ def persona_orchester(df: pl.DataFrame):
     df = _limpiar_columnas_texto(df, cols=["tipo_iden", "num_iden", "apellidos", "nombres","nombres_completos", "sexo", "etnia", "nacionalidad"])
     df = _limpiar_columnas_fecha(df, cols=["fecha_nacimiento"])
     df = _limpiar_identificacion(df)
+    df = _homologar_nacionalidad(df)
     df = _calcular_edad(df)
     df = _calcular_grupo_etario(df)
     df = _homologar_etnia(df)
