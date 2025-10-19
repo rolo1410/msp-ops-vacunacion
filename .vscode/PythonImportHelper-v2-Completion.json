@@ -1332,15 +1332,6 @@
         "documentation": {}
     },
     {
-        "label": "\tle.UNI_CODIGO",
-        "kind": 5,
-        "importPath": "streamlit-app.src.components.geografico",
-        "description": "streamlit-app.src.components.geografico",
-        "peekOfCode": "\tle.UNI_CODIGO = v.unicodigo\nWHERE\n\tprovincia IS NOT NULL\n\tAND canton IS NOT NULL\nGROUP BY\n\tprovincia,\n\tcanton,\n\tdistrito\nORDER BY\n\ttotal_vacunas DESC",
-        "detail": "streamlit-app.src.components.geografico",
-        "documentation": {}
-    },
-    {
         "label": "REGIONES",
         "kind": 5,
         "importPath": "streamlit-app.src.data.config",

@@ -16,26 +16,35 @@ def show_geografico():
     with st.spinner("Cargando datos geográficos..."):
         # Query básica para obtener datos geográficos
         query_geografico = """
-       SELECT
-	le.PRV_DESCRIPCION  provincia,
-	le.CAN_DESCRIPCION  canton,
-	le.DIS_CODIGO distrito,
-	COUNT(*) as total_vacunas,
-	COUNT(DISTINCT unicodigo) as total_establecimientos,
-	COUNT(DISTINCT v.num_iden ) as personas_vacunadas
-FROM
-	vacunacion.main.db_vacunacion v
-inner join vacunacion.main.lk_establecimiento le on
-	le.UNI_CODIGO = v.unicodigo
-WHERE
-	provincia IS NOT NULL
-	AND canton IS NOT NULL
-GROUP BY
-	provincia,
-	canton,
-	distrito
-ORDER BY
-	total_vacunas DESC
+    SELECT 
+        le.UNI_CODIGO as unicodigo,
+        le.UNI_NOMBRE as nombre_establecimiento,
+        le.PRV_DESCRIPCION as provincia,
+        le.CAN_DESCRIPCION as canton,
+        le.DIS_CODIGO as distrito,
+        le.TIPO_ESTABLECEMIENTO as tipo_establecimiento,
+        le.LATGPS as latitud,
+        le.LONGPS as longitud,
+        COUNT(v.num_iden) as total_vacunas,
+        COUNT(DISTINCT unicodigo) as total_establecimientos,
+        COUNT(DISTINCT v.num_iden) as personas_vacunadas
+    FROM 
+        vacunacion.main.lk_establecimiento le
+    LEFT JOIN 
+        vacunacion.main.db_vacunacion v ON le.UNI_CODIGO = v.unicodigo
+    WHERE 
+        le.LATGPS IS NOT NULL 
+        AND TRY_CAST(le.LONGPS as DOUBLE) IS NOT NULL
+        AND TRY_CAST(le.LATGPS as DOUBLE) != 0 
+        AND TRY_CAST(le.LONGPS as DOUBLE) != 0
+        AND TRY_CAST(le.LATGPS as DOUBLE) BETWEEN -5 AND 2  
+        AND TRY_CAST(le.LONGPS as DOUBLE) BETWEEN -92 AND -75
+    GROUP BY 
+        le.UNI_CODIGO, le.UNI_NOMBRE, le.PRV_DESCRIPCION, 
+        le.CAN_DESCRIPCION, le.DIS_CODIGO, le.TIPO_ESTABLECEMIENTO,
+        le.LATGPS, le.LONGPS
+    ORDER BY 
+        total_vacunas DESC
         """
         
         df_geo = get_duck_db_data(query_geografico)
