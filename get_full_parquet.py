@@ -48,7 +48,7 @@ def fetch_and_save_parquet_oracle(
 
     offset = 0
     # Get total number of rows (only once, at the start)
-    total_query = f"SELECT COUNT(*) FROM {table_name} where FECHA_APLICACION <= TO_DATE('2025-01-01', 'YYYY-MM-DD')"
+    total_query = f"SELECT COUNT(*) FROM {table_name} where FECHA_APLICACION <= TO_DATE('2025-01-01', 'YYYY-MM-DD') and rownum <= 500000"
     total_rows = pd.read_sql(total_query, engine).iloc[0, 0]
     total_iters = (total_rows + chunk_size - 1) // chunk_size
     
@@ -80,8 +80,8 @@ def fetch_and_save_parquet_oracle(
             temp_parquet = f"./parquets/{parquet_file}_chunk{iter_num}.parquet"
             df.to_parquet(temp_parquet, index=False)
             del df
-
         offset += chunk_size
+        print(f"Progreso: {min(offset, total_rows)}/{total_rows} filas procesadas.")
     print(f"Proceso completado. Archivo parquet guardado: {parquet_file}")
 
 
