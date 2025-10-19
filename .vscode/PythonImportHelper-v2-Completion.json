@@ -958,7 +958,7 @@
         "kind": 2,
         "importPath": "extract.geo_salud",
         "description": "extract.geo_salud",
-        "peekOfCode": "def get_geo_salud_data():\n    db_geo_salud_data = get_oracle_engine(DB_GEOSALUD)\n    query = f\"\"\"\n            SELECT\n                UNI_CODIGO,\n                UNI_NOMBRE,\n                PRV_CODIGO,\n                PRV_DESCRIPCION,\n                CAN_CODIGO,\n                CAN_DESCRIPCION,",
+        "peekOfCode": "def get_geo_salud_data():\n    db_geo_salud_data = get_oracle_engine(DB_GEOSALUD)\n    query = f\"\"\"\n         SELECT\n\tUNI_CODIGO,\n\tUNI_NOMBRE,\n\tPRV_CODIGO,\n\tPRV_DESCRIPCION,\n\tCAN_CODIGO,\n\tCAN_DESCRIPCION,",
         "detail": "extract.geo_salud",
         "documentation": {}
     },
@@ -1165,7 +1165,7 @@
         "kind": 2,
         "importPath": "process.clean_transform.dim_persona",
         "description": "process.clean_transform.dim_persona",
-        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = _crear_dataframe_con_moda_fecha(df)\n    df = _limpiar_columnas_texto(df, cols=[\"tipo_iden\", \"num_iden\", \"apellidos\", \"nombres\",\"nombres_completos\", \"sexo\", \"etnia\", \"nacionalidad\"])\n    df = _limpiar_columnas_fecha(df, cols=[\"fecha_nacimiento\"])\n    df = _limpiar_identificacion(df)\n    df = _homologar_nacionalidad(df)\n    df = _calcular_edad(df)\n    df = _calcular_grupo_etario(df)\n    df = _homologar_etnia(df)\n    return df",
+        "peekOfCode": "def persona_orchester(df: pl.DataFrame):\n    df = _crear_dataframe_con_moda_fecha(df)\n    df = _limpiar_columnas_texto(df, cols=[\"tipo_iden\", \"num_iden\", \"apellidos\", \"nombres\",\"nombres_completos\", \"sexo\", \"etnia\", \"nacionalidad\"])\n    df = _limpiar_columnas_fecha(df, cols=[\"fecha_nacimiento\"])\n    df = _limpiar_identificacion(df)\n    df = _homologar_nacionalidad(df)\n    print(f\"Dim persona - Homologando nacionalidad: {len(df)}\")\n    df = _calcular_edad(df)\n    df = _calcular_grupo_etario(df)\n    df = _homologar_etnia(df)",
         "detail": "process.clean_transform.dim_persona",
         "documentation": {}
     },
@@ -1179,20 +1179,11 @@
         "documentation": {}
     },
     {
-        "label": "vacunas_nombres",
-        "kind": 2,
-        "importPath": "process.clean_transform.dim_vacuna",
-        "description": "process.clean_transform.dim_vacuna",
-        "peekOfCode": "def vacunas_nombres(df):\n    ## leer archivo csv \n    pass\ndef vacuna_orchester(df):\n    return df",
-        "detail": "process.clean_transform.dim_vacuna",
-        "documentation": {}
-    },
-    {
         "label": "vacuna_orchester",
         "kind": 2,
         "importPath": "process.clean_transform.dim_vacuna",
         "description": "process.clean_transform.dim_vacuna",
-        "peekOfCode": "def vacuna_orchester(df):\n    return df",
+        "peekOfCode": "def vacuna_orchester(df):\n    print(f\"Dim vacuna - columnas: {len(df)}\")\n    df = _vacunas_nombres(df)\n    df = _descomponer_fecha_vacunacion(df)\n    print(f\"Dim vacuna - columnas: {len(df)}\")\n    return df",
         "detail": "process.clean_transform.dim_vacuna",
         "documentation": {}
     },
@@ -1246,7 +1237,7 @@
         "kind": 2,
         "importPath": "process.clean_transform_orchester",
         "description": "process.clean_transform_orchester",
-        "peekOfCode": "def process_orchester():\n    '''\n    Orquesta el procesamiento de datos de vacunación\n    '''\n    df = load_data('vacunacion', 'lk_vacunacion_covid')\n    df = persona_orchester(df)\n    df = vacuna_orchester(df)\n    df = vacunacion_orchester(df)\n    df = clean_cedulas_orchester(df)\n    return df",
+        "peekOfCode": "def process_orchester():\n    '''\n    Orquesta el procesamiento de datos de vacunación\n    '''\n    df = load_data('vacunacion', 'lk_vacunacion_covid')\n    df = persona_orchester(df)\n    print(f\"Dim persona - columnas: {len(df)}\")\n    df = vacuna_orchester(df)\n    print(f\"Dim vacuna - columnas: {len(df)}\")\n    df = vacunacion_orchester(df)",
         "detail": "process.clean_transform_orchester",
         "documentation": {}
     },
@@ -1337,6 +1328,15 @@
         "importPath": "streamlit-app.src.components.geografico",
         "description": "streamlit-app.src.components.geografico",
         "peekOfCode": "def show_geografico():\n    \"\"\"\n    Muestra el análisis geográfico de las vacunas aplicadas\n    \"\"\"\n    st.header(\"🗺️ Análisis Geográfico\")\n    st.markdown(\"Distribución geográfica de las vacunas aplicadas por región, provincia y cantón.\")\n    # Cargar datos\n    with st.spinner(\"Cargando datos geográficos...\"):\n        # Query básica para obtener datos geográficos\n        query_geografico = \"\"\"",
+        "detail": "streamlit-app.src.components.geografico",
+        "documentation": {}
+    },
+    {
+        "label": "\tle.UNI_CODIGO",
+        "kind": 5,
+        "importPath": "streamlit-app.src.components.geografico",
+        "description": "streamlit-app.src.components.geografico",
+        "peekOfCode": "\tle.UNI_CODIGO = v.unicodigo\nWHERE\n\tprovincia IS NOT NULL\n\tAND canton IS NOT NULL\nGROUP BY\n\tprovincia,\n\tcanton,\n\tdistrito\nORDER BY\n\ttotal_vacunas DESC",
         "detail": "streamlit-app.src.components.geografico",
         "documentation": {}
     },
@@ -1444,7 +1444,7 @@
         "kind": 5,
         "importPath": "streamlit-app.src.data.source",
         "description": "streamlit-app.src.data.source",
-        "peekOfCode": "DB_PATH = os.getenv(\"DUCK_DB_PATH\")\n# Consulta SQL\nQUERY_VACUNAS_TEMPORAL_FULL = \"\"\"\nselect\n\tunicodigo,\n\t'q' uni_lat, \n\t'v' uni_long,\n\t'z' zona,664\n\t'c' circuito,\n\t'd' distrito,",
+        "peekOfCode": "DB_PATH = os.getenv(\"DUCK_DB_PATH\")\n# Consulta SQL\nQUERY_VACUNAS_TEMPORAL_FULL = \"\"\"\nSELECT\n\tunicodigo,\n\te.LATGPS uni_lat, \n\te.LONGPS uni_long,\n\te.ZON_DESCRIPCION zona,\n\te.CIR_CODIGO circuito,\n\tE.DIS_CODIGO distrito,",
         "detail": "streamlit-app.src.data.source",
         "documentation": {}
     },
@@ -1453,7 +1453,16 @@
         "kind": 5,
         "importPath": "streamlit-app.src.data.source",
         "description": "streamlit-app.src.data.source",
-        "peekOfCode": "QUERY_VACUNAS_TEMPORAL_FULL = \"\"\"\nselect\n\tunicodigo,\n\t'q' uni_lat, \n\t'v' uni_long,\n\t'z' zona,664\n\t'c' circuito,\n\t'd' distrito,\n\t'p' provincia,\n\t'ct' canton,",
+        "peekOfCode": "QUERY_VACUNAS_TEMPORAL_FULL = \"\"\"\nSELECT\n\tunicodigo,\n\te.LATGPS uni_lat, \n\te.LONGPS uni_long,\n\te.ZON_DESCRIPCION zona,\n\te.CIR_CODIGO circuito,\n\tE.DIS_CODIGO distrito,\n\tE.PRV_DESCRIPCION provincia,\n\tE.CAN_DESCRIPCION canton,",
+        "detail": "streamlit-app.src.data.source",
+        "documentation": {}
+    },
+    {
+        "label": "\tv.unicodigo",
+        "kind": 5,
+        "importPath": "streamlit-app.src.data.source",
+        "description": "streamlit-app.src.data.source",
+        "peekOfCode": "\tv.unicodigo = e.UNI_CODIGO\n\"\"\"\ndef get_duck_db_data(query: str) -> pd.DataFrame:\n    \"\"\"Función para ejecutar una consulta SQL en DuckDB y devolver un DataFrame de pandas.\"\"\"\n    con = None\n    try:\n        con = duckdb.connect(DB_PATH, read_only=True)\n        con.execute(\"SET memory_limit='4GB';\")  # Limitar el uso de memoria a 4GB\n        result = con.execute(query).df()\n        # Aplicar limpieza de tipos de datos",
         "detail": "streamlit-app.src.data.source",
         "documentation": {}
     },

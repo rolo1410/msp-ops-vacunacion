@@ -250,6 +250,7 @@ def _homologar_nacionalidad(df: pl.DataFrame):
     df = df.with_columns(pl.col("nacionalidad_homologada").str.strip_chars())
     df = df.drop("nacionalidad", "valor_homologado") 
     df = df.rename({"nacionalidad_homologada": "nacionalidad"})
+    print(f"Dim persona - columnas: {len(df)}")
     return df
 
 def persona_orchester(df: pl.DataFrame):
@@ -258,6 +259,7 @@ def persona_orchester(df: pl.DataFrame):
     df = _limpiar_columnas_fecha(df, cols=["fecha_nacimiento"])
     df = _limpiar_identificacion(df)
     df = _homologar_nacionalidad(df)
+    print(f"Dim persona - Homologando nacionalidad: {len(df)}")
     df = _calcular_edad(df)
     df = _calcular_grupo_etario(df)
     df = _homologar_etnia(df)

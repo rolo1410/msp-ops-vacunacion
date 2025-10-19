@@ -9,16 +9,16 @@ DB_PATH = os.getenv("DUCK_DB_PATH")
 
 # Consulta SQL
 QUERY_VACUNAS_TEMPORAL_FULL = """
-select
+SELECT
 	unicodigo,
-	'q' uni_lat, 
-	'v' uni_long,
-	'z' zona,664
-	'c' circuito,
-	'd' distrito,
-	'p' provincia,
-	'ct' canton,
-	'pa' parroquia,
+	e.LATGPS uni_lat, 
+	e.LONGPS uni_long,
+	e.ZON_DESCRIPCION zona,
+	e.CIR_CODIGO circuito,
+	E.DIS_CODIGO distrito,
+	E.PRV_DESCRIPCION provincia,
+	E.CAN_DESCRIPCION canton,
+	E.PAR_DESCRIPCION parroquia,
 	fecha_aplicacion,
 	date_part('year', fecha_aplicacion) as anio_aplicacion,
 	date_part('month', fecha_aplicacion) as mes_aplicacion,
@@ -26,9 +26,11 @@ select
 	num_iden,
 	nombre_vacuna,
 	sexo,
-	dosis_aplicada 
-from
-	vacunacion.main.lk_vacunacion_covid limit 1000000
+	dosis_aplicada
+FROM
+	vacunacion.main.db_vacunacion v
+INNER JOIN vacunacion.main.lk_establecimiento e ON
+	v.unicodigo = e.UNI_CODIGO
 """
 
 def get_duck_db_data(query: str) -> pd.DataFrame:

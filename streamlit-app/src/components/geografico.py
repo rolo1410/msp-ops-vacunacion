@@ -16,18 +16,26 @@ def show_geografico():
     with st.spinner("Cargando datos geográficos..."):
         # Query básica para obtener datos geográficos
         query_geografico = """
-        SELECT 
-            provincia,
-            canton,
-            distrito,
-            COUNT(*) as total_vacunas,
-            COUNT(DISTINCT unicodigo) as total_establecimientos,
-            COUNT(DISTINCT cedula) as personas_vacunadas
-        FROM lk_vacunacion_covid 
-        WHERE provincia IS NOT NULL 
-        AND canton IS NOT NULL
-        GROUP BY provincia, canton, distrito
-        ORDER BY total_vacunas DESC
+       SELECT
+	le.PRV_DESCRIPCION  provincia,
+	le.CAN_DESCRIPCION  canton,
+	le.DIS_CODIGO distrito,
+	COUNT(*) as total_vacunas,
+	COUNT(DISTINCT unicodigo) as total_establecimientos,
+	COUNT(DISTINCT v.num_iden ) as personas_vacunadas
+FROM
+	vacunacion.main.db_vacunacion v
+inner join vacunacion.main.lk_establecimiento le on
+	le.UNI_CODIGO = v.unicodigo
+WHERE
+	provincia IS NOT NULL
+	AND canton IS NOT NULL
+GROUP BY
+	provincia,
+	canton,
+	distrito
+ORDER BY
+	total_vacunas DESC
         """
         
         df_geo = get_duck_db_data(query_geografico)

@@ -93,7 +93,7 @@ def main():
         
         # Guardar datos procesados
         logging.info("Guardando datos procesados al lago")
-        add_new_elements_to_lake('vacunacion', 'db_vacunacion', ['NUM_IDEN', 'FECHA_APLICACION', 'UNICODIGO'], df)
+        add_new_elements_to_lake('vacunacion', 'db_vacunacion', ['num_iden', 'fecha_aplicacion', 'unicodigo'], df)
         
         # Guardar datos procesados
         logging.info("Generando perfiles de datos")

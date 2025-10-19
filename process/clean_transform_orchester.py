@@ -11,7 +11,11 @@ def process_orchester():
     '''
     df = load_data('vacunacion', 'lk_vacunacion_covid')
     df = persona_orchester(df)
+    print(f"Dim persona - columnas: {len(df)}")
     df = vacuna_orchester(df)
+    print(f"Dim vacuna - columnas: {len(df)}")
     df = vacunacion_orchester(df)
+    print(f"Dim vacunacion - columnas: {len(df)}")
     df = clean_cedulas_orchester(df)
+    print(f"Dim cedulas - columnas: {len(df)}")
     return df
