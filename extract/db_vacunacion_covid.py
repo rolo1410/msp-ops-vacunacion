@@ -1,6 +1,9 @@
 import logging
 import time
+from venv import logger
 
+import oracledb
+import pandas as pd
 import polars as pl
 
 from extract.config.sources import DB_VACUNACION, get_oracle_engine
@@ -101,17 +104,32 @@ def load_lake_db_vacunacion_covid(since: str, until: str, chunk_size: int = 1000
     """
     Carga datos de vacunación COVID en paralelo con persistencia directa en DuckDB
     """
-    total_count = get_count_db_vacunacion(since, until)
-    logging.info(f"|- Total de registros a procesar: {total_count:,}")
-    offset = 0
+          
+    connection = oracledb.connect(
+        user="USR.ROLANDOCASIGNA",
+        password="Salud.2025",
+        host="scan19c-mspvacuna-prod.msp.gob.ec",
+        port=1521,
+        service_name="DB_VACUNACION"
+    )
     
-    while offset < total_count:
-        logging.info(f" |- Procesando chunk con offset {offset}")
-        df_chunk = get_db_vacunacion_covid_chunk(since, until, offset, chunk_size)
-        ## convertir en minusculas las columnas 
-        df_chunk.columns = [col.lower() for col in df_chunk.columns]
-        add_new_elements_to_lake('vacunacion', 'lk_vacunacion_covid', ['num_iden','fecha_aplicacion'], df_chunk)
-        offset += chunk_size
-        logging.info(f" |- Chunk con offset {offset} procesado y almacenado en el lago")
+    query = f"""
+            SELECT 
+                *
+            FROM HCUE_VACUNACION_DEPURADA.DB_VACUNACION_CONSOLIDADA_DEPURADA_COVID
+            WHERE 
+                FECHA_APLICACION BETWEEN TO_DATE('{since}', 'YYYY-MM-DD') 
+                AND TO_DATE('{until}', 'YYYY-MM-DD')
+            """
+        
+    chunk_size = 10000000 # Procesar en chunks de 50k registros
+    count=0
+    for chunk_df in pd.read_sql(query, connection, chunksize=chunk_size):
+        chunk_df.columns = [col.lower() for col in chunk_df.columns]
+        add_new_elements_to_lake('vacunacion', 'lk_vacunacion_covid', ['num_iden','fecha_aplicacion'], chunk_df)
+        logger.info(f"Procesado chunk con {len(chunk_df)} registros")
+        count += 1
+    logger.info(f"Archivos data lake creados exitosamente")
+
     
 VACUNACION_COLUMNS = ['id_vac_depu', 'fecha_aplicacion', 'punto_vacunacion', 'unicodigo', 'tipo_iden', 'num_iden', 'apellidos', 'nombres', 'nombres_completos', 'sexo', 'fecha_nacimiento', 'nacionalidad', 'etnia', 'pobla_vacuna', 'grupo_riesgo', 'nombre_vacuna', 'lote_vacuna', 'dosis_aplicada', 'profesional_aplica', 'iden_profesional_aplica', 'fase_vacuna', 'fase_vacuna_depurada', 'grupo_riesgo_depurada', 'sistema', 'registro_civil', 'id_vac_cons']

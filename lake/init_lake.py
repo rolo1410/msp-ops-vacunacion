@@ -1,6 +1,8 @@
 import logging
+import re
 
 import duckdb
+import pandas as pd
 import polars as pl
 
 
@@ -102,20 +104,23 @@ def generate_bi_schema():
     """)
     con.close()
     
-def add_new_elements_to_lake( db:str,
-                              table:str,
-                              keys_columns:list[str],
-                              df:pl.DataFrame):
-    logging.info(f"|-Adding new elements to lake: {db}.{table}")
+def add_new_elements_to_lake(db: str,
+                             table: str,
+                             keys_columns: list[str],
+                             df: pd.DataFrame | pl.DataFrame):  # Removed type hint to accept both pandas and polars
+    logging.info(f"|-Adding new elements to lake aqui: {db}.{table}")
     # Implement the logic to add new elements to the lake
+    print(df.columns)
     con = duckdb.connect(f'./resources/data_lake/{db}.duckdb')
-    
     # aqui hace el llamado al df
-    one_query = f"""CREATE TABLE IF NOT EXISTS {db}.main.{table} AS SELECT * FROM df;
-                    CREATE TABLE IF NOT EXISTS {db}.main.tmp_{table} AS SELECT * FROM df;
-                    INSERT INTO {db}.main.{table} SELECT * FROM {db}.main.tmp_{table} WHERE NOT EXISTS (SELECT 1 FROM {db}.main.{table} WHERE {' AND '.join([f'{table}.{col} = tmp_{table}.{col}' for col in keys_columns])} );
-                    DROP TABLE {db}.main.tmp_{table};"""
-    #
-    con.execute(one_query)
+    query= f"""CREATE TABLE IF NOT EXISTS {db}.main.{table} AS SELECT * FROM df;"""
+    query2=f"""CREATE TABLE IF NOT EXISTS {db}.main.tmp_{table} AS SELECT * FROM df;"""
+    query3= f"""INSERT INTO {db}.main.{table} SELECT * FROM {db}.main.tmp_{table} as tmp WHERE NOT EXISTS (SELECT 1 FROM {db}.main.{table} as t WHERE {' AND '.join([f't.{col} = tmp.{col}' for col in keys_columns])} );"""    
+    query4= f"""DROP TABLE {db}.main.tmp_{table};"""
+    con.execute(query)
+    con.execute(query2)
+    con.execute(query3)
+    con.execute(query4)
+
     con.close()
     

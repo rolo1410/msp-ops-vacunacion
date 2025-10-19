@@ -1,3 +1,5 @@
-from lake.init_lake import generare_bi_echema
 
-generare_bi_echema()
+
+from lake.init_lake import generate_bi_schema
+
+generate_bi_schema()
