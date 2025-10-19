@@ -104,7 +104,7 @@ def load_lake_db_vacunacion_covid(since: str, until: str, chunk_size: int = 1000
     """
     Carga datos de vacunación COVID en paralelo con persistencia directa en DuckDB
     """
-          
+    ## TODO: borrar conexión
     connection = oracledb.connect(
         user="USR.ROLANDOCASIGNA",
         password="Salud.2025",

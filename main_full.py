@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from extract.ingest_orchester import ingest_orchester
 from lake.init_lake import add_new_elements_to_lake
 from load.profilers.data_profiler import profiler_orchester
-from process.clean_transform_orchester import process_orchester
+from process.clean_transform_orchester import process_all_data_paginated, process_orchester
 
 load_dotenv(override=True) 
 
@@ -89,15 +89,15 @@ def main():
         
         # Ejecutar procesamiento
         logging.info("Iniciando procesamiento de datos")
-        df = process_orchester()
+        df = process_all_data_paginated()
         
         # Guardar datos procesados
         logging.info("Guardando datos procesados al lago")
-        add_new_elements_to_lake('vacunacion', 'db_vacunacion', ['num_iden', 'fecha_aplicacion', 'unicodigo'], df)
+        ##add_new_elements_to_lake('vacunacion', 'db_vacunacion', ['num_iden', 'fecha_aplicacion', 'unicodigo'], df)
         
         # Guardar datos procesados
         logging.info("Generando perfiles de datos")
-        profiler_orchester(df)  # pyright: ignore[reportUndefinedVariable]
+        #profiler_orchester(df)  # pyright: ignore[reportUndefinedVariable]
         
         logging.info("Procesamiento completado exitosamente")
         

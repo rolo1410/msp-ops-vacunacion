@@ -8,7 +8,18 @@ def load_data(db, table) -> pl.DataFrame:
     # Implement the logic to load data into the lake
     logging.info("|- Cargando datos al lago")
     con = duckdb.connect(database=f'./resources/data_lake/{db}.duckdb')
-    df = con.execute(f"SELECT * FROM {table}").fetch_df()
+    df = con.execute(f"SELECT * FROM {table} ").fetch_df()
+    df = pl.from_pandas(df)
+    ## convertir los nombres de las columnas a minusculas
+    df.columns = [col.lower() for col in df.columns]
+    logging.info(" |- Datos cargados al lago")
+    return df
+
+def load_data_paginated(db, table, page, page_size) -> pl.DataFrame:
+    # Implement the logic to load data into the lake
+    logging.info("|- Cargando datos al lago")
+    con = duckdb.connect(database=f'./resources/data_lake/{db}.duckdb')
+    df = con.execute(f"SELECT * FROM {table} LIMIT {page_size} OFFSET {page * page_size}").fetch_df()
     df = pl.from_pandas(df)
     ## convertir los nombres de las columnas a minusculas
     df.columns = [col.lower() for col in df.columns]

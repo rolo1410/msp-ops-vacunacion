@@ -37,3 +37,12 @@ def clean_cedulas_orchester(df):
     df = process_incomplete_cedulas(df)
     df = marcar_cedula_no_valida(df)
     return df
+
+def marcar_duplicados(df):
+    # marcar los registros num_iden, fecha_aplicacion, unicodigo, nombre_vacuna que esten duplicados
+    df = df.with_columns(
+        pl.struct(['num_iden', 'fecha_aplicacion', 'unicodigo', 'nombre_vacuna'])
+        .is_duplicated()
+        .alias('registro_duplicado')
+    )
+    return df

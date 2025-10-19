@@ -110,17 +110,65 @@ def add_new_elements_to_lake(db: str,
                              df: pd.DataFrame | pl.DataFrame):  # Removed type hint to accept both pandas and polars
     logging.info(f"|-Adding new elements to lake aqui: {db}.{table}")
     # Implement the logic to add new elements to the lake
-    print(df.columns)
-    con = duckdb.connect(f'./resources/data_lake/{db}.duckdb')
+    try:
     # aqui hace el llamado al df
-    query= f"""CREATE TABLE IF NOT EXISTS {db}.main.{table} AS SELECT * FROM df;"""
-    query2=f"""CREATE TABLE IF NOT EXISTS {db}.main.tmp_{table} AS SELECT * FROM df;"""
-    query3= f"""INSERT INTO {db}.main.{table} SELECT * FROM {db}.main.tmp_{table} as tmp WHERE NOT EXISTS (SELECT 1 FROM {db}.main.{table} as t WHERE {' AND '.join([f't.{col} = tmp.{col}' for col in keys_columns])} );"""    
-    query4= f"""DROP TABLE {db}.main.tmp_{table};"""
-    con.execute(query)
-    con.execute(query2)
-    con.execute(query3)
-    con.execute(query4)
+        columnas = ','.join(df.columns)
+        con = duckdb.connect(f'./resources/data_lake/{db}.duckdb')
+        query= f"""CREATE TABLE IF NOT EXISTS {db}.main.{table} AS SELECT * FROM df;"""
+        query2=f"""CREATE TABLE IF NOT EXISTS {db}.main.tmp_{table} AS SELECT * FROM df;"""
+        # Insert sólo las columnas compatibles entre la tabla destino y la tabla temporal
+        # Verificar si la tabla destino existe
+        table_exists = con.execute(
+            f"SELECT 1 FROM information_schema.tables WHERE table_schema='main' AND table_name='{table}' LIMIT 1"
+        ).fetchall()
+        if table_exists:
+            # Obtener columnas existentes en la tabla destino
+            col_info = con.execute(f"PRAGMA table_info('{table}')").fetchall()
+            existing_cols = [r[1] for r in col_info]  # PRAGMA table_info -> (cid, name, type, ...)
+            df_cols = list(df.columns)
+            compatible_cols = [c for c in df_cols if c in existing_cols]
 
-    con.close()
-    
+            if not compatible_cols:
+                logging.warning(f"No hay columnas compatibles para insertar en {db}.main.{table}")
+                query3 = "SELECT 1;"
+            else:
+            # Filtrar las claves que también sean compatibles
+                keys_filtered = [c for c in keys_columns if c in compatible_cols]
+            if not keys_filtered:
+                logging.warning(f"No hay columnas clave compatibles para evitar duplicados en {db}.main.{table}")
+                query3 = "SELECT 1;"
+            else:
+                cols_list = ','.join([f'"{c}"' for c in compatible_cols])
+                where_clause = ' AND '.join([f't."{c}" = tmp."{c}"' for c in keys_filtered])
+                query3 = (
+                f"""INSERT INTO {db}.main.{table} ({cols_list})
+                    SELECT {cols_list} FROM {db}.main.tmp_{table} AS tmp
+                    WHERE NOT EXISTS (
+                    SELECT 1 FROM {db}.main.{table} AS t WHERE {where_clause}
+                    );"""
+                )
+        else:
+            # Si la tabla no existe, la query de CREATE TABLE AS SELECT rellenará la tabla; no hace falta insertar
+            query3 = "SELECT 1;"
+        query4= f"""DROP TABLE {db}.main.tmp_{table};"""
+        con.execute(query)
+        con.execute(query2)
+        con.execute(query3)
+        con.execute(query4)
+        con.close()
+    except Exception as e:
+        logging.error(f"Error adding new elements to lake {db}.{table}: {e}")   
+        con.close()
+        
+def eliminar_tabla_tmp(db: str,
+                             table: str):
+    logging.info(f"|-Eliminando tabla temporal del lago: {db}.tmp_{table}")
+    # Implement the logic to add new elements to the lake
+    try:
+        con = duckdb.connect(f'./resources/data_lake/{db}.duckdb')
+        query= f"""DROP TABLE IF EXISTS {db}.main.tmp_{table};"""
+        con.execute(query)
+        con.close()
+    except Exception as e:
+        logging.error(f"Error eliminando tabla temporal del lago {db}.tmp_{table}: {e}")   
+        con.close()
