@@ -594,6 +594,23 @@
         "documentation": {}
     },
     {
+        "label": "folium",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "folium",
+        "description": "folium",
+        "detail": "folium",
+        "documentation": {}
+    },
+    {
+        "label": "st_folium",
+        "importPath": "streamlit_folium",
+        "description": "streamlit_folium",
+        "isExtraImport": true,
+        "detail": "streamlit_folium",
+        "documentation": {}
+    },
+    {
         "label": "show_analisis_temporal",
         "importPath": "components.analisis_temporal",
         "description": "components.analisis_temporal",
@@ -1320,6 +1337,15 @@
         "description": "streamlit-app.src.components.general",
         "peekOfCode": "def show_general():\n    \"\"\"\n    Página principal con información general del sistema de vacunación\n    \"\"\"\n    # Obtener datos con manejo de errores\n    try:\n        df = get_duck_db_data(QUERY_VACUNAS_TEMPORAL_FULL)\n        # Verificar que el DataFrame no esté vacío y tenga las columnas necesarias\n        if df.empty:\n            st.error(\"⚠️ No se encontraron datos de vacunación. Verifique la conexión a la base de datos.\")",
         "detail": "streamlit-app.src.components.general",
+        "documentation": {}
+    },
+    {
+        "label": "create_vaccination_map",
+        "kind": 2,
+        "importPath": "streamlit-app.src.components.geografico",
+        "description": "streamlit-app.src.components.geografico",
+        "peekOfCode": "def create_vaccination_map(df_geo, max_establishments=500):\n    \"\"\"\n    Crea un mapa interactivo con burbujas que muestran la cantidad de vacunas por establecimiento\n    \"\"\"\n    # Filtrar datos válidos\n    df_map = df_geo.copy()\n    df_map = df_map.dropna(subset=['latitud', 'longitud'])\n    # Convertir coordenadas a float\n    df_map['latitud'] = pd.to_numeric(df_map['latitud'], errors='coerce')\n    df_map['longitud'] = pd.to_numeric(df_map['longitud'], errors='coerce')",
+        "detail": "streamlit-app.src.components.geografico",
         "documentation": {}
     },
     {
