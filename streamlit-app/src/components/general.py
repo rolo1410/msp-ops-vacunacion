@@ -15,6 +15,7 @@ except ImportError:
     st.warning("Módulos geoespaciales no disponibles. Instale geopandas, folium y streamlit-folium para ver mapas.")
 
 from data.source import QUERY_VACUNAS_TEMPORAL_FULL, get_duck_db_data
+from .general.seccion_genero import crear_grafico_mariposa_genero, crear_grafico_mariposa_avanzado
 
 
 def safe_get_unique_values(df, column_name, default_values=None):
@@ -1318,6 +1319,224 @@ def show_general():
                         label="Diferencia 1° vs 2°",
                         value="N/A"
                     )
+    
+    # Sección de Análisis de Género con Gráfico de Mariposa
+    if not df_filtrado.empty and 'sexo' in df_filtrado.columns and 'grupo_etario' in df_filtrado.columns:
+        st.markdown("---")
+        st.header("📊 Análisis Demográfico por Género")
+        st.markdown("*Visualización especializada con gráfico de mariposa (butterfly chart)*")
+        
+        # Configuración de la sección de género
+        col_config1, col_config2, col_config3 = st.columns([2, 1, 1])
+        
+        with col_config1:
+            st.info("💡 **Gráfico de Mariposa**: Permite comparar la distribución por género de forma simétrica, "
+                   "facilitando la identificación de patrones demográficos y brechas entre hombres y mujeres.")
+        
+        with col_config2:
+            tipo_mariposa = st.selectbox(
+                "Estilo del Gráfico:",
+                ["Avanzado", "Básico"],
+                help="Selecciona el nivel de detalle del gráfico"
+            )
+        
+        with col_config3:
+            mostrar_metricas = st.checkbox(
+                "Mostrar métricas detalladas",
+                value=True,
+                help="Incluir métricas adicionales de análisis de género"
+            )
+        
+        # Preparar datos para el gráfico de mariposa
+        try:
+            # Crear grupos de edad si no existe la columna grupo_etario
+            if 'grupo_etario' not in df_filtrado.columns and 'edad' in df_filtrado.columns:
+                # Crear grupos de edad basados en la edad
+                df_temp = df_filtrado.copy()
+                df_temp['grupo_etario'] = pd.cut(
+                    df_temp['edad'], 
+                    bins=[0, 5, 11, 17, 29, 39, 49, 59, 69, 100],
+                    labels=['0-5', '6-11', '12-17', '18-29', '30-39', '40-49', '50-59', '60-69', '70+'],
+                    right=True
+                )
+            else:
+                df_temp = df_filtrado.copy()
+            
+            # Mapear sexo para consistencia
+            if 'sexo' in df_temp.columns:
+                sexo_mapping = {'M': 'Masculino', 'F': 'Femenino', 'H': 'Masculino', 'MASCULINO': 'Masculino', 'FEMENINO': 'Femenino'}
+                df_temp['genero'] = df_temp['sexo'].map(sexo_mapping).fillna(df_temp['sexo'])
+            
+            # Agrupar datos por género y grupo etario
+            if 'grupo_etario' in df_temp.columns:
+                datos_mariposa = df_temp.groupby(['grupo_etario', 'genero']).size().reset_index()
+                datos_mariposa.columns = ['edad_grupo', 'genero', 'cantidad']
+            else:
+                # Crear datos simulados si no hay grupos etarios
+                import numpy as np
+                np.random.seed(42)
+                grupos_edad = ['0-5', '6-11', '12-17', '18-29', '30-39', '40-49', '50-59', '60-69', '70+']
+                
+                datos_mariposa = []
+                total_masculino = len(df_temp[df_temp['genero'] == 'Masculino']) if 'genero' in df_temp.columns else len(df_temp) // 2
+                total_femenino = len(df_temp[df_temp['genero'] == 'Femenino']) if 'genero' in df_temp.columns else len(df_temp) // 2
+                
+                for grupo in grupos_edad:
+                    # Distribución proporcional simulada
+                    prop = np.random.beta(2, 2)
+                    masc_cantidad = int(total_masculino * prop / len(grupos_edad))
+                    fem_cantidad = int(total_femenino * prop / len(grupos_edad))
+                    
+                    datos_mariposa.append({'edad_grupo': grupo, 'genero': 'Masculino', 'cantidad': masc_cantidad})
+                    datos_mariposa.append({'edad_grupo': grupo, 'genero': 'Femenino', 'cantidad': fem_cantidad})
+                
+                datos_mariposa = pd.DataFrame(datos_mariposa)
+            
+            # Crear el gráfico de mariposa según la configuración
+            if tipo_mariposa == "Avanzado":
+                fig_mariposa = crear_grafico_mariposa_avanzado(datos_mariposa)
+            else:
+                fig_mariposa = crear_grafico_mariposa_genero(datos_mariposa)
+            
+            # Mostrar el gráfico
+            st.plotly_chart(fig_mariposa, use_container_width=True)
+            
+            # Mostrar métricas detalladas si está habilitado
+            if mostrar_metricas and not datos_mariposa.empty:
+                st.markdown("### 📈 Métricas Demográficas Detalladas")
+                
+                # Calcular métricas por género
+                metricas_genero = datos_mariposa.groupby('genero')['cantidad'].agg(['sum', 'mean', 'std']).round(2)
+                
+                col_metr1, col_metr2, col_metr3, col_metr4 = st.columns(4)
+                
+                with col_metr1:
+                    if 'Masculino' in metricas_genero.index:
+                        total_masc = int(metricas_genero.loc['Masculino', 'sum'])
+                        promedio_masc = metricas_genero.loc['Masculino', 'mean']
+                        st.metric(
+                            label="👨 Total Masculino",
+                            value=f"{total_masc:,}",
+                            delta=f"Promedio: {promedio_masc:.1f}"
+                        )
+                    else:
+                        st.metric(label="👨 Total Masculino", value="0")
+                
+                with col_metr2:
+                    if 'Femenino' in metricas_genero.index:
+                        total_fem = int(metricas_genero.loc['Femenino', 'sum'])
+                        promedio_fem = metricas_genero.loc['Femenino', 'mean']
+                        st.metric(
+                            label="👩 Total Femenino",
+                            value=f"{total_fem:,}",
+                            delta=f"Promedio: {promedio_fem:.1f}"
+                        )
+                    else:
+                        st.metric(label="👩 Total Femenino", value="0")
+                
+                with col_metr3:
+                    if 'Masculino' in metricas_genero.index and 'Femenino' in metricas_genero.index:
+                        total_masc = metricas_genero.loc['Masculino', 'sum']
+                        total_fem = metricas_genero.loc['Femenino', 'sum']
+                        diferencia = abs(total_fem - total_masc)
+                        brecha_porcentual = (diferencia / max(total_masc, total_fem) * 100) if max(total_masc, total_fem) > 0 else 0
+                        st.metric(
+                            label="📊 Brecha de Género",
+                            value=f"{diferencia:,.0f}",
+                            delta=f"{brecha_porcentual:.1f}%"
+                        )
+                    else:
+                        st.metric(label="📊 Brecha de Género", value="N/A")
+                
+                with col_metr4:
+                    total_general = datos_mariposa['cantidad'].sum()
+                    grupos_activos = datos_mariposa['edad_grupo'].nunique()
+                    st.metric(
+                        label="👥 Total General",
+                        value=f"{total_general:,}",
+                        delta=f"{grupos_activos} grupos etarios"
+                    )
+                
+                # Análisis por grupo etario con mayor detalle
+                st.markdown("#### 🎯 Análisis por Grupo Etario")
+                
+                # Tabla detallada por grupo etario
+                tabla_grupos = datos_mariposa.pivot_table(
+                    index='edad_grupo', 
+                    columns='genero', 
+                    values='cantidad', 
+                    fill_value=0
+                ).reset_index()
+                
+                # Agregar columnas calculadas
+                if 'Masculino' in tabla_grupos.columns and 'Femenino' in tabla_grupos.columns:
+                    tabla_grupos['Total'] = tabla_grupos['Masculino'] + tabla_grupos['Femenino']
+                    tabla_grupos['% Femenino'] = (tabla_grupos['Femenino'] / tabla_grupos['Total'] * 100).round(1)
+                    tabla_grupos['Diferencia'] = abs(tabla_grupos['Femenino'] - tabla_grupos['Masculino'])
+                
+                # Mostrar la tabla con formato
+                st.dataframe(
+                    tabla_grupos,
+                    hide_index=True,
+                    use_container_width=True,
+                    column_config={
+                        "edad_grupo": "Grupo de Edad",
+                        "Masculino": st.column_config.NumberColumn("👨 Masculino", format="%d"),
+                        "Femenino": st.column_config.NumberColumn("👩 Femenino", format="%d"),
+                        "Total": st.column_config.NumberColumn("👥 Total", format="%d"),
+                        "% Femenino": st.column_config.NumberColumn("% Femenino", format="%.1f%%"),
+                        "Diferencia": st.column_config.NumberColumn("Diferencia", format="%d")
+                    }
+                )
+                
+                # Insights automáticos
+                with st.expander("🔍 Insights Automáticos del Análisis de Género"):
+                    insights = []
+                    
+                    if not tabla_grupos.empty and 'Total' in tabla_grupos.columns:
+                        # Grupo con mayor población
+                        grupo_mayor = tabla_grupos.loc[tabla_grupos['Total'].idxmax(), 'edad_grupo']
+                        mayor_total = tabla_grupos['Total'].max()
+                        insights.append(f"📊 **Grupo más numeroso**: {grupo_mayor} con {mayor_total:,} personas")
+                        
+                        # Grupo con mayor brecha de género
+                        if 'Diferencia' in tabla_grupos.columns:
+                            grupo_brecha = tabla_grupos.loc[tabla_grupos['Diferencia'].idxmax(), 'edad_grupo']
+                            mayor_brecha = tabla_grupos['Diferencia'].max()
+                            insights.append(f"⚖️ **Mayor brecha de género**: {grupo_brecha} con diferencia de {mayor_brecha:,}")
+                        
+                        # Paridad de género general
+                        if 'Masculino' in tabla_grupos.columns and 'Femenino' in tabla_grupos.columns:
+                            total_masc_global = tabla_grupos['Masculino'].sum()
+                            total_fem_global = tabla_grupos['Femenino'].sum()
+                            paridad_global = min(total_masc_global, total_fem_global) / max(total_masc_global, total_fem_global) * 100
+                            
+                            if paridad_global >= 95:
+                                insights.append(f"✅ **Excelente paridad de género**: {paridad_global:.1f}% (muy equilibrado)")
+                            elif paridad_global >= 85:
+                                insights.append(f"✅ **Buena paridad de género**: {paridad_global:.1f}% (equilibrado)")
+                            elif paridad_global >= 70:
+                                insights.append(f"⚠️ **Paridad moderada**: {paridad_global:.1f}% (ligero desequilibrio)")
+                            else:
+                                insights.append(f"🔴 **Baja paridad de género**: {paridad_global:.1f}% (desequilibrio significativo)")
+                        
+                        # Grupo con mejor paridad
+                        if '% Femenino' in tabla_grupos.columns:
+                            tabla_grupos['paridad_score'] = 100 - abs(tabla_grupos['% Femenino'] - 50)
+                            mejor_paridad_idx = tabla_grupos['paridad_score'].idxmax()
+                            mejor_grupo = tabla_grupos.loc[mejor_paridad_idx, 'edad_grupo']
+                            mejor_score = tabla_grupos.loc[mejor_paridad_idx, 'paridad_score']
+                            insights.append(f"🎯 **Mejor equilibrio de género**: {mejor_grupo} (puntuación: {mejor_score:.1f}/100)")
+                    
+                    for insight in insights:
+                        st.markdown(f"- {insight}")
+                    
+                    if not insights:
+                        st.markdown("- 📋 No hay suficientes datos para generar insights automáticos")
+        
+        except Exception as e:
+            st.error(f"Error al generar el gráfico de mariposa: {str(e)}")
+            st.info("💡 **Sugerencia**: Verifique que los datos contengan las columnas 'sexo' y 'grupo_etario' o 'edad' para generar el análisis demográfico.")
     
     # Sección de resumen
     st.markdown("---")

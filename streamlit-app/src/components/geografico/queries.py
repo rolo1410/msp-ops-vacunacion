@@ -1,0 +1,49 @@
+AGRUPADO_PROVINCIASSQL = """SELECT
+	le.ZON_DESCRIPCION AS zona,
+	le.DIS_CODIGO AS distrito,
+	le.CIR_CODIGO AS circuito,
+	SUM(COUNT(v.num_iden)) OVER (PARTITION BY le.ZON_DESCRIPCION ) AS total_vacunas_zona,
+	SUM(COUNT(v.num_iden)) OVER (PARTITION BY le.ZON_DESCRIPCION,le.DIS_CODIGO ) AS total_vacunas_distrito,
+	SUM(COUNT(v.num_iden)) OVER (PARTITION BY le.ZON_DESCRIPCION,le.DIS_CODIGO, le.CIR_CODIGO ) AS total_vacunas_distrito
+FROM
+	vacunacion.main.lk_establecimiento le
+LEFT JOIN
+    vacunacion.main.db_vacunacion v ON
+	le.UNI_CODIGO = v.unicodigo
+WHERE
+	le.LATGPS IS NOT NULL
+	AND TRY_CAST(le.LONGPS AS DOUBLE) IS NOT NULL
+	AND TRY_CAST(le.LATGPS AS DOUBLE) != 0
+	AND TRY_CAST(le.LONGPS AS DOUBLE) != 0
+	AND TRY_CAST(le.LATGPS AS DOUBLE) BETWEEN -5 AND 2
+	AND TRY_CAST(le.LONGPS AS DOUBLE) BETWEEN -92 AND -75
+GROUP BY
+    le.ZON_DESCRIPCION,
+	le.CIR_CODIGO,
+	le.DIS_CODIGO"""
+ 
+ 
+AGRUPADO_ZONAS_SQL = """
+ SELECT
+	le.ZON_DESCRIPCION AS zona,
+	le.DIS_CODIGO AS distrito,
+	le.CIR_CODIGO AS circuito,
+	SUM(COUNT(v.num_iden)) OVER (PARTITION BY le.ZON_DESCRIPCION ) AS total_vacunas_zona,
+	SUM(COUNT(v.num_iden)) OVER (PARTITION BY le.ZON_DESCRIPCION,le.DIS_CODIGO ) AS total_vacunas_distrito,
+	SUM(COUNT(v.num_iden)) OVER (PARTITION BY le.ZON_DESCRIPCION,le.DIS_CODIGO, le.CIR_CODIGO ) AS total_vacunas_distrito
+FROM
+	vacunacion.main.lk_establecimiento le
+LEFT JOIN
+    vacunacion.main.db_vacunacion v ON
+	le.UNI_CODIGO = v.unicodigo
+WHERE
+	le.LATGPS IS NOT NULL
+	AND TRY_CAST(le.LONGPS AS DOUBLE) IS NOT NULL
+	AND TRY_CAST(le.LATGPS AS DOUBLE) != 0
+	AND TRY_CAST(le.LONGPS AS DOUBLE) != 0
+	AND TRY_CAST(le.LATGPS AS DOUBLE) BETWEEN -5 AND 2
+	AND TRY_CAST(le.LONGPS AS DOUBLE) BETWEEN -92 AND -75
+GROUP BY
+    le.ZON_DESCRIPCION,
+	le.CIR_CODIGO,
+	le.DIS_CODIGO"""
