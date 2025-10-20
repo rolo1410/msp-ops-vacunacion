@@ -87,6 +87,7 @@ def load_zonas_planificacion():
         shapefile_path = os.path.join(
             os.path.dirname(__file__), 
             '..', 
+            '..', 
             'resources', 
             'dis_administrativa', 
             'ZONAS_PLANIFICACION_SENPLADES.shp'
@@ -436,6 +437,11 @@ def show_general():
     with col_filtro8:
         st.write("")  # Espacio para alineación
         if st.button("Limpiar Filtros"):
+            # Limpiar los valores de session state si existen
+            for key in list(st.session_state.keys()):
+                if key.startswith('filter_'):
+                    del st.session_state[key]
+            # Solo hacer rerun si realmente se limpió algo
             st.rerun()
     
     # Aplicar filtros
