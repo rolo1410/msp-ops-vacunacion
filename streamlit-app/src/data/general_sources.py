@@ -47,7 +47,7 @@ FROM
 INNER JOIN vacunacion.main.lk_establecimiento e ON
 	v.unicodigo = e.UNI_CODIGO 
     where fecha_aplicacion is not null
-    and fecha_aplicacion >= '2021-01-01';
+    and fecha_aplicacion >= '2021-01-01' limit 1000000;
 """
 
 QUERY_TOTAL_VACUNAS_POR_GRUPO_ETARIO_Y_GENERO = """
@@ -70,4 +70,21 @@ SELECT
 FROM vacunacion.main.db_vacunacion v
 WHERE fecha_aplicacion IS NOT NULL
   AND fecha_aplicacion >= '2021-01-01';
+"""
+
+
+QUERY_TOTAL_VACUNA_FECHA="""
+SELECT
+    fecha_aplicacion,
+    anio_aplicacion,
+    mes_aplicacion,
+    dia_aplicacion,
+    COUNT(*) AS total_vacunas,
+    COUNT(DISTINCT num_iden) AS total_personas,
+    COUNT(DISTINCT nombre_vacuna) AS total_vacunas_nombres
+FROM vacunacion.main.db_vacunacion v
+WHERE fecha_aplicacion IS NOT NULL
+  AND fecha_aplicacion >= '2021-01-01';
+GROUP BY fecha_aplicacion, anio_aplicacion, mes_aplicacion, dia_aplicacion
+ORDER BY fecha_aplicacion, anio_aplicacion, mes_aplicacion, dia_aplicacion;
 """

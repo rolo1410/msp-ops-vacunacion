@@ -282,30 +282,15 @@ def show_geografico():
     if map_result is not None:
         vaccination_map, shown_count, total_count = map_result
         
-        # Mostrar información sobre el filtrado
-        if shown_count < total_count:
-            st.info(f"ℹ️ Mostrando {shown_count} de {total_count} establecimientos para optimizar rendimiento. Usa los filtros para refinar la vista.")
-        
         # Mostrar el mapa
         st_folium(vaccination_map, width=1000, height=500)
-        
-        # Estadísticas del mapa
-        col_map1, col_map2, col_map3 = st.columns(3)
-        with col_map1:
-            st.info(f"📍 **{shown_count}** establecimientos mostrados en el mapa")
-        with col_map2:
-            max_vacunas_establecimiento = df_filtered['total_vacunas'].max()
-            st.info(f"💉 **{max_vacunas_establecimiento:,}** vacunas máximas por establecimiento")
-        with col_map3:
-            promedio_coords = df_filtered.dropna(subset=['latitud', 'longitud'])['total_vacunas'].mean()
-            st.info(f"📊 **{promedio_coords:.1f}** promedio de vacunas por establecimiento")
     else:
         st.warning("No se pudieron cargar datos geográficos válidos para el mapa.")
     
     st.markdown("---")
     
     # Crear dos columnas para los gráficos
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])
     
     with col1:
         # Gráfico de barras por provincia (si se muestran todas las provincias)
@@ -350,38 +335,8 @@ def show_geografico():
             )
             fig_canton.update_layout(height=500)
             st.plotly_chart(fig_canton, use_container_width=True)
-    
     with col2:
-        # Gráfico de dispersión: Establecimientos vs Vacunas
-        st.subheader("📈 Relación Establecimientos vs Vacunas")
-        
-        if provincia_seleccionada == "Todas":
-            df_scatter = df_geo.groupby('provincia').agg({
-                'total_vacunas': 'sum',
-                'total_establecimientos': 'sum'
-            }).reset_index()
-            hover_data = ['provincia']
-        else:
-            df_scatter = df_filtered.groupby('canton').agg({
-                'total_vacunas': 'sum',
-                'total_establecimientos': 'sum'
-            }).reset_index()
-            hover_data = ['canton']
-        
-        fig_scatter = px.scatter(
-            df_scatter,
-            x='total_establecimientos',
-            y='total_vacunas',
-            size='total_vacunas',
-            hover_data=hover_data,
-            title="Relación entre Establecimientos y Vacunas",
-            labels={
-                'total_establecimientos': 'Total de Establecimientos',
-                'total_vacunas': 'Total de Vacunas'
-            }
-        )
-        fig_scatter.update_layout(height=500)
-        st.plotly_chart(fig_scatter, use_container_width=True)
+        st.markdown('')
     
     # Tabla detallada
     st.subheader("📋 Tabla Detallada")

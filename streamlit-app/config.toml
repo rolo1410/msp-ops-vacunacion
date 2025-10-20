@@ -1,5 +1,5 @@
 [settings]
-title = "Sistema de Vacunación MSP"
+title = "Sistema de Vacunación MSP (Entorno pruebas)"
 description = "Sistema de análisis y control de vacunación del Ministerio de Salud Pública"
 version = "1.0.0"
 
@@ -9,10 +9,10 @@ enableCORS = false
 maxUploadSize = 200
 
 [theme]
-# Tema Light Moderno
+# Tema Light Moderno con fondo gris ceniza
 primaryColor = "#FF6B6B"
-backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F0F2F6"
+backgroundColor = "#A9A9A9"
+secondaryBackgroundColor = "#D3D3D3"
 textColor = "#262730"
 font = "sans serif"
 

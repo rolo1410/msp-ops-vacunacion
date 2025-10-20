@@ -213,19 +213,6 @@ def create_zona_distribution_map(df_filtrado: pd.DataFrame, gdf_zonas: gpd.GeoDa
                         }
                     ).add_to(m)
             
-            # Agregar nota sobre datos simulados
-            note_html = '''
-            <div style="position: fixed; 
-                        top: 10px; right: 10px; width: 200px; height: 70px; 
-                        background-color: white; border:2px solid grey; z-index:9999; 
-                        font-size:14px; color: red; font-weight: bold;
-                        ">
-                <p style="margin: 10px;"><u>Nota:</u><br>
-                Los datos mostrados son simulados para demostración.</p>
-            </div>
-            '''
-            m.get_root().html.add_child(folium.Element(note_html))
-        
         # Agregar control de capas
         folium.LayerControl().add_to(m)
         
@@ -573,7 +560,7 @@ def show_general():
     # Estadísticas por sexo (si hay datos y el sexo no está filtrado)
     if not df_filtrado.empty and sexo_seleccionado == "Todos" and 'sexo' in df_filtrado.columns:
         st.markdown("---")
-        st.subheader("Distribución por Sexo")
+        st.subheader("Distribución por Sexo (***** revisar TODO: Actualizar con consuta simple conte por sexo)")
         
         # Calcular estadísticas por sexo
         stats_sexo = df_filtrado.groupby('sexo').agg({
@@ -590,7 +577,7 @@ def show_general():
         stats_sexo.columns = ['Sexo', 'Vacunados', 'Establecimientos', 'Total Vacunas']
         
         # Mostrar en columnas
-        col_sexo1, col_sexo2 = st.columns([2, 1])
+        col_sexo2, col_sexo1 = st.columns([8, 4])
         
         with col_sexo1:
             # Tabla de estadísticas por sexo
@@ -614,7 +601,7 @@ def show_general():
     # Estadísticas por zona (si hay datos y la zona no está filtrada)
     if not df_filtrado.empty and zona_seleccionada == "Todas" and 'zona' in df_filtrado.columns:
         st.markdown("---")
-        st.subheader("Distribución por Zonas")
+        st.subheader("Distribución por Zonas (***** revisar TODO: asociar vacunas con shape)")
         
         # Cargar datos geográficos de zonas
         gdf_zonas = load_zonas_planificacion()
@@ -636,7 +623,7 @@ def show_general():
         # Crear pestañas para diferentes vistas
         tab_tabla, tab_grafico, tab_mapa = st.tabs(["📊 Tabla de Datos", "📈 Gráfico Circular", "🗺️ Mapa Geográfico"])
         
-        with tab_tabla:
+        with tab_grafico:
             # Mostrar en columnas para la tabla
             col_zona1, col_zona2 = st.columns([3, 1])
             
@@ -685,7 +672,7 @@ def show_general():
                     value=f"{promedio_vacunas:,.0f}"
                 )
         
-        with tab_grafico:
+        with tab_tabla:
             # Crear dos columnas para gráficos
             col_grafico1, col_grafico2 = st.columns([1, 1])
             
@@ -721,34 +708,8 @@ def show_general():
             mapa = create_zona_distribution_map(df_filtrado, gdf_zonas)
             
             if mapa is not None:
-                # Mostrar información sobre el mapa
-                st.info("🗺️ **Instrucciones del Mapa:**\n"
-                        "- Haga clic en las zonas para ver información detallada\n"
-                        "- Use los controles de zoom para navegar\n"
-                        "- Los colores más intensos indican mayor número de vacunas aplicadas")
-                
                 # Mostrar el mapa
                 st_folium(mapa, width=700, height=500)
-                
-                # Mostrar información adicional del mapa
-                col_info1, col_info2 = st.columns([1, 1])
-                
-                with col_info1:
-                    st.write("##### Información de las Zonas de Planificación")
-                    if len(gdf_zonas) > 0:
-                        st.write(f"- **Total de zonas cargadas:** {len(gdf_zonas)}")
-                        # Mostrar algunas columnas disponibles en el shapefile
-                        columnas_disponibles = [col for col in gdf_zonas.columns if col != 'geometry'][:5]
-                        if columnas_disponibles:
-                            st.write(f"- **Campos disponibles:** {', '.join(columnas_disponibles)}")
-                
-                with col_info2:
-                    st.write("##### Estadísticas del Mapa")
-                    zonas_con_datos = len(stats_zona)
-                    st.write(f"- **Zonas con datos de vacunación:** {zonas_con_datos}")
-                    st.write(f"- **Total de vacunas mapeadas:** {stats_zona['Total Vacunas'].sum():,}")
-                    st.write(f"- **Cobertura promedio por zona:** {stats_zona['Total Vacunas'].mean():.0f} vacunas")
-            
             else:
                 st.error("No se pudo generar el mapa. Verifique que los datos geográficos estén correctamente cargados.")
             
@@ -796,7 +757,7 @@ def show_general():
     # Análisis de Dosis Aplicadas
     if not df_filtrado.empty and 'dosis_aplicada' in df_filtrado.columns:
         st.markdown("---")
-        st.subheader("Análisis de Dosis Aplicadas")
+        st.subheader("Análisis de Dosis Aplicadas (***** revisar TODO: Cambiar a conteo por query)")
         
         # Calcular estadísticas de dosis
         dosis_stats = df_filtrado['dosis_aplicada'].value_counts().sort_index()
@@ -894,11 +855,7 @@ def show_general():
                 )
             
             with col_metr2:
-                promedio_por_tipo = dosis_stats.mean()
-                st.metric(
-                    label="Promedio por Tipo",
-                    value=f"{promedio_por_tipo:,.0f}"
-                )
+                st.markdown("")
             
             with col_metr3:
                 total_tipos_dosis = len(dosis_stats)
@@ -909,7 +866,7 @@ def show_general():
             
             # Análisis de dosis por sexo
             if 'sexo' in df_filtrado.columns:
-                st.write("#### Distribución de Dosis por Sexo")
+                st.write("#### Distribución de Dosis por Sexo y grupo etario (Gráfico Mariposa)")
                 
                 # Crear datos para el análisis cruzado de dosis y sexo
                 dosis_sexo = df_filtrado.groupby(['dosis_aplicada', 'sexo']).size().unstack(fill_value=0)
@@ -1099,18 +1056,7 @@ def show_general():
                     col_comp1, col_comp2, col_comp3 = st.columns(3)
                     
                     with col_comp1:
-                        if 'F' in total_por_sexo.index and 'M' in total_por_sexo.index:
-                            diferencia = abs(total_por_sexo['F'] - total_por_sexo['M'])
-                            st.metric(
-                                label="Diferencia H/M",
-                                value=f"{diferencia:,}",
-                                delta=f"Brecha de género"
-                            )
-                        else:
-                            st.metric(
-                                label="Diferencia H/M",
-                                value="N/A"
-                            )
+                        st.markdown("")
                     
                     with col_comp2:
                         if len(total_por_sexo) > 0:
@@ -1513,7 +1459,7 @@ def show_general():
     
     with col1:
         # Gráfico de progreso de vacunación
-        st.write("### Progreso de Vacunación")
+        st.write("### Progreso de Vacunación (**** TODO: Ajustar según datos disponibles ****)")
         
         if not df_filtrado.empty:
             # Si se seleccionó un mes específico, mostrar progreso diario
@@ -1526,7 +1472,7 @@ def show_general():
                     x=vacunas_por_dia.index,
                     y=vacunas_por_dia.values,
                     name='Vacunas por Día',
-                    marker_color='lightblue'
+                    marker_color='lightGeen'
                 ))
                 
                 # Obtener nombre del mes de forma segura
@@ -1622,25 +1568,4 @@ def show_general():
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
-        st.write("### Indicadores Clave")
-        
-        # Indicadores basados en datos filtrados
-        if not df_filtrado.empty:
-            total_registros = len(df_filtrado)
-            establecimientos_activos = df_filtrado['unicodigo'].nunique()
-            
-            st.info(f"**Registros en período:** {total_registros:,}")
-            st.success(f"**Establecimientos activos:** {establecimientos_activos}")
-            
-            # Calcular estadísticas adicionales
-            if 'dosis_aplicada' in df_filtrado.columns:
-                dosis_info = df_filtrado['dosis_aplicada'].value_counts()
-                st.info(f"**Dosis más aplicada:** {dosis_info.index[0] if len(dosis_info) > 0 else 'N/A'}")
-            
-            if 'sexo' in df_filtrado.columns:
-                distribucion_sexo = df_filtrado['sexo'].value_counts()
-                if len(distribucion_sexo) > 0:
-                    porcentaje_f = (distribucion_sexo.get('F', 0) / len(df_filtrado) * 100)
-                    st.info(f"**Distribución F/M:** {porcentaje_f:.1f}% / {100-porcentaje_f:.1f}%")
-        else:
-            st.warning("No hay datos para el período seleccionado")
+        st.markdown('')

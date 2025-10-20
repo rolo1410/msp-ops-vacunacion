@@ -8,11 +8,11 @@ enableCORS = false
 maxUploadSize = 200
 
 [theme]
-# Tema personalizado basado en MSP
+# Tema personalizado basado en MSP con fondo gris ceniza
 primaryColor = "#FF6B6B"
-backgroundColor = "#0E1117"
-secondaryBackgroundColor = "#262730"
-textColor = "#FAFAFA"
+backgroundColor = "#A9A9A9"
+secondaryBackgroundColor = "#D3D3D3"
+textColor = "#262730"
 font = "sans serif"
 
 [client]
