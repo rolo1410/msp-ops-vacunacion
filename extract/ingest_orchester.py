@@ -37,7 +37,7 @@ def ingest_vacunacion_covid(since, until, chunk_size=1000000):
     logging.info("|- Usando versión paralela con persistencia automática")
     
     # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb
-    #load_lake_db_vacunacion_covid(since, until, chunk_size)
+    load_lake_db_vacunacion_covid(since, until, chunk_size)
     
     ## obtiene los datos de vacunación de rutina
     ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)
