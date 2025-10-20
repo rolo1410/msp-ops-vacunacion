@@ -2,8 +2,8 @@ import streamlit as st
 
 from components.analisis_temporal import show_analisis_temporal
 from components.calidad import show_calidad
-from components.general import show_general
 from components.geografico import show_geografico
+from components.general import show_general
 from utils.helpers import get_favicon_path
 
 

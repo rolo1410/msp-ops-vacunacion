@@ -15,8 +15,6 @@ except ImportError:
     st.warning("Módulos geoespaciales no disponibles. Instale geopandas, folium y streamlit-folium para ver mapas.")
 
 from data.source import QUERY_VACUNAS_TEMPORAL_FULL, get_duck_db_data
-from .general.seccion_genero import crear_grafico_mariposa_genero, crear_grafico_mariposa_avanzado
-
 
 def safe_get_unique_values(df, column_name, default_values=None):
     """
