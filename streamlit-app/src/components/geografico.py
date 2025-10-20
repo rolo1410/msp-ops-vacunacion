@@ -186,7 +186,7 @@ def show_geografico():
         le.CAN_DESCRIPCION, le.DIS_CODIGO, le.TIPO_ESTABLECEMIENTO,
         le.LATGPS, le.LONGPS
     ORDER BY 
-        total_vacunas DESC
+        total_vacunas DESC limit 10000
         """
         
         df_geo = get_duck_db_data(query_geografico)

@@ -5,16 +5,14 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-try:
-    import geopandas as gpd
-    import folium
-    from streamlit_folium import st_folium
-    GEOSPATIAL_AVAILABLE = True
-except ImportError:
-    GEOSPATIAL_AVAILABLE = False
-    st.warning("Módulos geoespaciales no disponibles. Instale geopandas, folium y streamlit-folium para ver mapas.")
 
-from data.source import QUERY_VACUNAS_TEMPORAL_FULL, get_duck_db_data
+
+import geopandas as gpd
+import folium
+from streamlit_folium import st_folium
+
+from data.source import get_duck_db_data
+from data.general_sources import QUERY_TOTAL_VACUNAS, QUERY_VACUNAS_TEMPORAL_FULL
 
 def safe_get_unique_values(df, column_name, default_values=None):
     """
@@ -84,9 +82,6 @@ def load_zonas_planificacion():
     """
     Carga los datos de zonas de planificación de SENPLADES desde el shapefile.
     """
-    if not GEOSPATIAL_AVAILABLE:
-        return None
-    
     try:
         # Ruta al archivo shapefile
         shapefile_path = os.path.join(
@@ -128,9 +123,6 @@ def create_zona_distribution_map(df_filtrado: pd.DataFrame, gdf_zonas: gpd.GeoDa
     """
     Crea un mapa de distribución de vacunación por zonas usando folium.
     """
-    if not GEOSPATIAL_AVAILABLE or gdf_zonas is None:
-        return None
-    
     try:
         # Calcular estadísticas de vacunación por zona
         if 'zona' not in df_filtrado.columns:
@@ -520,15 +512,13 @@ def show_general():
     
     
     # Métricas principales
-    col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12 = st.columns(12)
-    
+    col1, col2, col3, col4, col5, col6= st.columns(6)
+    df_totales = get_duck_db_data(QUERY_TOTAL_VACUNAS)
     with col1:
-        total_vacunas = df_filtrado.groupby('num_iden').size().sum() if not df_filtrado.empty else 0
-        delta_vacunas = delta_total_vacunas(df_filtrado) if not df_filtrado.empty else 0
+        total_vacunas = df_totales['total_vacunas'].values[0] if not df_totales.empty else 0
         st.metric(
             label="Total Vacunas Aplicadas",
             value=f"{total_vacunas:,}",
-            delta=f"{delta_vacunas}"
         )
     
     with col2:
@@ -548,20 +538,20 @@ def show_general():
             delta=f"{delta_vacunados_val}"
         )
     
-    with col5:
+    with col4:
         st.metric(
             label="Fechas en Período",
             value=f"{df_filtrado['fecha_aplicacion'].nunique()}"
         )
     
-    with col6:
+    with col5:
         vacunas_unicas = df_filtrado['nombre_vacuna'].nunique() if 'nombre_vacuna' in df_filtrado.columns else 0
         st.metric(
             label="Tipos de Vacunas",
             value=f"{vacunas_unicas}"
         )
     
-    with col7:
+    with col6:
         if 'zona' in df_filtrado.columns:
             zonas_activas = df_filtrado['zona'].nunique()
             st.metric(
@@ -719,68 +709,43 @@ def show_general():
                 st.plotly_chart(fig_bar, use_container_width=True)
         
         with tab_mapa:
-            if GEOSPATIAL_AVAILABLE and gdf_zonas is not None:
-                st.write("#### Mapa de Distribución Geográfica de Vacunación por Zonas")
+            st.write("#### Mapa de Distribución Geográfica de Vacunación por Zonas")
+            
+            # Crear el mapa
+            mapa = create_zona_distribution_map(df_filtrado, gdf_zonas)
+            
+            if mapa is not None:
+                # Mostrar información sobre el mapa
+                st.info("🗺️ **Instrucciones del Mapa:**\n"
+                        "- Haga clic en las zonas para ver información detallada\n"
+                        "- Use los controles de zoom para navegar\n"
+                        "- Los colores más intensos indican mayor número de vacunas aplicadas")
                 
-                # Crear el mapa
-                mapa = create_zona_distribution_map(df_filtrado, gdf_zonas)
+                # Mostrar el mapa
+                st_folium(mapa, width=700, height=500)
                 
-                if mapa is not None:
-                    # Mostrar información sobre el mapa
-                    st.info("🗺️ **Instrucciones del Mapa:**\n"
-                           "- Haga clic en las zonas para ver información detallada\n"
-                           "- Use los controles de zoom para navegar\n"
-                           "- Los colores más intensos indican mayor número de vacunas aplicadas")
-                    
-                    # Mostrar el mapa
-                    st_folium(mapa, width=700, height=500)
-                    
-                    # Mostrar información adicional del mapa
-                    col_info1, col_info2 = st.columns([1, 1])
-                    
-                    with col_info1:
-                        st.write("##### Información de las Zonas de Planificación")
-                        if len(gdf_zonas) > 0:
-                            st.write(f"- **Total de zonas cargadas:** {len(gdf_zonas)}")
-                            # Mostrar algunas columnas disponibles en el shapefile
-                            columnas_disponibles = [col for col in gdf_zonas.columns if col != 'geometry'][:5]
-                            if columnas_disponibles:
-                                st.write(f"- **Campos disponibles:** {', '.join(columnas_disponibles)}")
-                    
-                    with col_info2:
-                        st.write("##### Estadísticas del Mapa")
-                        zonas_con_datos = len(stats_zona)
-                        st.write(f"- **Zonas con datos de vacunación:** {zonas_con_datos}")
-                        st.write(f"- **Total de vacunas mapeadas:** {stats_zona['Total Vacunas'].sum():,}")
-                        st.write(f"- **Cobertura promedio por zona:** {stats_zona['Total Vacunas'].mean():.0f} vacunas")
+                # Mostrar información adicional del mapa
+                col_info1, col_info2 = st.columns([1, 1])
                 
-                else:
-                    st.error("No se pudo generar el mapa. Verifique que los datos geográficos estén correctamente cargados.")
+                with col_info1:
+                    st.write("##### Información de las Zonas de Planificación")
+                    if len(gdf_zonas) > 0:
+                        st.write(f"- **Total de zonas cargadas:** {len(gdf_zonas)}")
+                        # Mostrar algunas columnas disponibles en el shapefile
+                        columnas_disponibles = [col for col in gdf_zonas.columns if col != 'geometry'][:5]
+                        if columnas_disponibles:
+                            st.write(f"- **Campos disponibles:** {', '.join(columnas_disponibles)}")
+                
+                with col_info2:
+                    st.write("##### Estadísticas del Mapa")
+                    zonas_con_datos = len(stats_zona)
+                    st.write(f"- **Zonas con datos de vacunación:** {zonas_con_datos}")
+                    st.write(f"- **Total de vacunas mapeadas:** {stats_zona['Total Vacunas'].sum():,}")
+                    st.write(f"- **Cobertura promedio por zona:** {stats_zona['Total Vacunas'].mean():.0f} vacunas")
             
             else:
-                st.warning("📍 **Funcionalidad de mapas no disponible**\n\n"
-                          "Para visualizar el mapa geográfico de distribución por zonas, instale las siguientes dependencias:\n"
-                          "```bash\n"
-                          "pip install geopandas folium streamlit-folium\n"
-                          "```\n\n"
-                          "Una vez instaladas, reinicie la aplicación para ver el mapa interactivo.")
-                
-                # Mostrar un gráfico alternativo mientras tanto
-                st.write("#### Vista Alternativa: Gráfico de Barras por Zona")
-                fig_alt = px.bar(
-                    stats_zona.sort_values('Total Vacunas', ascending=False),
-                    x='Zona',
-                    y='Total Vacunas',
-                    title='Distribución de Vacunas por Zona',
-                    color='Total Vacunas',
-                    color_continuous_scale='blues'
-                )
-                fig_alt.update_layout(
-                    xaxis_tickangle=-45,
-                    height=400
-                )
-                st.plotly_chart(fig_alt, use_container_width=True)
-    
+                st.error("No se pudo generar el mapa. Verifique que los datos geográficos estén correctamente cargados.")
+            
     # Estadísticas por grupo etario (si hay datos y el grupo etario no está filtrado)
     if not df_filtrado.empty and grupo_etario_seleccionado == "Todos" and 'grupo_etario' in df_filtrado.columns:
         st.markdown("---")

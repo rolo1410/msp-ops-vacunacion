@@ -8,32 +8,6 @@ from dotenv import load_dotenv
 load_dotenv()
 DB_PATH = os.getenv("DUCK_DB_PATH")
 
-# Consulta SQL
-QUERY_VACUNAS_TEMPORAL_FULL = """
-SELECT
-	unicodigo,
-	e.LATGPS uni_lat, 
-	e.LONGPS uni_long,
-	e.ZON_DESCRIPCION zona,
-	e.CIR_CODIGO circuito,
-	E.DIS_CODIGO distrito,
-	E.PRV_DESCRIPCION provincia,
-	E.CAN_DESCRIPCION canton,
-	E.PAR_DESCRIPCION parroquia,
-	fecha_aplicacion,
-	date_part('year', fecha_aplicacion) as anio_aplicacion,
-	date_part('month', fecha_aplicacion) as mes_aplicacion,
-	date_part('day', fecha_aplicacion) as dia_aplicacion,
-	num_iden,
-	nombre_vacuna,
-	sexo,
-	dosis_aplicada
-FROM
-	vacunacion.main.db_vacunacion v
-INNER JOIN vacunacion.main.lk_establecimiento e ON
-	v.unicodigo = e.UNI_CODIGO
-"""
-
 def get_duck_db_data(query: str) -> pd.DataFrame:
     """Función para ejecutar una consulta SQL en DuckDB y devolver un DataFrame de pandas."""
     con = None

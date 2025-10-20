@@ -126,7 +126,7 @@ def load_lake_db_vacunacion_covid(since: str, until: str, chunk_size: int = 1000
     count=0
     for chunk_df in pd.read_sql(query, connection, chunksize=chunk_size):
         chunk_df.columns = [col.lower() for col in chunk_df.columns]
-        add_new_elements_to_lake('vacunacion', 'lk_vacunacion_covid', ['num_iden','fecha_aplicacion'], chunk_df)
+        add_new_elements_to_lake('vacunacion', 'lk_vacunacion_covid', ['num_iden','fecha_aplicacion', 'tipo_iden', 'nombre_vacuna', 'lote_vacuna', 'fase_vacuna_depurada'], chunk_df)
         logger.info(f"Procesado chunk con {len(chunk_df)} registros")
         count += 1
     logger.info(f"Archivos data lake creados exitosamente")
