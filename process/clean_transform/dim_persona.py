@@ -202,9 +202,6 @@ def _calcular_grupo_etario(df: pl.DataFrame):
         .otherwise(pl.lit("NO DEFINIDO"))
         .alias("grupo_etario")
     )
-    
-
-    
     logging.debug(" |- Grupos etarios calculados correctamente")
     return df
 
@@ -253,14 +250,25 @@ def _homologar_nacionalidad(df: pl.DataFrame):
     print(f"Dim persona - columnas: {len(df)}")
     return df
 
+def _identificar_cedulas_validas(df: pl.DataFrame):
+    logging.info("|- ENR Identificando cédulas válidas")
+    # si es una c'edula valida y el tipo de identificacion es null entonces asignar CÉDULA DE IDENTIDAD
+    df = df.with_columns(
+        pl.when((pl.col("cedula_es_valida") == True) & (pl.col("tipo_iden").is_null()))
+        .then(pl.lit("CÉDULA DE IDENTIDAD"))
+        .otherwise(pl.col("tipo_iden"))
+        .alias("tipo_iden")
+    )
+    return df
+
 def persona_orchester(df: pl.DataFrame):
     df = _crear_dataframe_con_moda_fecha(df)
     df = _limpiar_columnas_texto(df, cols=["tipo_iden", "num_iden", "apellidos", "nombres","nombres_completos", "sexo", "etnia", "nacionalidad"])
     df = _limpiar_columnas_fecha(df, cols=["fecha_nacimiento"])
     df = _limpiar_identificacion(df)
     df = _homologar_nacionalidad(df)
-    print(f"Dim persona - Homologando nacionalidad: {len(df)}")
     df = _calcular_edad(df)
+    df = _identificar_cedulas_validas(df)
     df = _calcular_grupo_etario(df)
     df = _homologar_etnia(df)
     return df
