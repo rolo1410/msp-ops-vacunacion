@@ -58,7 +58,7 @@ def ingest_vacunacion_covid(since, until, chunk_size=1000000):
     ## obtener datos geográficos
     logging.info("|- Procesando datos geográficos")
     geo_df = get_geo_salud_data()
-    add_new_elements_to_lake('vacunacion', 'lk_establecimiento', ['uni_codigo'], geo_df)
+    #add_new_elements_to_lake('vacunacion', 'lk_establecimiento', ['uni_codigo'], geo_df)
     
     logging.info("|- Orquestador de ingesta completado")
 

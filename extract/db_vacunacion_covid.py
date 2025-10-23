@@ -6,7 +6,7 @@ import oracledb
 import pandas as pd
 import polars as pl
 
-from extract.config.sources import DB_VACUNACION, get_oracle_engine
+from extract.config.sources import DB_REPLICA, DB_VACUNACION, get_oracle_engine
 from lake.init_lake import add_new_elements_to_lake
 
 VACUNACION_SCHEMA = {
@@ -105,12 +105,13 @@ def load_lake_db_vacunacion_covid(since: str, until: str, chunk_size: int = 1000
     Carga datos de vacunación COVID en paralelo con persistencia directa en DuckDB
     """
     ## TODO: borrar conexión
+    print(DB_VACUNACION['user'])
     connection = oracledb.connect(
-        user="USR.ROLANDOCASIGNA",
-        password="Salud.2025",
-        host="scan19c-mspvacuna-prod.msp.gob.ec",
-        port=1521,
-        service_name="DB_VACUNACION"
+        user=DB_VACUNACION['user'],
+        password=DB_VACUNACION['password'],
+        host=DB_VACUNACION['host'],
+        port=DB_VACUNACION['port'],
+        service_name=DB_VACUNACION['service_name']
     )
     
     query = f"""
@@ -126,7 +127,7 @@ def load_lake_db_vacunacion_covid(since: str, until: str, chunk_size: int = 1000
     count=0
     for chunk_df in pd.read_sql(query, connection, chunksize=chunk_size):
         chunk_df.columns = [col.lower() for col in chunk_df.columns]
-        add_new_elements_to_lake('vacunacion', 'lk_vacunacion_covid', ['num_iden','fecha_aplicacion', 'tipo_iden', 'nombre_vacuna', 'lote_vacuna', 'fase_vacuna_depurada'], chunk_df)
+        add_new_elements_to_lake('vacunacion', 'lk_vacunacion_covid', ['num_iden','fecha_aplicacion', 'tipo_iden','id_vac_cons', 'nombre_vacuna', 'lote_vacuna', 'profesional_aplica','fase_vacuna_depurada'], chunk_df)
         logger.info(f"Procesado chunk con {len(chunk_df)} registros")
         count += 1
     logger.info(f"Archivos data lake creados exitosamente")

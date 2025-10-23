@@ -492,8 +492,6 @@ def show_general():
         if grupo_etario_seleccionado != "Todos":
             grupo_etario_texto = f" | Grupo Etario: {grupo_etario_seleccionado}"
         
-        st.info(f"Mostrando datos para: {años_texto}{mes_texto}{zona_texto}{sexo_texto}{grupo_etario_texto}")
-        
         # Mostrar resumen de registros filtrados
         total_registros = len(df_filtrado)
         porcentaje_filtrado = (total_registros / len(df) * 100) if len(df) > 0 else 0
