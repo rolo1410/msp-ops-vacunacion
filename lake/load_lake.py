@@ -23,7 +23,6 @@ def load_data_paginated(db, table, page, page_size) -> pl.DataFrame:
     df = pl.from_pandas(df)
     ## convertir los nombres de las columnas a minusculas
     df.columns = [col.lower() for col in df.columns]
-    logging.info(" |- Datos cargados al lago")
     return df
 
 def get_identificaciones_data(db, table, column_id) -> pl.DataFrame:

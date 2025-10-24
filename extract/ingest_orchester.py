@@ -44,21 +44,21 @@ def ingest_vacunacion_covid(since, until, chunk_size=1000000):
     
     # Cargar datos desde el lago para obtener las identificaciones
     logging.info("|- Cargando datos desde el lago para procesamiento posterior")
-    #df = get_identificaciones_data('vacunacion', 'lk_vacunacion_covid', 'num_iden')
+    df = get_identificaciones_data('vacunacion', 'lk_vacunacion_covid', 'num_iden')
     
     # datos del registro civil
     logging.info("|- Procesando datos del registro civil (MPI)")
     
-    #unique_identifiers = df['num_iden'].drop_nulls().drop_nans().unique().to_list()
+    unique_identifiers = df['num_iden'].drop_nulls().drop_nans().unique().to_list()
     #logging.info(f" |- Total de identificaciones únicas: {len(unique_identifiers):,}")
 
-    #mpi_df = get_mpi_data(unique_identifiers)
-    #add_new_elements_to_lake('vacunacion', 'lk_persona', ['IDENTIFIER_VALUE'], mpi_df)
+    mpi_df = get_mpi_data(unique_identifiers)
+    add_new_elements_to_lake('vacunacion', 'lk_persona', ['IDENTIFIER_VALUE'], mpi_df)
 
     ## obtener datos geográficos
     logging.info("|- Procesando datos geográficos")
     geo_df = get_geo_salud_data()
-    #add_new_elements_to_lake('vacunacion', 'lk_establecimiento', ['uni_codigo'], geo_df)
+    add_new_elements_to_lake('vacunacion', 'lk_establecimiento', ['uni_codigo'], geo_df)
     
     logging.info("|- Orquestador de ingesta completado")
 

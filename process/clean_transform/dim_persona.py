@@ -26,7 +26,6 @@ def _limpiar_columnas_fecha(df: pl.DataFrame, cols: list[str] = []):
     logging.info("|- EST Estandarizando columnas fecha")
     for col in cols:
         logging.debug(f" |- Estandarizando columna {col}")
-        
     return df
 
 
@@ -206,7 +205,6 @@ def _calcular_grupo_etario(df: pl.DataFrame):
     return df
 
 def _crear_dataframe_con_moda_fecha(df: pl.DataFrame) -> pl.DataFrame:
-    print(df.columns)
     df_moda = (
         df.filter(pl.col("fecha_aplicacion") != pl.date(1900, 1, 1))
         .group_by("unicodigo", "nombre_vacuna")
@@ -222,7 +220,7 @@ def _crear_dataframe_con_moda_fecha(df: pl.DataFrame) -> pl.DataFrame:
         .otherwise(pl.col("fecha_aplicacion"))
         .alias("FECHA_APLICACION_FINAL")
     ).drop("moda")
-    
+    print(f"Dim persona - columnas despues de moda: {len(df_final.columns)}")
     return df_final
 
 def _homologar_etnia(df: pl.DataFrame):

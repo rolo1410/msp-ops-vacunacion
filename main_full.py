@@ -89,7 +89,7 @@ def main():
         
         # Ejecutar procesamiento
         logging.info("Iniciando procesamiento de datos")
-        df = process_all_data_paginated()
+        process_all_data_paginated()
         
         # Guardar datos procesados
         logging.info("Guardando datos procesados al lago")

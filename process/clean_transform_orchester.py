@@ -30,9 +30,8 @@ def process_all_data_paginated():
     page = 0
     page_size = 10000000 # Tamaño de página ajustable
     while True:
-        print(f"Procesando página {page}")
         df_page = process_orchester(page, page_size)
-        add_new_elements_to_lake('vacunacion', 'db_vacunacion', ['num_iden', 'fecha_aplicacion', 'unicodigo'], df_page)
+        add_new_elements_to_lake('vacunacion', 'db_vacunacion', ['num_iden', 'fecha_aplicacion', 'unicodigo', 'id_vac_cons', 'sistema'], df_page)
         if df_page.is_empty():
             break
         # Aquí puedes guardar o procesar df_page según sea necesario
