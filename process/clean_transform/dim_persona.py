@@ -212,16 +212,18 @@ def _crear_dataframe_con_moda_fecha(df: pl.DataFrame) -> pl.DataFrame:
     )
     df_moda.write_csv("df_moda.csv")
 
-    df_unido = df.join(df_moda, on=["unicodigo", "nombre_vacuna"], how="left")
+    df = df.join(df_moda, on=["unicodigo", "nombre_vacuna"], how="left")
 
-    df_final = df_unido.with_columns(
+    df = df.with_columns(
         pl.when(pl.col("fecha_aplicacion") == pl.date(1900, 1, 1))
         .then(pl.col("moda"))
         .otherwise(pl.col("fecha_aplicacion"))
-        .alias("FECHA_APLICACION_FINAL")
+        .alias("fecha_aplicacion_final")
     ).drop("moda")
-    print(f"Dim persona - columnas despues de moda: {len(df_final.columns)}")
-    return df_final
+    # elimina la columna fecha_aplicacion y renombrar fecha_aplicacion_final a fecha_aplicacion
+    df = df.drop("fecha_aplicacion").rename({"fecha_aplicacion_final": "fecha_aplicacion"})
+    print(f"Dim persona - columnas despues de moda: {len(df.columns)}")
+    return df
 
 def _homologar_etnia(df: pl.DataFrame):
     logging.info("|- ENR Homologando etnia")
