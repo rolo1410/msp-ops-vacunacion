@@ -1,4 +1,5 @@
 import duckdb
+import pandas
 
 
 def copia_tabla(db_name, tabla_original, tabla_copia):
@@ -54,11 +55,23 @@ def crear_columna_en_tabla_si_no_existe(db_name, tabla, columna, tipo):
     finally:
         cnn.close()  
         
+def get_from_duckdb(db_name, query):
+    cnn = duckdb.connect(database=db_name, read_only=True)
+    try:
+        result=cnn.execute(query).df()  
+        return result
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        cnn.close()
+
+
 def ejecutar_query(db_name, query):
     cnn = duckdb.connect(database=db_name, read_only=False)
     try:
-        cnn.execute(query)  
+        result=cnn.execute(query)  
         cnn.commit()
+        return result
     except Exception as e:
         print(f"Error: {e}")
     finally:

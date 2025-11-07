@@ -1,18 +1,16 @@
-from datetime import datetime, timedelta
 import os
+from datetime import datetime, timedelta
 
+import folium
+import geopandas as gpd
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-
-
-import geopandas as gpd
-import folium
+from data.general_sources import QUERY_TOTAL_VACUNAS, QUERY_VACUNAS_TEMPORAL_FULL
+from data.source import get_duck_db_data
 from streamlit_folium import st_folium
 
-from data.source import get_duck_db_data
-from data.general_sources import QUERY_TOTAL_VACUNAS, QUERY_VACUNAS_TEMPORAL_FULL
 
 def safe_get_unique_values(df, column_name, default_values=None):
     """

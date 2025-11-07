@@ -6,6 +6,7 @@ from process.clean_transform.dim_persona import persona_orchester
 from process.clean_transform.dim_vacuna import vacuna_orchester
 from process.clean_transform.dim_vacunacion import vacunacion_orchester
 from process.clean_transform.imp_fase import imputar_fases_orchester
+from process.clean_transform.utils import ejecutar_query
 from process.marquer.no_tranform_persona import clean_cedulas_orchester, marcar_duplicados
 
 
@@ -31,8 +32,37 @@ def process_orchester(page, page_size):
     #print(f"Dim duplicados - columnas: {len(df)}")
     return df
 
+def prepare_clean_process():
+    ## elminiar tabla si existe 
+    query = """
+    DROP TABLE IF EXISTS db_vacunacion_covid;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+    create_table_from = """
+    CREATE TABLE db_vacunacion_covid AS
+    SELECT * FROM lk_vacunacion_covid;
+   
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=create_table_from
+    )
+    create_column_audit = """
+    ALTER TABLE db_vacunacion_covid
+    ADD COLUMN proceso_auditoria VARCHAR;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=create_column_audit
+    )
+
+
 def process_all_data_paginated():
     #imputar_fases_orchester()
+    prepare_clean_process()
     clean_orchester()
     add_data_orchester()
     '''
