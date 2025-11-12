@@ -1,7 +1,35 @@
 import re
 
 from extract.extraccion_oracle_simple import logger
+from process.clean_transform.dim_vacunacion import vacunacion_orchester
 from process.clean_transform.utils import crear_columna_en_tabla_si_no_existe, ejecutar_query
+
+
+def add_0_when_cedula_9_chars():
+    query = """
+    UPDATE db_vacunacion_covid
+    SET num_iden = '0' || num_iden,
+        proceso_auditoria = concat(proceso_auditoria, '| C006, num_iden')
+    WHERE tipo_iden LIKE 'CÉDULA DE IDENTIDAD%' AND LENGTH(num_iden) = 9;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+    logger.info("Adición de cero inicial en cédulas de 9 caracteres completada.")
+
+def clean_00_in_iden():
+    query = """
+    UPDATE db_vacunacion_covid
+    SET num_iden = REGEXP_REPLACE(num_iden, '^0+', ''),
+        proceso_auditoria = concat(proceso_auditoria, '| C005, num_iden')
+    WHERE num_iden IS NOT NULL AND num_iden LIKE '0%';
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+    logger.info("Limpieza de ceros iniciales en num_iden completada.")
 
 
 def clean_especial_characters():
@@ -250,11 +278,16 @@ def unir_un_grupo_riesgo_depurada():
     )
     logger.info("Unión de registros en grupo de prioridad completada.")
 
+
+
 def clean_orchester():
-    clean_especial_characters()
-    clean_espacios()
-    remove_duplicates_query()
-    create_la_diferencia_en_dias_entre_vacunas()
-    unir_un_grupo_riesgo_depurada()
-    update_fases()
+    #clean_especial_characters()
+    #clean_espacios()
+    #create_la_diferencia_en_dias_entre_vacunas()
+    ##remove_duplicates_query()
+    #unir_un_grupo_riesgo_depurada()
+    clean_00_in_iden()
+    add_0_when_cedula_9_chars()
+    vacunacion_orchester()
+    #update_fases()
     
