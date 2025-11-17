@@ -10,6 +10,16 @@ from process.clean_transform.utils import ejecutar_query
 from process.marquer.no_tranform_persona import clean_cedulas_orchester, marcar_duplicados
 
 
+def ubicar_registros_1900():
+    query = """
+    DELETE FROM db_vacunacion_covid
+    WHERE fecha_aplicacion = '1900-01-01';
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+
 def eliminar_fecha_aplicacion_none():
     query = """
     DELETE FROM db_vacunacion_covid
@@ -166,16 +176,14 @@ def asignar_pesos_completitud():
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query_update
-    )
-
-
-
-
+    )    
+    
 def process_all_data_paginated():
-    imputar_fases_orchester()
+    ubicar_registros_1900()
     eliminar_fecha_aplicacion_none()
     asignar_pesos_completitud()
     prepare_clean_process()
+    imputar_fases_orchester()
     delete_none_identifications()
     clean_orchester()
     add_data_orchester()

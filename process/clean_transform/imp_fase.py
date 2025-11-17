@@ -20,24 +20,29 @@ DIC_FASES = [
 
 def imputar_fases_orchester():
     
-    crear_columna_en_tabla_si_no_existe(
+    query_crear_fase="""
+    ALTER TABLE db_vacunacion_covid
+    ADD COLUMN IF NOT EXISTS fase_depurada_2 VARCHAR;
+    """
+    ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
-        tabla='db_vacunacion_covid',
-        columna='fase_depurada_2',
-        tipo='VARCHAR'
+        query=query_crear_fase
     )
-    crear_columna_en_tabla_si_no_existe(
+    
+    query_crear_audit="""
+    ALTER TABLE db_vacunacion_covid
+    ADD COLUMN IF NOT EXISTS proceso_auditoria VARCHAR;
+    """
+    ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
-        tabla='db_vacunacion_covid',
-        columna='proceso_auditoria',
-        tipo='VARCHAR'
+        query=query_crear_audit
     )
     
     for fase in DIC_FASES:
         query = f"""
         UPDATE db_vacunacion_covid
         SET fase_depurada_2 = '{fase['nombre']}',
-        proceso_auditoria = concat(proceso_auditoria, '| P001')
+            proceso_auditoria = concat(proceso_auditoria, '| P001')
         
         WHERE fecha_aplicacion >= DATE('{fase['inicio']}') AND fecha_aplicacion <= DATE('{fase['fin']}') AND fecha_aplicacion > DATE('2021-01-01')
         """

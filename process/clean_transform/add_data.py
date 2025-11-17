@@ -31,6 +31,7 @@ def add_diff_dias_fecha_aplicacion():
                 ) AS diferencia_dias
                 FROM
                 db_vacunacion_covid
+                ORDER BY num_iden, fecha_aplicacion
                 )
                 SELECT * FROM FechasUnicasCalculadas
                 ) AS T2
