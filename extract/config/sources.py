@@ -15,6 +15,14 @@ DB_VACUNACION = {
     "service_name": os.getenv("CNN_ORACLE_DB_VACUNACION_SID", "orcl")
 }
 
+DB_VACUNACION_SAID = {
+    "host": os.getenv("CNN_POSTGRES_DB_VACUNACION_SAID_HOST", "10.64.102.47"),
+    "port": int(os.getenv("CNN_POSTGRES_DB_VACUNACION_SAID_PORT", 5432)),
+    "user": os.getenv("CNN_POSTGRES_DB_VACUNACION_SAID_USER", "dhis"),
+    "password": os.getenv("CNN_POSTGRES_DB_VACUNACION_SAID_PASSWORD", "dhis2"),
+    "database": os.getenv("CNN_POSTGRES_DB_VACUNACION_SAID_DB_NAME", "sais")
+}
+
 DB_MIP = {
     "host": os.getenv("CNN_ORACLE_DB_MPI_HOST", "localhost"),
     "port": int(os.getenv("CNN_ORACLE_DB_MPI_PORT", 1521)),

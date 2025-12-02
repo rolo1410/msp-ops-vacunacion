@@ -85,7 +85,7 @@ def main():
     try:
         # Ejecutar ingesta de datos con parámetros optimizados
         logging.info("Iniciando ingesta de datos")
-        #ingest_orchester(args.since, args.until, args.chunk_size)
+        ingest_orchester(args.since, args.until, args.chunk_size)
         
         # Ejecutar procesamiento
         logging.info("Iniciando procesamiento de datos")

@@ -1,5 +1,8 @@
 import logging
 
+import duckdb
+
+from extract.db_said_covid import load_lake_db_vacunacion_covid_from_sais
 from extract.db_vacunacion_covid import load_lake_db_vacunacion_covid
 from extract.db_vacunacion_rutinario import load_lake_db_vacunacion_rutinario
 from extract.geo_salud import get_geo_salud_data
@@ -62,7 +65,11 @@ def ingest_vacunacion_covid(since, until, chunk_size=1000000):
     
     logging.info("|- Orquestador de ingesta completado")
 
+def ingest_sais_db(since, until, chunk_size=1000000):
+    dest_db = 'vacunacion_total.db'
+    con = duckdb.connect(dest_db)
+    
 def ingest_orchester(since, until, chunk_size=1000000):
-    ingest_vacunacion_covid(since, until, chunk_size)
-    ##
-    ##ingest_vacunacion_rutina(since, until, chunk_size)
+    ##ingest_vacunacion_covid(since, until, chunk_size)
+    load_lake_db_vacunacion_covid_from_sais(since, until, chunk_size)
+    
