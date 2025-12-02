@@ -154,11 +154,11 @@ def update_fases():
     UPDATE db_vacunacion_covid
     SET fase_vacuna_depurada = 
     CASE
-        WHEN fecha_aplicacion BETWEEN '2021-01-18' AND '2021-05-23' THEN 'FASE0'
-        WHEN fecha_aplicacion BETWEEN '2021-05-24' AND '2021-06-14' THEN 'FASE1'
-        WHEN fecha_aplicacion BETWEEN '2021-06-15' AND '2021-07-11' THEN 'FASE2'
-        WHEN fecha_aplicacion BETWEEN '2021-07-11' AND '2021-09-05' THEN 'FASE3'
-        WHEN fecha_aplicacion BETWEEN '2021-09-06' AND '2021-09-12' THEN 'FASE4'
+        WHEN fecha_aplicacion BETWEEN '2021-01-18' AND '2021-05-23' THEN 'FASE 0'
+        WHEN fecha_aplicacion BETWEEN '2021-05-24' AND '2021-06-14' THEN 'FASE 1'
+        WHEN fecha_aplicacion BETWEEN '2021-06-15' AND '2021-07-11' THEN 'FASE 2'
+        WHEN fecha_aplicacion BETWEEN '2021-07-11' AND '2021-09-05' THEN 'FASE 3'
+        WHEN fecha_aplicacion BETWEEN '2021-09-06' AND '2021-09-12' THEN 'FASE 4'
         WHEN fecha_aplicacion BETWEEN '2021-10-15' AND '2021-03-30' THEN 'Primer refuerzo'
         WHEN fecha_aplicacion BETWEEN '2022-03-30' AND '2023-12-31' THEN 'Segundo refuerzo'
         WHEN fecha_aplicacion BETWEEN '2023-01-01' AND '2023-12-31' THEN 'Vacunación bivalente 2023'

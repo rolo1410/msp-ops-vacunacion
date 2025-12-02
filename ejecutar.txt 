@@ -1,0 +1,1 @@
+python3 main_full.py --since 1800-01-01 --until 2050-01-31
