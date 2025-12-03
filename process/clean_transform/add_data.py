@@ -78,8 +78,6 @@ def add_grupo_etario_depurada():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=create_colum_query
     )
-    
-        
     query = """
     UPDATE db_vacunacion_covid
     SET grupo_etario_depurada =

@@ -1,7 +1,5 @@
 from venv import logger
 
-import polars
-
 from process.clean_transform.utils import ejecutar_query
 
 
@@ -38,6 +36,7 @@ def _compute_nombre_comercial_vacuna():
             WHEN nombre_vacuna IS NULL OR nombre_vacuna = '' THEN 'DESCONOCE'
             WHEN nombre_vacuna ILIKE '%COMIRNATY BIVALENTE%' THEN 'PFIZER'
             WHEN nombre_vacuna ILIKE '%REFUERZO 1%' THEN 'DESCONOCE'
+            WHEN nombre_vacuna ILIKE '%HB ADULTO%' THEN 'SINOVAC'
             ELSE 'DESCONOCE'
             END
         WHERE vacuna_nom_comercial IS NULL;
@@ -47,6 +46,32 @@ def _compute_nombre_comercial_vacuna():
         query=query
     )
     logger.info("Población de columna vacuna_nom_comercial completada.")
-
-def vacunacion_orchester():
+    
+def _computue_descompose_fecha_aplicacion(since: str, until: str):
+    """
+    Docstring para _computue_descompose_fecha_aplicacion
+    
+    :param since: Descripción
+    :type since: str
+    :param until: Descripción
+    :type until: str
+    """
+    logger.info(f"""Iniciando descomposición de fecha_aplicacion entre {since} y {until}""")
+    query= """
+        UPDATE db_vacunacion_covid
+        SET
+            anio_aplicacion = EXTRACT(YEAR FROM fecha_aplicacion)::INT,
+            mes_aplicacion = EXTRACT(MONTH FROM fecha_aplicacion)::INT,
+            dia_aplicacion = EXTRACT(DAY FROM fecha_aplicacion)::INT,
+            proceso_auditoria = concat(proceso_auditoria, '| VAC_001, calcular fecha_aplicacion descompuesta')
+        WHERE fecha_aplicacion BETWEEN DATE '{since}' AND DATE '{until}';
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+    logger.info("""Descomposición de fecha_aplicacion completada. Año, mes y día creados.""")
+    
+def vacunacion_orchester(since: str, until: str):
     _compute_nombre_comercial_vacuna()
+    _computue_descompose_fecha_aplicacion(since, until)

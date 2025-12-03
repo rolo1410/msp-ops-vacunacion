@@ -3,24 +3,14 @@ from lake.load_lake import load_data, load_data_paginated
 from process.clean_transform.add_data import add_data_orchester
 from process.clean_transform.clean_global import clean_orchester
 from process.clean_transform.dim_persona import persona_orchester
-from process.clean_transform.dim_vacuna import vacuna_orchester
 from process.clean_transform.dim_vacunacion import vacunacion_orchester
-from process.clean_transform.imp_fase import imputar_fases_orchester
+from process.clean_transform.functions import agregar_funciones_utilitarias
+from process.clean_transform.imp_fase import fases_orchester
 from process.clean_transform.utils import ejecutar_query
 from process.marquer.no_tranform_persona import clean_cedulas_orchester, marcar_duplicados
 
 
-def ubicar_registros_1900():
-    query = """
-    DELETE FROM db_vacunacion_covid
-    WHERE fecha_aplicacion = '1900-01-01';
-    """
-    ejecutar_query(
-        db_name='resources/data_lake/vacunacion.duckdb',
-        query=query
-    )
-
-def eliminar_fecha_aplicacion_none():
+def _eliminar_fecha_aplicacion_none():
     query = """
     DELETE FROM db_vacunacion_covid
     WHERE fecha_aplicacion IS NULL;
@@ -31,7 +21,7 @@ def eliminar_fecha_aplicacion_none():
     )
 
 
-def prepare_clean_process():
+def _prepare_clean_process():
     ## elminiar tabla si existe 
     query = """
     DROP TABLE IF EXISTS db_vacunacion_covid;
@@ -152,7 +142,7 @@ tabla_pesos = {
 }
 
 
-def asignar_pesos_completitud():
+def _asignar_pesos_completitud():
     """Crear una columna con el peso de completitud de los datos"""
     query = """
     ALTER TABLE db_vacunacion_covid
@@ -178,13 +168,13 @@ def asignar_pesos_completitud():
         query=query_update
     )    
     
-def process_all_data_paginated():
-    ubicar_registros_1900()
-    eliminar_fecha_aplicacion_none()
-    asignar_pesos_completitud()
-    prepare_clean_process()
-    imputar_fases_orchester()
+def process_all_data_paginated(desde, hasta):
+    agregar_funciones_utilitarias()
+    _eliminar_fecha_aplicacion_none()
+    _asignar_pesos_completitud()
+    _prepare_clean_process()
+    fases_orchester(desde, hasta)
     delete_none_identifications()
-    clean_orchester()
+    clean_orchester(desde, hasta)
     add_data_orchester()
     

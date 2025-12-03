@@ -1,5 +1,3 @@
-import re
-
 from extract.extraccion_oracle_simple import logger
 from process.clean_transform.dim_vacunacion import vacunacion_orchester
 from process.clean_transform.utils import crear_columna_en_tabla_si_no_existe, ejecutar_query
@@ -280,14 +278,14 @@ def unir_un_grupo_riesgo_depurada():
 
 
 
-def clean_orchester():
-    #clean_especial_characters()
+def clean_orchester(since: str, until: str):
+    clean_especial_characters()
     #clean_espacios()
     #create_la_diferencia_en_dias_entre_vacunas()
     ##remove_duplicates_query()
     #unir_un_grupo_riesgo_depurada()
     clean_00_in_iden()
     add_0_when_cedula_9_chars()
-    vacunacion_orchester()
+    vacunacion_orchester(since, until)
     #update_fases()
     

@@ -1,274 +1,158 @@
 
 import logging
 
+import duckdb
 import polars as pl
 
-from process.clean_transform.dim_establecimiento import limpiar_columnas_geograficas
+from process.clean_transform.utils import crear_columna_en_tabla_si_no_existe, ejecutar_query
 
-# Define qué funciones son públicas
-__all__ = [
-    'persona_orchester',
-]
 
 def _limpiar_columnas_texto(df: pl.DataFrame, cols: list[str] = []):
     logging.info("|- EST Limpiando columnas de texto")
-    for col in cols:
-        
-        logging.debug(f" |- Limpiando columna {col} caracteres especiales")
-        df = df.with_columns(pl.col(col).str.strip_chars().alias(col))
-
-        logging.debug(f" |- Limpiando columna {col} mayusculas")
-        df = df.with_columns(pl.col(col).str.to_uppercase().alias(col))
-    return df
-
-
-def _limpiar_columnas_fecha(df: pl.DataFrame, cols: list[str] = []):
-    logging.info("|- EST Estandarizando columnas fecha")
-    for col in cols:
-        logging.debug(f" |- Estandarizando columna {col}")
-    return df
-
-
-def _es_cedula_valida(cedula: str) -> bool:    
-    # Implementación de la validación de cédula
-    if not cedula or len(cedula) != 10 or not cedula.isdigit():
-        return False
-
-    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]
-    total = 0
-
-    for i in range(9):
-        val = int(cedula[i]) * coeficientes[i]
-        if val >= 10:
-            val -= 9
-        total += val
-
-    digito_verificador = 10 - (total % 10) if (total % 10) != 0 else 0
-
-    return digito_verificador == int(cedula[9])
-
+    conn = duckdb.connect('resources/data_lake/vacunacion.duckdb')
+    query = f"""
+        update db_vacunacion 
+        set 
+        {','.join([f"{col} = eliminar_caracteres_especiales({col})" for col in cols])},
+        proceso_auditoria = concat(proceso_auditoria, '| PER_001')
+        where true;
+    """
+    conn.execute(query)
 
 def _limpiar_identificacion(df: pl.DataFrame):
     logging.info("|- LIM Limpiando columnas identificación")
     
     ## Eliminar registros sin cédula
-    logging.debug(f" |- REM Eliminando registros sin cédula o vacíos en el campo NUM_IDEN")
-    df = df.filter(pl.col("num_iden").is_not_null() & (pl.col("num_iden") != ""))
+    query = """
+    DELETE FROM db_vacunacion
+    WHERE num_iden IS NULL OR TRIM(num_iden) = '';
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
 
     ## si el registro es cedula y tiene 10 digitos
     logging.debug(f" |- EST Completando cedulas que tienen menos de 10 digitos con un 0 a la izquierda")
-    df = df.with_columns(pl.when(
-        (pl.col("tipo_iden") == "CÉDULA DE IDENTIDAD") & (pl.col("num_iden").str.len_chars() < 10)
-    ).then(
-        pl.col("num_iden").str.zfill(10)
-    ).otherwise(
-        pl.col("num_iden")
-    ).alias("num_iden")
-)
-    
+    query = """
+    UPDATE db_vacunacion
+    SET num_iden = LPAD(num_iden, 10, '0'), 
+        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_002')
+    WHERE tipo_iden = 'CÉDULA DE IDENTIDAD' AND LENGTH(num_iden) < 10;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+       
     ## valida si las cédulas cumple con el digito verfificador crear una columna nueva
     logging.debug(f" |- Identificando cédulas válidas e inválidas")
-    df = df.with_columns(
-        pl.when(pl.col("tipo_iden") == "CÉDULA DE IDENTIDAD")
-            .then(pl.col("num_iden").map_elements(_es_cedula_valida, return_dtype=pl.Boolean))
-            .otherwise(None)
-            .alias("cedula_es_valida")
+    crear_columna_en_tabla_si_no_existe(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        tabla='db_vacunacion',
+        columna='cedula_es_valida',
+        tipo='boolean'
+    )
+    query_update= """
+        UPDATE db_vacunacion
+        SET cedula_es_valida = es_cedula_valida(num_iden),
+            proceso_auditoria = CONCAT(proceso_auditoria, '| PER_003')
+        WHERE tipo_iden = 'CÉDULA DE IDENTIDAD';
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query_update
+    )
+
+def _calcular_edad():
+    crear_columna_en_tabla_si_no_existe(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        tabla='db_vacunacion',
+        columna='edad_anios',
+        tipo='INT'
+    )
+    query_update= """
+    UPDATE db_vacunacion
+    SET edad_anios = EXTRACT(YEAR FROM AGE(fecha_aplicacion, fecha_nacimiento::DATE))::INT,
+        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_004')
+    WHERE fecha_nacimiento IS NOT NULL AND fecha_aplicacion IS NOT NULL;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query_update
+    )
+
+def _homologar_nacionalidad():
+    ## valor_origina, valor_homologado
+    nacionalidades = pl.read_csv('resources/mapping/nacionalidades.csv')
+    query = """
+    UPDATE db_vacunacion
+    SET nacionalidad = CASE
+    """
+    for row in nacionalidades.iter_rows():
+        valor_original = row[0]
+        valor_homologado = row[1]
+        query += f"WHEN nacionalidad = '{valor_original}' THEN '{valor_homologado}'\n"
+    query += """
+    ELSE nacionalidad
+    END,
+    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_005')
+    WHERE nacionalidad IS NOT NULL;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
     )
     
-    return df
-
-
-def _calcular_diferencia_fechas(fecha_nacimiento, fecha_aplicacion):
-    """
-    Calcula la diferencia exacta entre dos fechas en años, meses y días
-    """
-    from datetime import date
-    
-    if fecha_nacimiento is None or fecha_aplicacion is None:
-        return None, None, None
-    
-    # Convertir a objetos date si no lo son ya
-    if not isinstance(fecha_nacimiento, date):
-        return None, None, None
-    if not isinstance(fecha_aplicacion, date):
-        return None, None, None
-    
-    # Calcular años
-    años = fecha_aplicacion.year - fecha_nacimiento.year
-    
-    # Calcular meses
-    meses = fecha_aplicacion.month - fecha_nacimiento.month
-    
-    # Calcular días
-    dias = fecha_aplicacion.day - fecha_nacimiento.day
-    
-    # Ajustar si los días son negativos
-    if dias < 0:
-        meses -= 1
-        # Obtener el número de días del mes anterior
-        if fecha_aplicacion.month == 1:
-            mes_anterior = 12
-            año_anterior = fecha_aplicacion.year - 1
-        else:
-            mes_anterior = fecha_aplicacion.month - 1
-            año_anterior = fecha_aplicacion.year
-        
-        # Días del mes anterior
-        if mes_anterior in [1, 3, 5, 7, 8, 10, 12]:
-            dias_mes_anterior = 31
-        elif mes_anterior in [4, 6, 9, 11]:
-            dias_mes_anterior = 30
-        else:  # febrero
-            if (año_anterior % 4 == 0 and año_anterior % 100 != 0) or (año_anterior % 400 == 0):
-                dias_mes_anterior = 29
-            else:
-                dias_mes_anterior = 28
-        
-        dias += dias_mes_anterior
-    
-    # Ajustar si los meses son negativos
-    if meses < 0:
-        años -= 1
-        meses += 12
-    
-    return años, meses, dias
-
-def _calcular_edad(df: pl.DataFrame):
-    logging.info("|- ENR Agregando edad, descomponiendo en años, meses y días")
-    
-    # Calcular diferencia total en días para referencia
-    df = df.with_columns(
-        (pl.col("fecha_aplicacion") - pl.col("fecha_nacimiento")).dt.total_days().alias("edad_total_dias")
-    )
-    
-    # Aplicar la función de cálculo de edad exacta
-    logging.debug(" |- Calculando edad exacta en años, meses y días")
-    
-    df = df.with_columns([
-        pl.struct(["fecha_nacimiento", "fecha_aplicacion"])
-        .map_elements(
-            lambda x: _calcular_diferencia_fechas(x["fecha_nacimiento"], x["fecha_aplicacion"])[0] if x["fecha_nacimiento"] is not None and x["fecha_aplicacion"] is not None else None,
-            return_dtype=pl.Int32
-        ).alias("edad_anios"),
-        
-        pl.struct(["fecha_nacimiento", "fecha_aplicacion"])
-        .map_elements(
-            lambda x: _calcular_diferencia_fechas(x["fecha_nacimiento"], x["fecha_aplicacion"])[1] if x["fecha_nacimiento"] is not None and x["fecha_aplicacion"] is not None else None,
-            return_dtype=pl.Int32
-        ).alias("edad_meses"),
-        
-        pl.struct(["fecha_nacimiento", "fecha_aplicacion"])
-        .map_elements(
-            lambda x: _calcular_diferencia_fechas(x["fecha_nacimiento"], x["fecha_aplicacion"])[2] if x["fecha_nacimiento"] is not None and x["fecha_aplicacion"] is not None else None,
-            return_dtype=pl.Int32
-        ).alias("edad_dias")
-    ])
-    logging.debug(" |- Cálculo de edad completado")
-    return df
-
-
 def _calcular_grupo_etario(df: pl.DataFrame):
-    """
-    Agrega la columna GRUPO_ETARIO basada en la edad en años
-    Clasificación estándar epidemiológica por grupos quinquenales
-    """
-    logging.info("|- ENR Agregando grupo etario")
-    
-    # Verificar que la columna EDAD_ANIOS existe
-    if "edad_anios" not in df.columns:
-        logging.error(" |- Error: La columna EDAD_ANIOS no existe en el DataFrame")
-        return df
-    
     logging.debug(" |- Calculando grupos etarios basados en EDAD_ANIOS")
+    query = """
+    UPDATE db_vacunacion
+    SET grupo_etario = CASE
+        WHEN edad_anios IS NULL THEN 'NO DEFINIDO'
+        WHEN edad_anios <= 1 THEN 'MENOR DE 1 AÑO'
+        WHEN edad_anios > 1 AND  edad_anios <= 4 THEN 'DE 1 A 4 AÑOS'
+        WHEN edad_anios >= 5 AND  edad_anios <= 9 THEN 'DE 5 A 9 AÑOS'
+        WHEN edad_anios >= 10 AND  edad_anios <= 14 THEN 'DE 10 A 14 AÑOS'
+        WHEN edad_anios >= 15 AND  edad_anios <= 19 THEN 'DE 15 A 19 AÑOS'
+        WHEN edad_anios >= 20 AND  edad_anios <= 64 THEN 'DE 20 A 64 AÑOS'
+        WHEN edad_anios >= 65 THEN 'DE 65 AÑOS Y MÁS'
+        ELSE 'NO DEFINIDO'
+    END,
+    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_006')
+    WHERE TRUE;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+
+def _homologar_etnia():
+    ## valor_origina, valor_homologado
+    etnias = pl.read_csv('resources/mapping/etnias.csv')
+    query = """
+    UPDATE db_vacunacion
+    SET etnia = CASE
+    """
+    for row in etnias.iter_rows():
+        valor_original = row[0]
+        valor_homologado = row[1]
+        query += f"WHEN etnia = '{valor_original}' THEN '{valor_homologado}'\n"
+    query += """
+    ELSE etnia
+    END,
+    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_007')
+    WHERE etnia IS NOT NULL;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
     
-    df = df.with_columns(
-        pl.when(pl.col("edad_anios").is_null())
-        .then(pl.lit("NO DEFINIDO"))
-        .when(pl.col("edad_anios") < 1)
-        .then(pl.lit("MENOR DE 1 AÑO"))
-        .when(pl.col("edad_anios").is_between(1, 4, closed="both"))
-        .then(pl.lit("DE 1 A 4 AÑOS"))
-        .when(pl.col("edad_anios").is_between(5, 9, closed="both"))
-        .then(pl.lit("DE 5 A 9 AÑOS"))
-        .when(pl.col("edad_anios").is_between(10, 14, closed="both"))
-        .then(pl.lit("DE 10 A 14 AÑOS"))
-        .when(pl.col("edad_anios").is_between(15, 19, closed="both"))
-        .then(pl.lit("DE 15 A 19 AÑOS"))
-        .when(pl.col("edad_anios").is_between(20, 64, closed="both"))
-        .then(pl.lit("DE 20 A 64 AÑOS"))
-        .when(pl.col("edad_anios") >= 65)
-        .then(pl.lit("DE 65 AÑOS Y MÁS"))
-        .otherwise(pl.lit("NO DEFINIDO"))
-        .alias("grupo_etario")
-    )
-    logging.debug(" |- Grupos etarios calculados correctamente")
-    return df
-
-def _crear_dataframe_con_moda_fecha(df: pl.DataFrame) -> pl.DataFrame:
-    df_moda = (
-        df.filter(pl.col("fecha_aplicacion") != pl.date(1900, 1, 1))
-        .group_by("unicodigo", "nombre_vacuna")
-        .agg(pl.col("fecha_aplicacion").mode().first().alias("moda"))
-    )
-    df_moda.write_csv("df_moda.csv")
-
-    df = df.join(df_moda, on=["unicodigo", "nombre_vacuna"], how="left")
-
-    df = df.with_columns(
-        pl.when(pl.col("fecha_aplicacion") == pl.date(1900, 1, 1))
-        .then(pl.col("moda"))
-        .otherwise(pl.col("fecha_aplicacion"))
-        .alias("fecha_aplicacion_final")
-    ).drop("moda")
-    # elimina la columna fecha_aplicacion y renombrar fecha_aplicacion_final a fecha_aplicacion
-    df = df.drop("fecha_aplicacion").rename({"fecha_aplicacion_final": "fecha_aplicacion"})
-    print(f"Dim persona - columnas despues de moda: {len(df.columns)}")
-    return df
-
-def _homologar_etnia(df: pl.DataFrame):
-    logging.info("|- ENR Homologando etnia")
-    logging.debug(" |- Homologando etnia")
-    etnia_map = pl.read_csv("resources/homologations/per_etnia.csv")
-    df = df.join(etnia_map, left_on="etnia", right_on="valor_original", suffix="_map")
-    df = df.with_columns(pl.col("valor_homologado").alias("etnia_homologada"))
-    # eliminar espacion en blanco al inicio y al fin de valor homologado
-    df = df.with_columns(pl.col("etnia_homologada").str.strip_chars())
-    df = df.drop("etnia", "valor_homologado") 
-    df = df.rename({"etnia_homologada": "etnia"})
-    return df
-
-def _homologar_nacionalidad(df: pl.DataFrame):
-    logging.info("|- ENR Homologando nacionalidad")
-    logging.debug(" |- Homologando nacionalidad")
-    nacionalidad_map = pl.read_csv("resources/homologations/per_nacionalidad_pais.csv")
-    df = df.join(nacionalidad_map, left_on="nacionalidad", right_on="valor_original", suffix="_map")
-    df = df.with_columns(pl.col("valor_homologado").alias("nacionalidad_homologada"))
-    # eliminar espacion en blanco al inicio y al fin de valor homologado
-    df = df.with_columns(pl.col("nacionalidad_homologada").str.strip_chars())
-    df = df.drop("nacionalidad", "valor_homologado") 
-    df = df.rename({"nacionalidad_homologada": "nacionalidad"})
-    print(f"Dim persona - columnas: {len(df)}")
-    return df
-
-def _identificar_cedulas_validas(df: pl.DataFrame):
-    logging.info("|- ENR Identificando cédulas válidas")
-    # si es una c'edula valida y el tipo de identificacion es null entonces asignar CÉDULA DE IDENTIDAD
-    df = df.with_columns(
-        pl.when((pl.col("cedula_es_valida") == True) & (pl.col("tipo_iden").is_null()))
-        .then(pl.lit("CÉDULA DE IDENTIDAD"))
-        .otherwise(pl.col("tipo_iden"))
-        .alias("tipo_iden")
-    )
-    return df
-
 def persona_orchester(df: pl.DataFrame):
-    df = _crear_dataframe_con_moda_fecha(df)
     df = _limpiar_columnas_texto(df, cols=["tipo_iden", "num_iden", "apellidos", "nombres","nombres_completos", "sexo", "etnia", "nacionalidad"])
-    df = _limpiar_columnas_fecha(df, cols=["fecha_nacimiento"])
-    df = _limpiar_identificacion(df)
-    df = _homologar_nacionalidad(df)
-    df = _calcular_edad(df)
-    df = _identificar_cedulas_validas(df)
-    df = _calcular_grupo_etario(df)
-    df = _homologar_etnia(df)
-    return df
+    _limpiar_identificacion()
+    _homologar_nacionalidad()
+    _calcular_edad()
+    _calcular_grupo_etario()
+    _homologar_etnia()

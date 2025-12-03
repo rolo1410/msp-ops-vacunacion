@@ -84,12 +84,12 @@ def main():
     
     try:
         # Ejecutar ingesta de datos con parámetros optimizados
-        logging.info("Iniciando ingesta de datos")
-        ingest_orchester(args.since, args.until, args.chunk_size)
+        # logging.info("Iniciando ingesta de datos")
+        # ingest_orchester(args.since, args.until, args.chunk_size)
         
         # Ejecutar procesamiento
         logging.info("Iniciando procesamiento de datos")
-        process_all_data_paginated()
+        process_all_data_paginated(args.since, args.until)
         
         # Guardar datos procesados
         logging.info("Guardando datos procesados al lago")
