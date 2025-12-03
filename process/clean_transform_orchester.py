@@ -6,6 +6,7 @@ from process.clean_transform.dim_persona import persona_orchester
 from process.clean_transform.dim_vacunacion import vacunacion_orchester
 from process.clean_transform.functions import agregar_funciones_utilitarias
 from process.clean_transform.imp_fase import fases_orchester
+from process.clean_transform.tra_duplicados import eliminar_duplicados_orchester
 from process.clean_transform.utils import ejecutar_query
 from process.marquer.no_tranform_persona import clean_cedulas_orchester, marcar_duplicados
 
@@ -169,6 +170,7 @@ def _asignar_pesos_completitud():
     )    
     
 def process_all_data_paginated(desde, hasta):
+    eliminar_duplicados_orchester()
     agregar_funciones_utilitarias()
     _eliminar_fecha_aplicacion_none()
     _asignar_pesos_completitud()
