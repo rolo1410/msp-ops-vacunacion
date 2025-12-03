@@ -8,7 +8,7 @@ AGRUPADO_PROVINCIASSQL = """SELECT
 FROM
 	vacunacion.main.lk_establecimiento le
 LEFT JOIN
-    vacunacion.main.db_vacunacion v ON
+    vacunacion.main.db_vacunacion_covid v ON
 	le.UNI_CODIGO = v.unicodigo
 WHERE
 	le.LATGPS IS NOT NULL
@@ -34,7 +34,7 @@ AGRUPADO_ZONAS_SQL = """
 FROM
 	vacunacion.main.lk_establecimiento le
 LEFT JOIN
-    vacunacion.main.db_vacunacion v ON
+    vacunacion.main.db_vacunacion_covid v ON
 	le.UNI_CODIGO = v.unicodigo
 WHERE
 	le.LATGPS IS NOT NULL

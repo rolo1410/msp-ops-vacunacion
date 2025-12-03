@@ -8,17 +8,15 @@ from dotenv import load_dotenv
 load_dotenv()
 DB_PATH = os.getenv("DUCK_DB_PATH")
 
+
 def get_duck_db_data(query: str) -> pd.DataFrame:
     """Función para ejecutar una consulta SQL en DuckDB y devolver un DataFrame de pandas."""
     con = None
     try:
+        print(f"Connecting to DuckDB...{DB_PATH}")
         con = duckdb.connect(DB_PATH, read_only=True)
-        con.execute("SET memory_limit='4GB';")  # Limitar el uso de memoria a 4GB
         result = con.execute(query).df()
-        
-        # Aplicar limpieza de tipos de datos
-        #result = clean_data_types(result)
-        
+        print(f"Query executed successfully, retrieved {len(result)} records.")
         return result
     except Exception as e:
         print(f"Error executing query: {e}")

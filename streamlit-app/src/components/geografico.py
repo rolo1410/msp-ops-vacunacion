@@ -1,11 +1,50 @@
+import folium
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-import folium
-from streamlit_folium import st_folium
-import numpy as np
 from data.source import get_duck_db_data
+from streamlit_folium import st_folium
+
+
+@st.cache_data(ttl=3600)  # Cache por 1 hora
+def load_geographical_data():
+    """
+    Carga los datos geográficos desde la base de datos con caché
+    """
+    query_geografico = """
+    SELECT 
+        le.UNI_CODIGO as unicodigo,
+        le.UNI_NOMBRE as nombre_establecimiento,
+        le.PRV_DESCRIPCION as provincia,
+        le.CAN_DESCRIPCION as canton,
+        le.DIS_CODIGO as distrito,
+        le.TIPO_ESTABLECEMIENTO as tipo_establecimiento,
+        le.LATGPS as latitud,
+        le.LONGPS as longitud,
+        COUNT(v.num_iden) as total_vacunas,
+        COUNT(DISTINCT unicodigo) as total_establecimientos,
+        COUNT(DISTINCT v.num_iden) as personas_vacunadas
+    FROM 
+        lk_establecimiento le
+    LEFT JOIN 
+        db_vacunacion_covid v ON le.UNI_CODIGO = v.unicodigo
+    WHERE 
+        le.LATGPS IS NOT NULL 
+        AND TRY_CAST(le.LONGPS as DOUBLE) IS NOT NULL
+        AND TRY_CAST(le.LATGPS as DOUBLE) != 0 
+        AND TRY_CAST(le.LONGPS as DOUBLE) != 0
+        AND TRY_CAST(le.LATGPS as DOUBLE) BETWEEN -5 AND 2  
+        AND TRY_CAST(le.LONGPS as DOUBLE) BETWEEN -92 AND -75
+    GROUP BY 
+        le.UNI_CODIGO, le.UNI_NOMBRE, le.PRV_DESCRIPCION, 
+        le.CAN_DESCRIPCION, le.DIS_CODIGO, le.TIPO_ESTABLECEMIENTO,
+        le.LATGPS, le.LONGPS
+    ORDER BY 
+        total_vacunas DESC limit 10000
+    """
+    return get_duck_db_data(query_geografico)
 
 
 def create_vaccination_map(df_geo, max_establishments=500):
@@ -154,42 +193,9 @@ def show_geografico():
     st.header("🗺️ Análisis Geográfico")
     st.markdown("Distribución geográfica de las vacunas aplicadas por región, provincia y cantón.")
     
-    # Cargar datos
+    # Cargar datos (con caché)
     with st.spinner("Cargando datos geográficos..."):
-        # Query básica para obtener datos geográficos
-        query_geografico = """
-    SELECT 
-        le.UNI_CODIGO as unicodigo,
-        le.UNI_NOMBRE as nombre_establecimiento,
-        le.PRV_DESCRIPCION as provincia,
-        le.CAN_DESCRIPCION as canton,
-        le.DIS_CODIGO as distrito,
-        le.TIPO_ESTABLECEMIENTO as tipo_establecimiento,
-        le.LATGPS as latitud,
-        le.LONGPS as longitud,
-        COUNT(v.num_iden) as total_vacunas,
-        COUNT(DISTINCT unicodigo) as total_establecimientos,
-        COUNT(DISTINCT v.num_iden) as personas_vacunadas
-    FROM 
-        vacunacion.main.lk_establecimiento le
-    LEFT JOIN 
-        vacunacion.main.db_vacunacion v ON le.UNI_CODIGO = v.unicodigo
-    WHERE 
-        le.LATGPS IS NOT NULL 
-        AND TRY_CAST(le.LONGPS as DOUBLE) IS NOT NULL
-        AND TRY_CAST(le.LATGPS as DOUBLE) != 0 
-        AND TRY_CAST(le.LONGPS as DOUBLE) != 0
-        AND TRY_CAST(le.LATGPS as DOUBLE) BETWEEN -5 AND 2  
-        AND TRY_CAST(le.LONGPS as DOUBLE) BETWEEN -92 AND -75
-    GROUP BY 
-        le.UNI_CODIGO, le.UNI_NOMBRE, le.PRV_DESCRIPCION, 
-        le.CAN_DESCRIPCION, le.DIS_CODIGO, le.TIPO_ESTABLECEMIENTO,
-        le.LATGPS, le.LONGPS
-    ORDER BY 
-        total_vacunas DESC limit 10000
-        """
-        
-        df_geo = get_duck_db_data(query_geografico)
+        df_geo = load_geographical_data()
     
     if df_geo.empty:
         st.error("No se pudieron cargar los datos geográficos.")
@@ -282,8 +288,11 @@ def show_geografico():
     if map_result is not None:
         vaccination_map, shown_count, total_count = map_result
         
-        # Mostrar el mapa
-        st_folium(vaccination_map, width=1000, height=500)
+        # Crear una clave única basada en los filtros para evitar re-renderizaciones innecesarias
+        map_key = f"map_{provincia_seleccionada}_{min_vacunas_filter}_{show_top_only}_{top_count if show_top_only else 0}"
+        
+        # Mostrar el mapa con key estable
+        st_folium(vaccination_map, width=1000, height=500, key=map_key)
     else:
         st.warning("No se pudieron cargar datos geográficos válidos para el mapa.")
     

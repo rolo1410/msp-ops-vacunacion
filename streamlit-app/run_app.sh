@@ -29,8 +29,10 @@ fi
 
 echo "✅ Dependencias verificadas"
 echo "🌐 Iniciando servidor Streamlit..."
-echo "📱 La aplicación estará disponible en: http://localhost:8501"
+echo "📱 La aplicación estará disponible en:"
+echo "   - http://localhost:8000"
+echo "   - http://$(hostname -I | awk '{print $1}'):8000"
 echo "==============================================="
 
 # Ejecutar la aplicación
-cd src && streamlit run app.py --server.port=8501 --server.address=localhost
+cd src && streamlit run app.py --server.port=8000 --server.address=0.0.0.0

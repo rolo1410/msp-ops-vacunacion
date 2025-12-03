@@ -40,7 +40,7 @@ def ingest_vacunacion_covid(since, until, chunk_size=1000000):
     logging.info("|- Usando versión paralela con persistencia automática")
     
     # La función ya no retorna DataFrame, persiste directamente en una base de datos duckdb
-    load_lake_db_vacunacion_covid(since, until, chunk_size)
+    #load_lake_db_vacunacion_covid(since, until, chunk_size)
     
     ## obtiene los datos de vacunación de rutina
     ##get_db_vacunaciones_parallel_rutinario(since, until, chunk_size, max_workers)
@@ -60,8 +60,8 @@ def ingest_vacunacion_covid(since, until, chunk_size=1000000):
 
     ## obtener datos geográficos
     logging.info("|- Procesando datos geográficos")
-    #geo_df = get_geo_salud_data()
-    #add_new_elements_to_lake('vacunacion', 'lk_establecimiento', ['uni_codigo'], geo_df)
+    geo_df = get_geo_salud_data()
+    add_new_elements_to_lake('vacunacion', 'lk_establecimiento', ['uni_codigo'], geo_df)
     
     logging.info("|- Orquestador de ingesta completado")
 
@@ -70,6 +70,6 @@ def ingest_sais_db(since, until, chunk_size=1000000):
     con = duckdb.connect(dest_db)
     
 def ingest_orchester(since, until, chunk_size=1000000):
-    ##ingest_vacunacion_covid(since, until, chunk_size)
-    load_lake_db_vacunacion_covid_from_sais(since, until, chunk_size)
+    ingest_vacunacion_covid(since, until, chunk_size)
+    #load_lake_db_vacunacion_covid_from_sais(since, until, chunk_size)
     

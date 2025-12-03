@@ -5,7 +5,7 @@ SELECT
     date_part('month', fecha_aplicacion)::int AS mes_aplicacion,
     date_part('day', fecha_aplicacion)::int AS dia_aplicacion,
     COUNT(*) AS total_vacunas
-FROM vacunacion.main.db_vacunacion v
+FROM db_vacunacion_covid v
 GROUP BY 1,2,3,4
 ORDER BY fecha_aplicacion;
 """
@@ -18,7 +18,7 @@ SELECT
     date_part('day', fecha_aplicacion)::int AS dia_aplicacion,
     SEXO AS genero,
     COUNT(*) AS total_vacunas
-FROM vacunacion.main.db_vacunacion v
+FROM db_vacunacion_covid v
 GROUP BY 1,2,3,4,5
 ORDER BY fecha_aplicacion;
 """
@@ -43,8 +43,8 @@ SELECT
 	sexo,
 	dosis_aplicada
 FROM
-	vacunacion.main.db_vacunacion v
-INNER JOIN vacunacion.main.lk_establecimiento e ON
+	db_vacunacion_covid v
+INNER JOIN lk_establecimiento e ON
 	v.unicodigo = e.UNI_CODIGO 
     where fecha_aplicacion is not null
     and fecha_aplicacion >= '2021-01-01' limit 1000000;
@@ -56,7 +56,7 @@ SELECT
     sexo AS genero,
     COUNT(*) AS total_vacunas,
     COUNT(DISTINCT num_iden) AS total_personas
-FROM vacunacion.main.db_vacunacion v
+FROM db_vacunacion_covid v
 WHERE fecha_aplicacion IS NOT NULL
   AND fecha_aplicacion >= '2021-01-01'
 GROUP BY 1,2
@@ -67,7 +67,7 @@ SELECT
     COUNT(*) AS total_vacunas,
     COUNT(DISTINCT num_iden) AS total_personas,
     COUNT(DISTINCT nombre_vacuna) AS total_vacunas_nombres
-FROM vacunacion.main.db_vacunacion v
+FROM db_vacunacion_covid v
 WHERE fecha_aplicacion IS NOT NULL
   AND fecha_aplicacion >= '2021-01-01';
 """
@@ -82,7 +82,7 @@ SELECT
     COUNT(*) AS total_vacunas,
     COUNT(DISTINCT num_iden) AS total_personas,
     COUNT(DISTINCT nombre_vacuna) AS total_vacunas_nombres
-FROM vacunacion.main.db_vacunacion v
+FROM db_vacunacion_covid v
 WHERE fecha_aplicacion IS NOT NULL
   AND fecha_aplicacion >= '2021-01-01';
 GROUP BY fecha_aplicacion, anio_aplicacion, mes_aplicacion, dia_aplicacion

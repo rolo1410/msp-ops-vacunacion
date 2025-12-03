@@ -236,7 +236,7 @@ def show_general():
             st.error("⚠️ No se encontraron datos de vacunación. Verifique la conexión a la base de datos.")
             st.info("💡 **Posibles causas:**\n"
                    "- Base de datos no disponible\n"
-                   "- Tabla 'vacunacion.main.lk_vacunacion_covid' vacía\n"
+                   "- Tabla 'vacunacion.main.db_vacunacion_covid' vacía\n"
                    "- Error en la consulta SQL")
             return
             
@@ -257,8 +257,6 @@ def show_general():
                "- Confirmar que el archivo .env está configurado")
         return
     
-    st.header("Vista General del Sistema")
-    
     # Sección de filtros
     st.markdown("### Filtros")
     col_filtro1, col_filtro2, col_filtro3, col_filtro4, col_filtro5, col_filtro6,col_filtro7, col_filtro8 = st.columns([2, 1, 1, 1, 1, 1, 1, 1])
@@ -272,7 +270,7 @@ def show_general():
             st.warning("⚠️ No se encontraron años válidos en los datos, usando 2024 por defecto")
             
         años_seleccionados = st.multiselect(
-            "Seleccionar Año(s):",
+            "Año(s):",
             options=años_disponibles,
             default=[años_disponibles[-1]] if años_disponibles else [2024],
             help="Puedes seleccionar múltiples años para comparar"
@@ -303,7 +301,7 @@ def show_general():
         
         opciones_meses = ["Todos"] + [f"{mes} - {meses_nombres.get(mes, mes)}" for mes in meses_disponibles]
         mes_seleccionado = st.selectbox(
-            "Seleccionar Mes:",
+            "Mes:",
             options=opciones_meses,
             index=0
         )
@@ -327,14 +325,14 @@ def show_general():
             sexos_disponibles = sorted(df_temp['sexo'].dropna().unique()) if not df_temp.empty else []
             opciones_sexos = ["Todos"] + [str(sexo) for sexo in sexos_disponibles]
             sexo_seleccionado = st.selectbox(
-                "Seleccionar Sexo:",
+                "Sexo:",
                 options=opciones_sexos,
                 index=0
             )
         else:
             sexo_seleccionado = "Todos"
             st.selectbox(
-                "Seleccionar Sexo:",
+                "Sexo:",
                 options=["Todos"],
                 index=0,
                 disabled=True
@@ -362,14 +360,14 @@ def show_general():
             zonas_disponibles = sorted(df_temp['zona'].dropna().unique()) if not df_temp.empty else []
             opciones_zonas = ["Todas"] + [str(zona) for zona in zonas_disponibles]
             zona_seleccionada = st.selectbox(
-                "Seleccionar Zona:",
+                "Zona:",
                 options=opciones_zonas,
                 index=0
             )
         else:
             zona_seleccionada = "Todas"
             st.selectbox(
-                "Seleccionar Zona:",
+                "Zona:",
                 options=["Todas"],
                 index=0,
                 disabled=True
@@ -400,14 +398,14 @@ def show_general():
             grupos_disponibles = sorted(df_temp['grupo_etario'].dropna().unique()) if not df_temp.empty else []
             opciones_grupos = ["Todos"] + [str(grupo) for grupo in grupos_disponibles]
             grupo_etario_seleccionado = st.selectbox(
-                "Seleccionar Grupo Etario:",
+                "Grupo Etario:",
                 options=opciones_grupos,
                 index=0
             )
         else:
             grupo_etario_seleccionado = "Todos"
             st.selectbox(
-                "Seleccionar Grupo Etario:",
+                "Grupo Etario:",
                 options=["Todos"],
                 index=0,
                 disabled=True
