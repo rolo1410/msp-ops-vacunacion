@@ -7,8 +7,8 @@ from process.clean_transform.dim_vacunacion import vacunacion_orchester
 from process.clean_transform.functions import agregar_funciones_utilitarias
 from process.clean_transform.imp_fase import fases_orchester
 from process.clean_transform.tra_duplicados import eliminar_duplicados_orchester
+from process.clean_transform.tra_fechas import eliminar_dhis2_registros_1900, fechas_tratamiento_orchester
 from process.clean_transform.utils import ejecutar_query
-from process.marquer.no_tranform_persona import clean_cedulas_orchester, marcar_duplicados
 
 
 def _eliminar_fecha_aplicacion_none():
@@ -170,13 +170,14 @@ def _asignar_pesos_completitud():
     )    
     
 def process_all_data_paginated(desde, hasta):
-    eliminar_duplicados_orchester()
-    agregar_funciones_utilitarias()
-    _eliminar_fecha_aplicacion_none()
-    _asignar_pesos_completitud()
     _prepare_clean_process()
-    fases_orchester(desde, hasta)
+    agregar_funciones_utilitarias()
     delete_none_identifications()
+    fechas_tratamiento_orchester(desde, hasta)
+    eliminar_duplicados_orchester()
+    persona_orchester()
+    _asignar_pesos_completitud()
+    fases_orchester(desde, hasta)
     clean_orchester(desde, hasta)
     add_data_orchester()
     

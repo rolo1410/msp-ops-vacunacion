@@ -1,6 +1,8 @@
 import duckdb
 import pandas
 
+from extract.extraccion_oracle_simple import logger
+
 
 def copia_tabla(db_name, tabla_original, tabla_copia):
     cnn = duckdb.connect(database=db_name, read_only=False)

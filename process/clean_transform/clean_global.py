@@ -20,8 +20,8 @@ def clean_00_in_iden():
     query = """
     UPDATE db_vacunacion_covid
     SET num_iden = REGEXP_REPLACE(num_iden, '^0+', ''),
-        proceso_auditoria = concat(proceso_auditoria, '| C005, num_iden')
-    WHERE num_iden IS NOT NULL AND num_iden LIKE '0%';
+        proceso_auditoria = concat(proceso_auditoria, '| C005')
+    WHERE num_iden IS NOT NULL AND num_iden LIKE '00%';
     """
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
