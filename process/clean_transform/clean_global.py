@@ -59,9 +59,8 @@ def clean_especial_characters():
             db_name='resources/data_lake/vacunacion.duckdb',
             query=query
         )
-        logger.info(f"Limpieza de caracteres especiales completada para la columna {col}.")
+        logger.info(f"|-- Limpieza de caracteres especiales completada para la columna {col}.")
     
-    logger.info("Limpieza de caracteres especiales completada.")
 
 def clean_espacios():
     columns =['num_iden', 'unicodigo', 'sistema']

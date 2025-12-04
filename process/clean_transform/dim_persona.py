@@ -7,7 +7,8 @@ import polars as pl
 from process.clean_transform.utils import crear_columna_en_tabla_si_no_existe, ejecutar_query
 
 
-def _limpiar_columnas_texto(cols: list[str] = []):
+def _limpiar_columnas_texto():
+    cols=["tipo_iden",  "apellidos", "nombres","nombres_completos", "sexo", "etnia", "nacionalidad"]
     logging.info("|- EST Limpiando columnas de texto")
     query = f"""
         update db_vacunacion_covid 
@@ -180,8 +181,8 @@ def _homologar_tipo_identificacion():
     )
 
 def persona_orchester():
-    _limpiar_columnas_texto( cols=["tipo_iden",  "apellidos", "nombres","nombres_completos", "sexo", "etnia", "nacionalidad"])
-    ##_limpiar_identificacion()
+    _limpiar_columnas_texto( )
+    _limpiar_identificacion()
     _homologar_nacionalidad()
     _homologar_tipo_identificacion()
     _calcular_edad()

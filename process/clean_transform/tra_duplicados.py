@@ -1,12 +1,10 @@
 import logging
 
-import duckdb
-
 from process.clean_transform.utils import ejecutar_query
 
 
 def _eliminar_duplicados_completos():
-    logging.info("eliminando duplicados por  fecha, num_iden, nombre_vacuna, unicodigo eliminados.")
+    logging.info("|-- Eliminando duplicados por fecha, num_iden, nombre_vacuna, unicodigo.")
     query = """
         DELETE FROM db_vacunacion_covid
         WHERE rowid NOT IN (
@@ -26,6 +24,7 @@ def _eliminar_duplicados_completos():
 
 
 def _eliminar_duplicados_fecha_establecimiento_vacuna_persona():
+    logging.info("|-- Eliminando duplicados completos, cuando todos los campos son iguales.")
     query = """
         DELETE FROM db_vacunacion_covid
         WHERE rowid NOT IN (
@@ -68,7 +67,6 @@ def _eliminar_duplicados_fecha_establecimiento_vacuna_persona():
                 registro_civil
         );
     """
-    logging.info("Eliminando duplicados completos, cuando todos los campos son iguales.")
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
@@ -77,5 +75,6 @@ def _eliminar_duplicados_fecha_establecimiento_vacuna_persona():
 
 
 def eliminar_duplicados_orchester():
-    #_eliminar_duplicados_fecha_establecimiento_vacuna_persona()
+    logging.info("|- Tratamiento de duplicados")
     _eliminar_duplicados_completos()
+    _eliminar_duplicados_fecha_establecimiento_vacuna_persona()

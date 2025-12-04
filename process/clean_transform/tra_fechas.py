@@ -1,14 +1,12 @@
 import logging
 
-import duckdb
-
 from process.clean_transform.utils import ejecutar_query
 
 logger = logging.getLogger(__name__)
 
 
-def tratamiento_registros_1900_rows():    
-    ## TRA_1900: Tratamiento de registros con fecha_aplicacion en 1900
+def _tratamiento_registros_1900_rows():    
+    logger.info("|-- Tratando registros con fecha_aplicacion en 1900")
     query = f"""
     WITH fecha_establecimiento_moda AS (
        SELECT unicodigo,
@@ -27,13 +25,13 @@ def tratamiento_registros_1900_rows():
     WHERE db_vacunacion_covid.unicodigo = f.unicodigo
     AND (db_vacunacion_covid.fecha_aplicacion < '2021-01-01' OR db_vacunacion_covid.fecha_aplicacion > '2025-01-01')
     """
-    logger.info("Tratando registros con fecha_aplicacion en 1900")
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
 
-def completar_anio_mes_dia_aplicacion():
+def _completar_anio_mes_dia_aplicacion():
+    logger.info("|-- Completando anio, mes y dia de aplicacion a partir de fecha_aplicacion")
     query = f"""
     UPDATE db_vacunacion_covid
     SET anio_aplicacion = EXTRACT(YEAR FROM fecha_aplicacion),
@@ -43,25 +41,35 @@ def completar_anio_mes_dia_aplicacion():
     WHERE (anio_aplicacion IS NULL OR mes_aplicacion IS NULL OR dia_aplicacion IS NULL)
     AND fecha_aplicacion IS NOT NULL;
     """
-    logger.info("Completando anio, mes y dia de aplicacion a partir de fecha_aplicacion")
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
 
-def eliminar_registros_sin_fecha_aplicacion():
+def _eliminar_registros_sin_fecha_aplicacion():
+    logger.info("|-- Eliminando registros sin fecha_aplicacion válida")
     query = f"""
     DELETE FROM db_vacunacion_covid
     WHERE fecha_aplicacion IS NULL or TRIM(fecha_aplicacion::varchar) = '';
     """
-    logger.info("Eliminando registros sin fecha_aplicacion válida")
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
     
-def tratamiento_maximo_dia_mes():
-    # Primero corregir meses fuera de rango
+def _eliminar_fecha_aplicacion_none():
+    logger.info("|-- Eliminando registros con fecha_aplicacion None")
+    query = """
+    DELETE FROM db_vacunacion_covid
+    WHERE fecha_aplicacion IS NULL;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+
+def _tratamiento_maximo_dia_mes():
+    logger.info("|-- Tratando días y meses fuera de rango")
     query_mes = f"""
     UPDATE db_vacunacion_covid
     SET mes_aplicacion = CASE 
@@ -72,7 +80,6 @@ def tratamiento_maximo_dia_mes():
         proceso_auditoria = concat(proceso_auditoria, '| TRA_FECHA_002_MES')
     WHERE mes_aplicacion IS NOT NULL AND (mes_aplicacion > 12 OR mes_aplicacion < 1);
     """
-    logger.info("Corrigiendo meses fuera de rango")
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query_mes
@@ -96,13 +103,13 @@ def tratamiento_maximo_dia_mes():
            AND (dia_aplicacion < 1 
                 OR dia_aplicacion > DAY(LAST_DAY(MAKE_DATE(CAST(anio_aplicacion AS BIGINT), CAST(mes_aplicacion AS BIGINT), 1))));
     """
-    logger.info("Corrigiendo días fuera de rango")
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query_dia
     )
 
-def asignar_fecha_aplicacion_desde_componentes():
+def _asignar_fecha_aplicacion_desde_componentes():
+    logger.info("|-- Asignando fecha_aplicacion desde anio, mes y dia de aplicacion")
     query = f"""
     UPDATE db_vacunacion_covid
     SET fecha_aplicacion = TRY_CAST(
@@ -117,27 +124,28 @@ def asignar_fecha_aplicacion_desde_componentes():
     AND mes_aplicacion BETWEEN 1 AND 12
     AND dia_aplicacion BETWEEN 1 AND 31);
     """
-    logger.info("Asignando fecha_aplicacion desde anio, mes y dia de aplicacion")
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
 
-def eliminar_dhis2_registros_1900():
+def _eliminar_dhis2_registros_1900():
+    logger.info("|-- Eliminando registros DHIS2 con anio_aplicacion en 1900")
     query = f"""
     DELETE FROM db_vacunacion_covid
     WHERE (anio_aplicacion = 1900 OR anio_aplicacion IS NULL);
     """
-    logger.info("Eliminando registros DHIS2 con anio_aplicacion en 1900")
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
 
 def fechas_tratamiento_orchester(since: str, until: str):
-    tratamiento_maximo_dia_mes()
-    asignar_fecha_aplicacion_desde_componentes()
-    eliminar_registros_sin_fecha_aplicacion()
-    tratamiento_registros_1900_rows()   
-    completar_anio_mes_dia_aplicacion()
-    eliminar_dhis2_registros_1900()
+    logger.info("|- TRATAMIENTO FECHAS")
+    _eliminar_fecha_aplicacion_none()
+    _tratamiento_maximo_dia_mes()
+    _asignar_fecha_aplicacion_desde_componentes()
+    _eliminar_registros_sin_fecha_aplicacion()
+    _tratamiento_registros_1900_rows()   
+    _completar_anio_mes_dia_aplicacion()
+    _eliminar_dhis2_registros_1900()

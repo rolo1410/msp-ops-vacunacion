@@ -53,7 +53,7 @@ def load_lake_db_vacunacion_covid_from_sais(since: str, until: str, chunk_size: 
             v.lote::VARCHAR AS "LOTE_VACUNA",
             LTRIM(UPPER(CONCAT(u.first_name, ' ', u.last_name))) AS "PROFESIONAL_APLICA",
             UPPER(u.cedula) AS "IDEN_PROFESIONAL_APLICA",
-            'SAID' AS "SISTEMA"
+            'SAIS' AS "SISTEMA"
         FROM vacunacion.atencion a
         INNER JOIN vacunacion.vacunas v ON v.id = a.id_vacuna 
         INNER JOIN vacunacion.paciente p ON a.id_paciente = p.id

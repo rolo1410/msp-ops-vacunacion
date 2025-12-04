@@ -15,44 +15,36 @@ DIC_FASES = [
      {'nombre': 'Vacunación estacionaria contra COVID 19, 2025', 'inicio': '2025-01-01', 'fin': '2025-12-31'}
 ]
 
-
-
 def _imputar_fases_orchester():
-    logger.info("FACES: Imputando fases de vacunación basadas en rangos de fechas")
-    query_crear_fase="""
-    ALTER TABLE db_vacunacion_covid
-    ADD COLUMN IF NOT EXISTS fase_depurada_2 VARCHAR;
-    """
-    ejecutar_query(
+    logger.info("|-- Imputando fases de vacunación")
+    crear_columna_en_tabla_si_no_existe(
         db_name='resources/data_lake/vacunacion.duckdb',
-        query=query_crear_fase
+        tabla='db_vacunacion_covid',
+        columna='fase_depurada_2',
+        tipo='VARCHAR'
     )
-    
-    query_crear_audit="""
-    ALTER TABLE db_vacunacion_covid
-    ADD COLUMN IF NOT EXISTS proceso_auditoria VARCHAR;
-    """
-    ejecutar_query(
-        db_name='resources/data_lake/vacunacion.duckdb',
-        query=query_crear_audit
-    )
-    
+    # Construir el query con un CASE para cada fase
+    cases = []
     for fase in DIC_FASES:
-        query = f"""
-        UPDATE db_vacunacion_covid
-        SET fase_depurada_2 = '{fase['nombre']}',
-            proceso_auditoria = concat(proceso_auditoria, '| P001')
-        
-        WHERE fecha_aplicacion >= DATE('{fase['inicio']}') AND fecha_aplicacion <= DATE('{fase['fin']}') AND fecha_aplicacion > DATE('2021-01-01')
-        """
-        ejecutar_query(
-            db_name='resources/data_lake/vacunacion.duckdb',
-            query=query
-        )
-        logger.info(f"Asignada la fase: {fase['nombre']}")
+        cases.append(f"WHEN fecha_aplicacion >= DATE '{fase['inicio']}' AND fecha_aplicacion <= DATE '{fase['fin']}' THEN '{fase['nombre']}'")
+    
+    cases_str = "\n        ".join(cases)
+    
+    query = f"""
+    UPDATE db_vacunacion_covid
+    SET fase_depurada_2 = CASE 
+        {cases_str}
+        ELSE fase_depurada_2 
+    END
+    WHERE fecha_aplicacion IS NOT NULL
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
 
 def _organizar_columnas():
-    logger.info("FASES: Organizando columnas de fase de vacunación")
+    logger.info("|-- Organizando columnas de fase de vacunación")
     query = """
     ALTER TABLE db_vacunacion_covid
     DROP COLUMN IF EXISTS fase_vacuna,
@@ -62,7 +54,6 @@ def _organizar_columnas():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
-    logger.info("Columnas antiguas de fase eliminadas")
     # renombrar la nueva columna
     query_rename = """
     ALTER TABLE db_vacunacion_covid
@@ -72,10 +63,9 @@ def _organizar_columnas():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query_rename
     )
-    logger.info("Columna de fase depurada renombrada correctamente")
 
 def fases_orchester(desde: str, hasta: str):
     """Imputar fases de vacunación basadas en rangos de fechas"""
-    logger.info("FASE:---------------------")
+    logger.info("|- FASE, Tratamiento de fases de vacunación")
     _imputar_fases_orchester()
     _organizar_columnas()

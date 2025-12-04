@@ -4,7 +4,8 @@ from venv import logger
 import duckdb
 
 
-def _es_cedula_valida() -> bool:    
+def _es_cedula_valida() -> bool:
+    logger.info("|-- Agregando función es_cedula_valida a DuckDB...")  
     query = f"""
             CREATE OR REPLACE MACRO es_cedula_valida(cedula_str) AS
             CASE 
@@ -36,6 +37,7 @@ def _es_cedula_valida() -> bool:
     conn.execute(query)
     
 def _fn_eliminar_caracteres_especiales() -> str:
+    logger.info("|-- Agregando función eliminar_caracteres_especiales a DuckDB...")  
     query = """
         CREATE OR REPLACE MACRO eliminar_caracteres_especiales(input_str) AS
         UPPER(
@@ -50,6 +52,7 @@ def _fn_eliminar_caracteres_especiales() -> str:
     
     
 def _fn_obtener_solo_numeros():
+    logger.info("|-- Agregando función obtener_solo_numeros a DuckDB...")
     query = """
         CREATE OR REPLACE MACRO obtener_solo_numeros(input_str) AS
         REGEXP_REPLACE(input_str, '[^0-9]', '', 'g');
@@ -59,7 +62,7 @@ def _fn_obtener_solo_numeros():
     
     
 def agregar_funciones_utilitarias():
-    logger.info("Agregando funciones utilitarias a DuckDB...")
+    logger.info("|- AGREGANDO FUNCIONES UTILITARIAS")
     _es_cedula_valida()
     _fn_eliminar_caracteres_especiales()
     _fn_obtener_solo_numeros()
