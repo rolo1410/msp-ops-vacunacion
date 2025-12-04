@@ -1,9 +1,9 @@
-from extract.extraccion_oracle_simple import logger
+import logging
 from process.clean_transform.utils import crear_columna_en_tabla_si_no_existe, ejecutar_query
 
 
 def add_diff_dias_fecha_aplicacion():
-    logger.info("Agregando columna diff_dias_fecha_aplicacion")
+    logging.info("|-- Agregando columna diff_dias_fecha_aplicacion")
     '''
     Agrega la columna de diferencia de días desde la fecha de aplicación a la fecha actual
     '''
@@ -42,20 +42,19 @@ def add_diff_dias_fecha_aplicacion():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )   
-    logger.info("Columna diff_dias_fecha_aplicacion agregada y calculada.")
 
 ## TODO: CALCULAR BIEN L SEMANA EPIDEMIOLOGICA SEGUN AÑO Y FECHA
 def add_semana_epidemiologica():
     """ en funcion de la fecha_aplicacion, calcular la semana apidemiologica y agregarla a la tabla
     a semana epidemiológica se calcula dividiendo el año en ciclos de 7 días que comienzan un domingo y terminan un sábado, con la primera semana del año definida por la primera semana de enero que contenga al menos 4 días de ese mes. La primera semana del año debe contener al menos cuatro días del mes de enero; de lo contrario, se considera parte del año anterior. El resto del año se divide en 52 o 53 semanas de esta manera. 
     """
-    create_colum_query = """ alter table db_vacunacion_covid
-    add column if not exists semana_epidemiologica INTEGER;
-    """
-    ejecutar_query(
+    logging.info("|-- Agregando columna semana_epidemiologica")
+    crear_columna_en_tabla_si_no_existe(
         db_name='resources/data_lake/vacunacion.duckdb',
-        query=create_colum_query
-    )       
+        tabla='db_vacunacion_covid',
+        columna='semana_epidemiologica',
+        tipo='INTEGER'
+    )
     query = """
     UPDATE db_vacunacion_covid
     SET semana_epidemiologica = CAST( (CAST(strftime(fecha_aplicacion, '%j') AS INTEGER) + 6 - CAST(strftime(date_trunc('year', fecha_aplicacion), '%w') AS INTEGER)) / 7 AS INTEGER),
@@ -66,17 +65,15 @@ def add_semana_epidemiologica():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
-    pass
 
 
 def add_grupo_etario_depurada():
-    create_colum_query = """
-    ALTER TABLE db_vacunacion_covid
-    ADD COLUMN IF NOT EXISTS grupo_etario_depurada VARCHAR;
-    """
-    ejecutar_query(
+    logging.info("|-- Calculando GRUPO_ETARIO_DEPURADA")
+    crear_columna_en_tabla_si_no_existe(
         db_name='resources/data_lake/vacunacion.duckdb',
-        query=create_colum_query
+        tabla='db_vacunacion_covid',
+        columna='grupo_etario_depurada',
+        tipo='VARCHAR'
     )
     query = """
     UPDATE db_vacunacion_covid
@@ -92,7 +89,7 @@ def add_grupo_etario_depurada():
         WHEN edad_anios >= 65 THEN 'DE 65 AÑOS Y MÁS'
         ELSE 'NO DEFINIDO'
     END,
-    proceso_auditoria = concat(proceso_auditoria, '| C002, grupo_etario_depurada')
+    proceso_auditoria = concat(proceso_auditoria, '| C002')
     WHERE edad_anios IS NOT NULL;
     """
     ejecutar_query(
@@ -101,9 +98,6 @@ def add_grupo_etario_depurada():
     )   
 
 def add_data_orchester():
-    '''
-    Agrega datos adicionales a la tabla de vacunación
-    '''
     add_semana_epidemiologica()
     add_grupo_etario_depurada()
     add_diff_dias_fecha_aplicacion()

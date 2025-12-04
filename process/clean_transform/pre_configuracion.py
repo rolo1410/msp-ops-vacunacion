@@ -1,10 +1,15 @@
-from extract.extraccion_oracle_simple import logger
 from process.clean_transform.pre_functions import agregar_funciones_utilitarias
 from process.clean_transform.utils import ejecutar_query
 
 
+
+import logging
+
+
+
+
 def _prepare_clean_process():
-    logger.info("|-- Preparando tabla de vacunacion_covid, crendo auditoria, logs y tabla base...")
+    logging.info("|-- Preparando tabla de vacunacion_covid, crendo auditoria, logs y tabla base...")
     ## elminiar tabla si existe 
     query = """
     DROP TABLE IF EXISTS db_vacunacion_covid;
@@ -16,7 +21,6 @@ def _prepare_clean_process():
     create_table_from = """
     CREATE TABLE db_vacunacion_covid AS
     SELECT * FROM lk_vacunacion_covid;
-   
     """
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
@@ -32,6 +36,8 @@ def _prepare_clean_process():
     )
     
 def configuracion_orchester():
-    logger.info("|- PREPARACION")
+    """_summary_
+    """
+    logging.info("|- PREPARACION")
     _prepare_clean_process()
     agregar_funciones_utilitarias()

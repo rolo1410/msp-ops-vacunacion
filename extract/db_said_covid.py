@@ -46,8 +46,8 @@ def load_lake_db_vacunacion_covid_from_sais(since: str, until: str, chunk_size: 
             LTRIM(UPPER(td.documento)) AS "TIPO_IDEN",
             p.numero_identificacion::VARCHAR AS "NUM_IDEN",
             n.nacionalidad::VARCHAR AS "NACIONALIDAD",
-            ne.nacetnica::VARCHAR AS "ETNIA",
-            NULL AS "POBLA_VACUNA",
+            ae.autoident::VARCHAR AS "ETNIA",
+            gro.grupo_obj ::VARCHAR  AS "POBLA_VACUNA",
             NULL AS "REGISTRO_CIVIL",
             b.biologico::VARCHAR AS "NOMBRE_VACUNA",
             v.lote::VARCHAR AS "LOTE_VACUNA",
@@ -66,13 +66,14 @@ def load_lake_db_vacunacion_covid_from_sais(since: str, until: str, chunk_size: 
         INNER JOIN vacunacion.grupo_riesgo gr ON gr.id = p.grupo_riesgo
         INNER JOIN vacunacion.establecimientos e ON e.id = v.id_establecimiento
         LEFT JOIN public.nacionalidad n ON n.id = p.nacionalidad
-        LEFT JOIN public.nacionalidad_etnica ne ON ne.id = p.nac_etnica
+        LEFT JOIN public.autoidentificacion_etnica ae ON ae.id = p.auto_ident
+        left join vacunacion.grupo_objetivo gro on gro.id = p.grupo_objetivo
         WHERE a.fecha_atencion BETWEEN '{since}' AND '{until}'
     """
         
     chunk_size = 10000000 # Procesar en chunks de 50k registros
     count=0
-    logger.info(f"Iniciando carga de datos de vacunación COVID desde SAID entre {since} y {until}")
+    logger.info(f"Iniciando carga de datos de vacunación COVID desde SAIS entre {since} y {until}")
     for chunk_df in pd.read_sql(query, engine, chunksize=chunk_size):
         chunk_df.columns = [col.lower() for col in chunk_df.columns]
         add_new_elements_to_lake('vacunacion', 'lk_vacunacion_covid', ['id_vac_depu','num_iden','fecha_aplicacion', 'tipo_iden','id_vac_cons', 'nombre_vacuna', 'lote_vacuna', 'profesional_aplica','fase_vacuna_depurada'], chunk_df)

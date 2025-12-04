@@ -71,10 +71,8 @@ def _eliminar_duplicados_fecha_establecimiento_vacuna_persona():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
-  
-
 
 def eliminar_duplicados_orchester():
-    logging.info("|- Tratamiento de duplicados")
+    logging.info("|- TRATAMIENTO DE DUPLICADOS")
     _eliminar_duplicados_completos()
     _eliminar_duplicados_fecha_establecimiento_vacuna_persona()

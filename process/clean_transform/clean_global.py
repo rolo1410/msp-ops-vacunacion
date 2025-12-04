@@ -4,6 +4,7 @@ from process.clean_transform.utils import crear_columna_en_tabla_si_no_existe, e
 
 
 def add_0_when_cedula_9_chars():
+    logger.info("|-- Adición de cero inicial en cédulas de 9 caracteres completada.")
     query = """
     UPDATE db_vacunacion_covid
     SET num_iden = '0' || num_iden,
@@ -14,9 +15,9 @@ def add_0_when_cedula_9_chars():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
-    logger.info("Adición de cero inicial en cédulas de 9 caracteres completada.")
 
 def clean_00_in_iden():
+    logger.info("|-- Limpieza de ceros iniciales en num_iden completada.")
     query = """
     UPDATE db_vacunacion_covid
     SET num_iden = REGEXP_REPLACE(num_iden, '^0+', ''),
@@ -27,7 +28,6 @@ def clean_00_in_iden():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
-    logger.info("Limpieza de ceros iniciales en num_iden completada.")
 
 
 def clean_especial_characters():
@@ -35,6 +35,7 @@ def clean_especial_characters():
     columns = ['num_iden', 'unicodigo', 'sistema']
     
     for col in columns:
+        logger.info(f"|-- Limpieza de caracteres especiales completada para la columna {col}.")
         # Construct a REPLACE chain for all special characters for this column
         replace_expression = col  # Start with column name
         for char in caracteres_especiales:
@@ -59,7 +60,6 @@ def clean_especial_characters():
             db_name='resources/data_lake/vacunacion.duckdb',
             query=query
         )
-        logger.info(f"|-- Limpieza de caracteres especiales completada para la columna {col}.")
     
 
 def clean_espacios():
@@ -83,42 +83,42 @@ def remove_duplicates_query():
     logger.info("Iniciando eliminación de duplicados.")
     ## COMO asignar la accion realizadas
     columnas =[
- "anio_aplicacion",
- "mes_aplicacion",
- "dia_aplicacion",
- "fecha_aplicacion",
- "punto_vacunacion",
- "unicodigo",
- "uni_nombre",
- "zona",
- "distrito",
- "provincia",
- "canton",
- "apellidos",
- "nombres",
- "nombres_completos",
- "tipo_iden",
- "num_iden",
- "sexo",
- "anio_nacimiento",
- "mes_nacimiento",
- "dia_nacimiento",
- "fecha_nacimiento",
- "nacionalidad",
- "etnia",
- "pobla_vacuna",
- "grupo_riesgo",
- "nombre_vacuna",
- "lote_vacuna",
- "dosis_aplicada",
- "profesional_aplica",
- "iden_profesional_aplica",
- "fase_vacuna",
- "fase_vacuna_depurada",
- "grupo_riesgo_depurada",
- "edad_anios",
- "sistema",
- "registro_civil"]
+                "anio_aplicacion",
+                "mes_aplicacion",
+                "dia_aplicacion",
+                "fecha_aplicacion",
+                "punto_vacunacion",
+                "unicodigo",
+                "uni_nombre",
+                "zona",
+                "distrito",
+                "provincia",
+                "canton",
+                "apellidos",
+                "nombres",
+                "nombres_completos",
+                "tipo_iden",
+                "num_iden",
+                "sexo",
+                "anio_nacimiento",
+                "mes_nacimiento",
+                "dia_nacimiento",
+                "fecha_nacimiento",
+                "nacionalidad",
+                "etnia",
+                "pobla_vacuna",
+                "grupo_riesgo",
+                "nombre_vacuna",
+                "lote_vacuna",
+                "dosis_aplicada",
+                "profesional_aplica",
+                "iden_profesional_aplica",
+                "fase_vacuna",
+                "fase_vacuna_depurada",
+                "grupo_riesgo_depurada",
+                "edad_anios",
+                "sistema",
+                "registro_civil"]
     query="""
     DELETE FROM db_vacunacion_covid a
     WHERE rowid NOT IN (
@@ -163,7 +163,7 @@ def update_fases():
         WHEN fecha_aplicacion BETWEEN '2025-01-01' AND '2025-12-31' THEN 'Vacunación estacionaria contra COVID 19, 2025'
         ELSE fase_vacuna_depurada
     END,
-    proceso_auditoria = concat(proceso_auditoria, '| C003, fase_vacuna_depurada')
+    proceso_auditoria = concat(proceso_auditoria, '| C003')
     WHERE fecha_aplicacion IS NOT NULL;
     """
     ejecutar_query(

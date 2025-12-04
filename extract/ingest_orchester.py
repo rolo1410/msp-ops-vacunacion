@@ -71,5 +71,5 @@ def ingest_sais_db(since, until, chunk_size=1000000):
     
 def ingest_orchester(since, until, chunk_size=1000000):
     #ingest_vacunacion_covid(since, until, chunk_size)
-    #load_lake_db_vacunacion_covid_from_sais(since, until, chunk_size)
+    load_lake_db_vacunacion_covid_from_sais(since, until, chunk_size)
     pass

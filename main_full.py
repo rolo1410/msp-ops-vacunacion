@@ -85,21 +85,21 @@ def main():
     try:
         # Ejecutar ingesta de datos con parámetros optimizados
         # logging.info("Iniciando ingesta de datos")
-        # ingest_orchester(args.since, args.until, args.chunk_size)
+        #ingest_orchester(args.since, args.until, args.chunk_size)
         
         # Ejecutar procesamiento
-        logging.info("Iniciando procesamiento de datos")
+        logging.info("|- Iniciando procesamiento de datos")
         process_all_data_paginated(args.since, args.until)
         
         # Guardar datos procesados
-        logging.info("Guardando datos procesados al lago")
+        logging.info("|- Guardando datos procesados al lago")
         #add_new_elements_to_lake('vacunacion', 'db_vacunacion', ['num_iden', 'fecha_aplicacion', 'unicodigo', 'id_vac_cons'], df)
         
         # Guardar datos procesados
-        logging.info("Generando perfiles de datos")
+        logging.info("|- Generando perfiles de datos")
         #profiler_orchester(df)  # pyright: ignore[reportUndefinedVariable]
         
-        logging.info("Procesamiento completado exitosamente")
+        logging.info("|- Procesamiento completado exitosamente")
         
     except Exception as e:
         logging.error(f"Error durante el procesamiento: {e}")

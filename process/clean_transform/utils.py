@@ -55,7 +55,7 @@ def crear_columna_en_tabla_si_no_existe(db_name, tabla, columna, tipo):
         cnn.execute(query)
         cnn.commit()
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error -> : {e}")
     finally:
         cnn.close()  
         
@@ -77,6 +77,7 @@ def ejecutar_query(db_name, query):
         cnn.commit()
         return result
     except Exception as e:
+        print(query)
         print(f"Error: {e}")
     finally:
         cnn.close()

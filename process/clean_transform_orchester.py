@@ -52,7 +52,6 @@ tabla_pesos = {
     "id_vac_cons": 0,
 }
 
-
 def _asignar_pesos_completitud():
     """Crear una columna con el peso de completitud de los datos"""
     query = """
@@ -81,11 +80,11 @@ def _asignar_pesos_completitud():
     
 def process_all_data_paginated(desde, hasta):
     configuracion_orchester()
-    fechas_tratamiento_orchester(desde, hasta)
-    eliminar_duplicados_orchester()
+    #fechas_tratamiento_orchester(desde, hasta)
+    #eliminar_duplicados_orchester()
     persona_orchester()
-    _asignar_pesos_completitud()
-    fases_orchester(desde, hasta)
-    clean_orchester(desde, hasta)
-    add_data_orchester()
+    #_asignar_pesos_completitud()
+    #fases_orchester(desde, hasta)
+   # clean_orchester(desde, hasta)
+    #add_data_orchester()
     

@@ -4,7 +4,6 @@ import polars as pl
 
 
 def limpiar_columnas_geograficas(df: pl.DataFrame, cols: list):
-    logging.info("|- EST ")
     logging.debug(" |- Truncando latitud y longitud a 6 decimales")
     df = df.with_columns(
         [pl.col(col).round(6) for col in cols if col in df.columns]
@@ -12,7 +11,7 @@ def limpiar_columnas_geograficas(df: pl.DataFrame, cols: list):
     return df
 
 def limpiar_columas_texto(df: pl.DataFrame):
-    logging.info("|- EST Limpiando columnas de texto")
+    logging.info("|-- Limpiando columnas de texto")
     logging.debug(" |- Removiendo espacios en blanco y caracteres especiales")
     df = df.with_columns(
         [pl.col(col).str.strip_chars().str.replace_all(r"[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s]", "") for col in df.columns if df[col].dtype == pl.Utf8]
