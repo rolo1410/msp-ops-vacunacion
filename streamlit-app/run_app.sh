@@ -35,4 +35,4 @@ echo "   - http://$(hostname -I | awk '{print $1}'):8000"
 echo "==============================================="
 
 # Ejecutar la aplicación
-cd src && streamlit run app.py --server.port=8000 --server.address=0.0.0.0
+cd src && streamlit run app.py --server.port=8080 --server.address=0.0.0.0

@@ -72,6 +72,34 @@ def _eliminar_duplicados_fecha_establecimiento_vacuna_persona():
         query=query
     )
 
+def _agrupar_grupo_riesgo():
+    logging.info("|-- Agrupando grupo_riesgo y lugar_aplica para registros con mismo num_iden, fecha_aplicacion, unicodigo.")
+    query = """
+        UPDATE db_vacunacion_covid
+        SET 
+            grupo_riesgo = subq.grupo_riesgo_concat,
+            punto_vacunacion = subq.lugar_aplica_concat
+        FROM (
+            SELECT 
+                num_iden,
+                fecha_aplicacion,
+                unicodigo,
+                STRING_AGG(DISTINCT grupo_riesgo, ', ' ORDER BY grupo_riesgo) as grupo_riesgo_concat,
+                STRING_AGG(DISTINCT punto_vacunacion, ', ' ORDER BY punto_vacunacion) as lugar_aplica_concat
+            FROM db_vacunacion_covid
+            GROUP BY num_iden, fecha_aplicacion, unicodigo
+            HAVING COUNT(DISTINCT grupo_riesgo) > 1 OR COUNT(DISTINCT punto_vacunacion) > 1
+        ) subq
+        WHERE 
+            db_vacunacion_covid.num_iden = subq.num_iden
+            AND db_vacunacion_covid.fecha_aplicacion = subq.fecha_aplicacion
+            AND db_vacunacion_covid.unicodigo = subq.unicodigo;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+
 def eliminar_duplicados_orchester():
     logging.info("|- TRATAMIENTO DE DUPLICADOS")
     _eliminar_duplicados_completos()

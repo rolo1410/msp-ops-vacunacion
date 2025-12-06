@@ -6,15 +6,66 @@ import polars as pl
 from process.clean_transform.utils import crear_columna_en_tabla_si_no_existe, ejecutar_query
 
 
-def _limpiar_columnas_texto():
-    cols=["tipo_iden",  "apellidos", "nombres","nombres_completos", "sexo", "etnia", "nacionalidad"]
-    logging.info("|-- EST Limpiando columnas de texto '" + ",".join(cols) + "'")
-    query = f"""
-        update db_vacunacion_covid 
-        set 
-        {','.join([f"{col} = eliminar_caracteres_especiales({col})" for col in cols])},
-        proceso_auditoria = concat(proceso_auditoria, '| PER_001')
-        where true;
+def _limpiar_num_iden():
+    logging.info("|-- Limpiando num_iden eliminando espacios en blanco y caracteres especiales")
+   
+    caracteres = [ '>',	'_','}','¨','°','½','Ç','Í','â','ç','é','í','ï','ú','‘','’','€','™', ':', '¿', '/']
+    queries = []
+    for char in caracteres:
+        query = """
+            UPDATE db_vacunacion_covid
+            SET 
+                num_iden = UPPER(REPLACE(num_iden, '""" + char + """', '')),
+                proceso_auditoria = CONCAT(proceso_auditoria, '| PER_001A')
+            WHERE num_iden IS NOT NULL AND num_iden LIKE '%""" + char + """%'
+        """
+        queries.append(query)
+    query = ";".join(queries)  
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+    
+def _reemplazar_caracter_en_num_iden():
+    logging.info("|-- Reemplazando caracteres especiales en num_iden")
+    caracteres = [
+            {'val': 'Á', 'to': 'A'}, 
+            {'val': 'À', 'to': 'A'}, 
+            {'val': 'Â', 'to': 'A'}, 
+            {'val': 'É', 'to': 'E'}, 
+            {'val': 'Ï', 'to': 'I'}, 
+            {'val': 'Ñ', 'to': 'N'},
+            {'val': 'Ó', 'to': 'O'},
+            {'val': 'Ú', 'to': 'U'}
+        ]
+    queries = []
+    for char in caracteres:
+        query = f"""
+            UPDATE db_vacunacion_covid
+            SET num_iden = REPLACE(num_iden, '{char['val']}', '{char['to']}'),
+                proceso_auditoria = CONCAT(proceso_auditoria, '| PER_001C')
+            WHERE num_iden IS NOT NULL AND num_iden LIKE '%{char['val']}%';
+            """
+        queries.append(query)
+    query = ";".join(queries)
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+
+def _recalcular_anio_mes_dia_nacimiento():
+    logging.info("|-- Recalculando AÑO_NACIMIENTO, MES_NACIMIENTO, DIA_NACIMIENTO")
+    query = """
+        UPDATE db_vacunacion_covid
+        SET 
+            anio_nacimiento = EXTRACT(YEAR FROM fecha_nacimiento::DATE)::INT,
+            mes_nacimiento = EXTRACT(MONTH FROM fecha_nacimiento::DATE)::INT,
+            dia_nacimiento = EXTRACT(DAY FROM fecha_nacimiento::DATE)::INT,
+            proceso_auditoria = CONCAT(proceso_auditoria, '| PER_002')
+        WHERE fecha_nacimiento IS NOT NULL 
+            AND (anio_nacimiento <> EXTRACT(YEAR FROM fecha_nacimiento::DATE)::INT
+                OR mes_nacimiento <> EXTRACT(MONTH FROM fecha_nacimiento::DATE)::INT
+                OR dia_nacimiento <> EXTRACT(DAY FROM fecha_nacimiento::DATE)::INT);
     """
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
@@ -38,7 +89,7 @@ def _limpiar_num_iden_espacios():
     logging.info("|-- Limpiando todos los espacios en blanco de num_iden")
     query_clean = """
     UPDATE db_vacunacion_covid
-    SET num_iden = REGEXP_REPLACE(TRIM(num_iden::VARCHAR), '\\s+', '', 'g'),
+    SET num_iden = UPPER(REGEXP_REPLACE(TRIM(num_iden::VARCHAR), '\\s+', '', 'g')),
         proceso_auditoria = CONCAT(proceso_auditoria, '| PER_001B')
     WHERE num_iden IS NOT NULL;
     """
@@ -51,8 +102,8 @@ def _limpiar_identificacion():
     logging.info("|-- Completando cédulas que tienen menos de 10 dígitos con un 0 a la izquierda")
     query = """
     UPDATE db_vacunacion_covid
-    SET num_iden = LPAD(num_iden, 10, '0'), 
-        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_002')
+    SET num_iden =UPPER(LPAD(num_iden, 10, '0')), 
+        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_003')
     WHERE tipo_iden = 'CÉDULA DE IDENTIDAD' 
     AND num_iden IS NOT NULL
     AND LENGTH(num_iden) < 10
@@ -73,7 +124,7 @@ def _limpiar_identificacion():
     query_update= """
         UPDATE db_vacunacion_covid
         SET cedula_es_valida = es_cedula_valida(num_iden),
-            proceso_auditoria = CONCAT(proceso_auditoria, '| PER_003')
+            proceso_auditoria = CONCAT(proceso_auditoria, '| PER_004')
         WHERE tipo_iden = 'CÉDULA DE IDENTIDAD'
         AND num_iden IS NOT NULL
         AND LENGTH(num_iden) > 0;
@@ -93,11 +144,31 @@ def _asignar_tipo_cedula_a_cedulas_validas():
         THEN 'CÉDULA DE IDENTIDAD'
         ELSE tipo_iden
         END,
-        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_009')
+        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_005')
     WHERE tipo_iden IS NULL 
     AND num_iden IS NOT NULL 
     AND LENGTH(num_iden) > 0
     AND es_cedula_valida(num_iden) = TRUE;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query_update
+    )
+
+def _asignar_tipo_no_identificado_a_num_iden_no_nulos():
+    logging.info("|-- Asignando tipo de identificación 'NO IDENTIFICADO' a num_iden no nulos y tipo_iden nulos")
+    query_update= """
+    UPDATE db_vacunacion_covid
+    SET tipo_iden = 
+        CASE 
+        WHEN tipo_iden IS NULL AND num_iden IS NOT NULL AND LENGTH(num_iden) > 0
+        THEN 'NO IDENTIFICADO'
+        ELSE tipo_iden
+        END,
+        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_006')
+    WHERE tipo_iden IS NULL 
+    AND num_iden IS NOT NULL 
+    AND LENGTH(num_iden) > 0;
     """
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
@@ -114,7 +185,7 @@ def _asignar_tipo_cedula_a_17_digitos():
         THEN 'CÉDULA DE IDENTIDAD'
         ELSE tipo_iden
         END,
-        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_009')
+        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_007')
     WHERE tipo_iden IS NULL 
     AND num_iden IS NOT NULL 
     AND LENGTH(num_iden) > 0
@@ -136,7 +207,7 @@ def _calcular_edad():
     query_update= """
     UPDATE db_vacunacion_covid
     SET edad_anios = EXTRACT(YEAR FROM AGE(fecha_aplicacion, fecha_nacimiento::DATE))::INT,
-        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_004')
+        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_008')
     WHERE fecha_nacimiento IS NOT NULL AND fecha_aplicacion IS NOT NULL;
     """
     ejecutar_query(
@@ -158,7 +229,7 @@ def _homologar_nacionalidad():
     query += """
     ELSE nacionalidad
     END,
-    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_005')
+    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_009')
     WHERE nacionalidad IS NOT NULL;
     """
     ejecutar_query(
@@ -187,7 +258,7 @@ def _calcular_grupo_etario():
         WHEN edad_anios >= 65 THEN 'DE 65 AÑOS Y MÁS'
         ELSE 'NO DEFINIDO'
     END,
-    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_006')
+    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_010')
     WHERE TRUE;
     """
     ejecutar_query(
@@ -209,7 +280,7 @@ def _homologar_etnia():
     query += """
     ELSE etnia
     END,
-    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_007')
+    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_011')
     WHERE etnia IS NOT NULL;
     """
     ejecutar_query(
@@ -232,7 +303,7 @@ def _homologar_tipo_identificacion():
     query += """
     ELSE tipo_iden
     END,
-    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_008')
+    proceso_auditoria = CONCAT(proceso_auditoria, '| PER_012')
     WHERE tipo_iden IS NOT NULL;
     """
     ejecutar_query(
@@ -240,13 +311,59 @@ def _homologar_tipo_identificacion():
         query=query
     )
 
+def _eliminar_caracter_porcentaje():
+    logging.info("|-- Eliminando caracteres de porcentaje en num_iden")
+    query = """
+    UPDATE db_vacunacion_covid
+    SET num_iden = REPLACE(num_iden, '%', ''),
+        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_013')
+    WHERE num_iden IS NOT NULL;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+
+def _eliminar_multiples_ceros_al_inicio_num_iden():
+    logging.info("|-- Eliminando múltiples ceros al inicio de num_iden")
+    query = """
+        UPDATE db_vacunacion_covid
+        SET num_iden = TRIM(LEADING '0' FROM num_iden)
+        WHERE num_iden LIKE '00%';
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+
+def _eliminar_comilla():
+    logging.info("|-- Eliminando comillas simples y dobles de num_iden")
+    query = """
+    UPDATE db_vacunacion_covid
+    SET num_iden = REPLACE(REPLACE(num_iden, '''', ''), '"', ''),
+        proceso_auditoria = CONCAT(proceso_auditoria, '| PER_014')
+    WHERE num_iden IS NOT NULL;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+
 def persona_orchester():
-    _limpiar_columnas_texto( )
+   # _limpiar_columnas_texto()
     _limpiar_num_iden_espacios()
+    _limpiar_num_iden()
+    _reemplazar_caracter_en_num_iden()
+    _eliminar_caracter_porcentaje()
+    _eliminar_comilla()
+    _eliminar_multiples_ceros_al_inicio_num_iden()
     _limpiar_identificacion()
     _homologar_nacionalidad()
     _homologar_tipo_identificacion()
     _asignar_tipo_cedula_a_cedulas_validas()
+    _asignar_tipo_no_identificado_a_num_iden_no_nulos()
+    _asignar_tipo_cedula_a_17_digitos()
+    _recalcular_anio_mes_dia_nacimiento()
     _calcular_edad()
     _calcular_grupo_etario()
     _homologar_etnia()
