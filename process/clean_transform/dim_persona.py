@@ -348,9 +348,61 @@ def _eliminar_comilla():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
+    
+def _limpiar_nombres_apellidos_completos():
+    logging.info("|-- Limpiando caracteres especiales en nombres y apellidos completos eliminando espacios en blanco adicionales")
+    query = r"""
+            UPDATE db_vacunacion_covid
+        SET 
+            nombres = TRIM(
+            REGEXP_REPLACE(
+            UPPER(REGEXP_REPLACE(nombres, '[^a-zA-Z0-9 ]', '', 'g')),
+            '\\s+', ' ', 'g'
+            )
+            ),
+            apellidos = TRIM(
+            REGEXP_REPLACE(
+            UPPER(REGEXP_REPLACE(apellidos, '[^a-zA-Z0-9 ]', '', 'g')),
+            '\\s+', ' ', 'g'
+            )
+            ),
+            nombres_completos = TRIM(
+            REGEXP_REPLACE(
+            UPPER(REGEXP_REPLACE(nombres_completos, '[^a-zA-Z0-9 ]', '', 'g')),
+            '\\s+', ' ', 'g'
+            )
+            ),
+            proceso_auditoria = CONCAT(proceso_auditoria, '| PER_015')
+        WHERE 
+            (nombres IS NOT NULL AND REGEXP_MATCHES(nombres, '[^a-zA-Z13 ]|\\s{2,}'))
+            OR (apellidos IS NOT NULL AND REGEXP_MATCHES(apellidos, '[^a-zA-Z13 ]|\\s{2,}'))
+            OR (nombres_completos IS NOT NULL AND REGEXP_MATCHES(nombres_completos, '[^a-zA-Z13 ]|\\s{2,}'));
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+
+def eliminar_1_3_de_nombres_apellidos():
+    logging.info("|-- Eliminando caracteres '1' y '3' de nombres y apellidos completos")
+    query = r"""
+        UPDATE db_vacunacion_covid
+        SET 
+            nombres = REPLACE(REPLACE(nombres, '1', ''), '3', ''),
+            apellidos = REPLACE(REPLACE(apellidos, '1', ''), '3', ''),
+            nombres_completos = REPLACE(REPLACE(nombres_completos, '1', ''), '3', ''),
+            proceso_auditoria = CONCAT(proceso_auditoria, '| PER_016')
+        WHERE 
+            (nombres IS NOT NULL AND (nombres LIKE '%1%' OR nombres LIKE '%3%'))
+            OR (apellidos IS NOT NULL AND (apellidos LIKE '%1%' OR apellidos LIKE '%3%'))
+            OR (nombres_completos IS NOT NULL AND (nombres_completos LIKE '%1%' OR nombres_completos LIKE '%3%'));
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
 
 def persona_orchester():
-   # _limpiar_columnas_texto()
     _limpiar_num_iden_espacios()
     _limpiar_num_iden()
     _reemplazar_caracter_en_num_iden()
@@ -358,6 +410,7 @@ def persona_orchester():
     _eliminar_comilla()
     _eliminar_multiples_ceros_al_inicio_num_iden()
     _limpiar_identificacion()
+    _limpiar_nombres_apellidos_completos()
     _homologar_nacionalidad()
     _homologar_tipo_identificacion()
     _asignar_tipo_cedula_a_cedulas_validas()
