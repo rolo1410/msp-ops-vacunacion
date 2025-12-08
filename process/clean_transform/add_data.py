@@ -18,30 +18,39 @@ def add_diff_dias_fecha_aplicacion():
                 UPDATE db_vacunacion_covid
                 SET diff_dias_fecha_aplicacion = T2.diferencia_dias
                 FROM (
-                WITH FechasUnicasCalculadas AS (
-                SELECT DISTINCT
-                num_iden,
-                fecha_aplicacion,
-                DATE_DIFF('day', 
-                    LAG(fecha_aplicacion, 1) OVER (
-                        PARTITION BY num_iden
-                        ORDER BY fecha_aplicacion
-                    ), 
-                    fecha_aplicacion
-                ) AS diferencia_dias
-                FROM
-                db_vacunacion_covid
-                ORDER BY num_iden, fecha_aplicacion
-                )
-                SELECT * FROM FechasUnicasCalculadas
+                    SELECT 
+                        ROWID as row_id,
+                        COALESCE(
+                            DATE_DIFF('day', 
+                                LAG(fecha_aplicacion, 1) OVER (
+                                    PARTITION BY num_iden
+                                    ORDER BY fecha_aplicacion, ROWID
+                                ), 
+                                fecha_aplicacion
+                            ),
+                            null
+                        ) AS diferencia_dias
+                    FROM
+                        db_vacunacion_covid
                 ) AS T2
-                WHERE db_vacunacion_covid.num_iden = T2.num_iden
-                AND db_vacunacion_covid.fecha_aplicacion = T2.fecha_aplicacion;
+                WHERE db_vacunacion_covid.ROWID = T2.row_id;
     """
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )   
+    
+def eliminar_registros_dias_0():
+    logging.info("|-- Eliminando registros con diff_dias_fecha_aplicacion = 0")
+    query = """
+        DELETE FROM db_vacunacion_covid
+        WHERE diff_dias_fecha_aplicacion = 0 
+           OR (diff_dias_fecha_aplicacion >= 1 AND diff_dias_fecha_aplicacion <= 10);
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
 
 ## TODO: CALCULAR BIEN L SEMANA EPIDEMIOLOGICA SEGUN AÑO Y FECHA
 def add_semana_epidemiologica():
@@ -101,3 +110,4 @@ def add_data_orchester():
     add_semana_epidemiologica()
     add_grupo_etario_depurada()
     add_diff_dias_fecha_aplicacion()
+    eliminar_registros_dias_0()

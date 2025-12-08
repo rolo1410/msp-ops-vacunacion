@@ -7,9 +7,11 @@ from process.clean_transform.dim_vacunacion import vacunacion_orchester
 from process.clean_transform.imp_fase import fases_orchester
 from process.clean_transform.pre_configuracion import configuracion_orchester
 from process.clean_transform.pre_functions import agregar_funciones_utilitarias
-from process.clean_transform.tra_duplicados import eliminar_duplicados_orchester
+from process.clean_transform.tra_duplicados import eliminar_duplicados_orchester, eliminar_duplicados_orchester_final
 from process.clean_transform.tra_fechas import fechas_tratamiento_orchester
 from process.clean_transform.utils import ejecutar_query
+from process.clean_transform.tra_establecimientos import establecimientos_orchester
+from process.clean_transform.tra_dosis import dosis_orchester
 
 tabla_pesos = {
     "id_vac_depu": 0,
@@ -80,11 +82,14 @@ def _asignar_pesos_completitud():
     
 def process_all_data_paginated(desde, hasta):
     configuracion_orchester()
-    #fechas_tratamiento_orchester(desde, hasta)
-    #eliminar_duplicados_orchester()
+    establecimientos_orchester()
+    fechas_tratamiento_orchester(desde, hasta)
+    eliminar_duplicados_orchester()
     persona_orchester()
-    #_asignar_pesos_completitud()
-    #fases_orchester(desde, hasta)
-   # clean_orchester(desde, hasta)
-    #add_data_orchester()
+    _asignar_pesos_completitud()
+    fases_orchester(desde, hasta)
+    clean_orchester(desde, hasta)
+    add_data_orchester()
+    eliminar_duplicados_orchester_final()
+    dosis_orchester()
     

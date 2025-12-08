@@ -139,9 +139,21 @@ def _eliminar_dhis2_registros_1900():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
+    
+def _remove_invalid_dates():
+    logger.info("|-- Removing records with invalid dates")
+    query = f"""
+    DELETE FROM db_vacunacion_covid
+    WHERE fecha_aplicacion > '2025-01-01' OR fecha_aplicacion > CURRENT_DATE;
+    """
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
 
 def fechas_tratamiento_orchester(since: str, until: str):
     logger.info("|- TRATAMIENTO FECHAS")
+    _remove_invalid_dates()
     _eliminar_fecha_aplicacion_none()
     _tratamiento_maximo_dia_mes()
     _asignar_fecha_aplicacion_desde_componentes()

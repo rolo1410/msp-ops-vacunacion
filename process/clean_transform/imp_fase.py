@@ -8,12 +8,13 @@ DIC_FASES = [
     {'nombre': 'FASE 2', 'inicio': '2021-06-15', 'fin': '2021-07-11'},
     {'nombre': 'FASE 3', 'inicio': '2021-07-12', 'fin': '2021-09-05'},
     {'nombre': 'FASE 4', 'inicio': '2021-09-06', 'fin': '2021-09-12'},    
+    ## aquí hay un salto, 15 DE OCTUBRE DE 2021, AL 30 DE MARZO DE 2022 NO HAY FASES DEFINIDAS
+    {'nombre': 'PRIMERA REFUERZO', 'inicio': '2021-10-15', 'fin': '2022-03-30'},
+    {'nombre': 'SEGUNDO REFUERZO', 'inicio': '2022-04-01', 'fin': '2022-12-31'},
     ## aquí hay un salto
-    {'nombre': 'Segundo refuerzo', 'inicio': '2021-03-30', 'fin': '2022-03-30'},
-    ## aquí hay un salto
-    {'nombre': 'Vacunación bivalente 2023', 'inicio': '2023-01-01', 'fin': '2023-12-31'},
-    {'nombre': 'Vacunación estacionaria contra COVID-19, 2024', 'inicio': '2024-01-01', 'fin': '2024-12-31'},
-    {'nombre': 'Vacunación estacionaria contra COVID 19, 2025', 'inicio': '2025-01-01', 'fin': '2025-12-31'}
+    {'nombre': 'VACUNACIÓN BIVALENTE 2023', 'inicio': '2023-01-01', 'fin': '2023-12-31'},
+    {'nombre': 'VACUNACIÓN ESTACIONARIA CONTRA COVID-19, 2024', 'inicio': '2024-01-01', 'fin': '2024-12-31'},
+    {'nombre': 'VACUNACIÓN ESTACIONARIA CONTRA COVID 19, 2025', 'inicio': '2025-01-01', 'fin': '2025-12-31'}
 ]
 
 def _imputar_fases_orchester():
@@ -48,7 +49,8 @@ def _organizar_columnas():
     logging.info("|-- Organizando columnas de fase de vacunación")
     query = """
     ALTER TABLE db_vacunacion_covid
-    DROP COLUMN IF EXISTS fase_vacuna,
+    DROP COLUMN IF EXISTS fase_vacuna;
+    ALTER TABLE db_vacunacion_covid
     DROP COLUMN IF EXISTS fase_vacuna_depurada;
     """
     ejecutar_query(

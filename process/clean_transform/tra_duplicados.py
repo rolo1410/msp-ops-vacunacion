@@ -99,8 +99,14 @@ def _agrupar_grupo_riesgo():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query
     )
+    
+
 
 def eliminar_duplicados_orchester():
     logging.info("|- TRATAMIENTO DE DUPLICADOS")
     _eliminar_duplicados_completos()
     _eliminar_duplicados_fecha_establecimiento_vacuna_persona()
+    
+def eliminar_duplicados_orchester_final():
+    logging.info("|- TRATAMIENTO DE DUPLICADOS FINAL")
+    _agrupar_grupo_riesgo()
