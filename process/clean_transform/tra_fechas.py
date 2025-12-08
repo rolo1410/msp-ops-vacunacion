@@ -61,7 +61,7 @@ def _eliminar_fecha_aplicacion_none():
     logger.info("|-- Eliminando registros con fecha_aplicacion None")
     query = """
     DELETE FROM db_vacunacion_covid
-    WHERE fecha_aplicacion IS NULL;
+    WHERE fecha_aplicacion IS NULL and (anio_aplicacion IS NULL OR mes_aplicacion IS NULL);
     """
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',
@@ -120,7 +120,7 @@ def _asignar_fecha_aplicacion_desde_componentes():
     AND (anio_aplicacion IS NOT NULL 
     AND mes_aplicacion IS NOT NULL 
     AND dia_aplicacion IS NOT NULL
-    AND anio_aplicacion BETWEEN 1900 AND 2100
+    AND anio_aplicacion BETWEEN 1900 AND 2100 
     AND mes_aplicacion BETWEEN 1 AND 12
     AND dia_aplicacion BETWEEN 1 AND 31);
     """
@@ -141,10 +141,10 @@ def _eliminar_dhis2_registros_1900():
     )
     
 def _remove_invalid_dates():
-    logger.info("|-- Removing records with invalid dates")
+    logger.info("|-- Eliminado registros con fechas inválidas")
     query = f"""
     DELETE FROM db_vacunacion_covid
-    WHERE fecha_aplicacion > '2025-01-01' OR fecha_aplicacion > CURRENT_DATE;
+    WHERE fecha_aplicacion > '2024-12-31' OR fecha_aplicacion > CURRENT_DATE;
     """
     ejecutar_query(
         db_name='resources/data_lake/vacunacion.duckdb',

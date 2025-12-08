@@ -1,6 +1,6 @@
 from extract.extraccion_oracle_simple import logger
 import logging
-from process.clean_transform.utils import crear_colulmna_en_tabla, crear_columna_en_tabla_si_no_existe, ejecutar_query
+from process.clean_transform.utils import  crear_columna_en_tabla_si_no_existe, ejecutar_query
 
 DIC_FASES = [
     {'nombre': 'FASE 0', 'inicio': '2021-01-18', 'fin': '2021-05-23'},
@@ -47,9 +47,16 @@ def _imputar_fases_orchester():
 
 def _organizar_columnas():
     logging.info("|-- Organizando columnas de fase de vacunación")
-    query = """
+    query = f"""
     ALTER TABLE db_vacunacion_covid
-    DROP COLUMN IF EXISTS fase_vacuna;
+    DROP COLUMN IF EXISTS fase_vacuna;"""
+    ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query
+    )
+    logging.info("|-- Renombrando fase_depurada_2 a fase_vacuna_depurada")
+    # eliminar la columna antigua si existe
+    query = f"""
     ALTER TABLE db_vacunacion_covid
     DROP COLUMN IF EXISTS fase_vacuna_depurada;
     """
@@ -58,6 +65,7 @@ def _organizar_columnas():
         query=query
     )
     # renombrar la nueva columna
+    logging.info("|-- Renombrando fase_depurada_2 a fase_vacuna_depurada")
     query_rename = """
     ALTER TABLE db_vacunacion_covid
     RENAME COLUMN fase_depurada_2 TO fase_vacuna_depurada;

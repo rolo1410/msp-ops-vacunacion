@@ -9,6 +9,7 @@ import logging
 
 
 def _prepare_clean_process():
+    logging.info("|-- CONFIGURACION")
     logging.info("|-- Preparando tabla de vacunacion_covid, crendo auditoria, logs y tabla base...")
     ## elminiar tabla si existe 
     query = """

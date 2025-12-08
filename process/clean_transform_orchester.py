@@ -1,3 +1,4 @@
+import logging
 from lake.init_lake import add_new_elements_to_lake
 from lake.load_lake import load_data, load_data_paginated
 from process.clean_transform.add_data import add_data_orchester
@@ -79,9 +80,25 @@ def _asignar_pesos_completitud():
         db_name='resources/data_lake/vacunacion.duckdb',
         query=query_update
     )    
+
+def _conteo_registros():
+    query_inicio = """
+    SELECT COUNT(*) FROM db_vacunacion_covid;
+    """
+    result_inicio = ejecutar_query(
+        db_name='resources/data_lake/vacunacion.duckdb',
+        query=query_inicio
+    )
     
+    logging.info(f"|-- Total de registros: {result_inicio[0][0]}")
+    return result_inicio[0][0]
+    
+
 def process_all_data_paginated(desde, hasta):
     configuracion_orchester()
+    
+    ##
+    total_inicio = _conteo_registros()
     establecimientos_orchester()
     fechas_tratamiento_orchester(desde, hasta)
     eliminar_duplicados_orchester()
@@ -93,3 +110,6 @@ def process_all_data_paginated(desde, hasta):
     eliminar_duplicados_orchester_final()
     dosis_orchester()
     
+    ##
+    total_inicio_final = _conteo_registros()
+    logging.info(f"|-- Total de registros: {total_inicio_final} (antes: {total_inicio}) diferencia: {total_inicio_final - total_inicio})")

@@ -98,7 +98,7 @@ def _limpiar_num_iden_espacios():
         query=query_clean
     )
 
-def _limpiar_identificacion():
+def _completar_0_cedulas_9_caracteres():
     logging.info("|-- Completando cédulas que tienen menos de 10 dígitos con un 0 a la izquierda")
     query = """
     UPDATE db_vacunacion_covid
@@ -403,13 +403,15 @@ def eliminar_1_3_de_nombres_apellidos():
     )
 
 def persona_orchester():
+    logging.info("|- TRATAMIENTO DE DATOS DE PERSONA")
     _limpiar_num_iden_espacios()
     _limpiar_num_iden()
     _reemplazar_caracter_en_num_iden()
     _eliminar_caracter_porcentaje()
     _eliminar_comilla()
     _eliminar_multiples_ceros_al_inicio_num_iden()
-    _limpiar_identificacion()
+    _completar_0_cedulas_9_caracteres()
+    ## nombres y apellidos
     _limpiar_nombres_apellidos_completos()
     _homologar_nacionalidad()
     _homologar_tipo_identificacion()
@@ -417,6 +419,7 @@ def persona_orchester():
     _asignar_tipo_no_identificado_a_num_iden_no_nulos()
     _asignar_tipo_cedula_a_17_digitos()
     _recalcular_anio_mes_dia_nacimiento()
+    
     _calcular_edad()
     _calcular_grupo_etario()
     _homologar_etnia()

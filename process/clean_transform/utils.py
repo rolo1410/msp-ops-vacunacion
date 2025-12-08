@@ -1,7 +1,6 @@
 import logging
 
 import duckdb
-import pandas
 
 from extract.extraccion_oracle_simple import logger
 
@@ -73,8 +72,11 @@ def get_from_duckdb(db_name, query):
 def ejecutar_query(db_name, query):
     cnn = duckdb.connect(database=db_name, read_only=False)
     try:
-        result=cnn.execute(query)  
+        result = cnn.execute(query).fetchall()
         cnn.commit()
+        is_update_or_delete = query.strip().upper().startswith(("UPDATE", "DELETE"))
+        if is_update_or_delete:
+            logging.info(f"|--- Registros afectados: {result[0][0]} en la {'ACTUALIZACION' if query.strip().upper().startswith('UPDATE') else 'ELIMINACION'}")
         return result
     except Exception as e:
         print(query)

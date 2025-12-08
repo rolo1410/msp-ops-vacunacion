@@ -1,7 +1,9 @@
+import logging
 from process.clean_transform.utils import ejecutar_query
 
 
 def _homogeniziar_dosis():
+    logging.info("|-- Homogenizando valores de dosis_aplicada")
     query = """
         UPDATE db_vacunacion_covid
         SET dosis_aplicada = CASE 
@@ -18,6 +20,7 @@ def _homogeniziar_dosis():
     )
     
 def _update_dosis_tercer_refuerzo():
+    logging.info("|-- Actualizando dosis_aplicada para tercer refuerzo y dosis bivalente")
     query = """
         UPDATE db_vacunacion_covid
         SET dosis_aplicada = CASE 
@@ -41,6 +44,7 @@ def _update_dosis_tercer_refuerzo():
     
     
 def _update_dosis_dosis_2():
+    logging.info("|-- Actualizando dosis_aplicada para segunda dosis")
     """
     Actualiza el campo dosis_aplicada del registro 2 a '2A DOSIS' cuando:
     - El campo dosis_aplicada del registro 1 es '1A DOSIS'
@@ -77,6 +81,7 @@ def _update_dosis_dosis_2():
    
 
 def _update_dosis_refuerzo_1():
+    logging.info("|-- Actualizando dosis_aplicada para primer refuerzo")
     """
     Actualiza el campo dosis_aplicada del registro 2 a 'REFUERZO 1' cuando:
     - El campo dosis_aplicada del registro 1 es '2A DOSIS'
@@ -120,6 +125,7 @@ def _update_dosis_refuerzo_2():
     Ordenados por fecha_aplicacion de forma ascendente por num_iden.
     solo los registros que cumplen con estas condiciones.
     """
+    logging.info("|-- Actualizando dosis_aplicada para segundo refuerzo")
     query = """
         WITH RankedDosis AS (
             SELECT 
